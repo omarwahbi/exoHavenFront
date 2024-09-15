@@ -30,6 +30,8 @@ const Categories = () => {
             <Image
               src={category.attributes.img_url}
               alt={category.attributes.name}
+              width={144}
+              height={144}
               className="rounded-full h-24 w-24 sm:h-36 sm:w-36 object-cover mb-4"
             />
             <h2 className="text-lg sm:text-xl font-bold text-green2 text-center">

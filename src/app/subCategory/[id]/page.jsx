@@ -46,6 +46,8 @@ const SubCategories = () => {
             {subCategory.attributes.subcategory_img && (
               <Image
                 src={subCategory.attributes.subcategory_img}
+                width={96}
+                height={96}
                 alt={subCategory.attributes.name || "Subcategory Image"}
                 className="rounded-full h-24 w-24 sm:h-36 sm:w-36 object-cover mb-4"
               />

@@ -18,7 +18,13 @@ const Navbar = () => {
             <div>
               <Link href="/">
                 <div className="text-white font-bold text-xl">
-                  <Image src="/favicon.ico" alt="logo" className="h-10 w-36" />
+                  <Image
+                    height={40}
+                    width={144}
+                    src="/favicon.png"
+                    alt="logo"
+                    className="h-10 w-36"
+                  />
                 </div>
               </Link>
             </div>

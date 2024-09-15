@@ -11,38 +11,24 @@ const Contact = () => {
         <div className="space-y-4">
           <div>
             <h3 className="text-lg font-medium text-gray-700">Email</h3>
-            <p className="text-gray-600">your-email@example.com</p>
+            <p className="text-gray-600">exohaven.iq@gmail.com</p>
           </div>
           <div>
             <h3 className="text-lg font-medium text-gray-700">Phone</h3>
-            <p className="text-gray-600">+123-456-7890</p>
+            <p className="text-gray-600">+964 783 898 4924</p>
           </div>
           <div>
             <h3 className="text-lg font-medium text-gray-700">Follow Me</h3>
             <div className="flex space-x-6 text-2xl text-gray-600">
               <a
-                href="https://www.facebook.com/yourprofile"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <FaFacebook className="hover:text-blue-600" />
-              </a>
-              <a
-                href="https://www.twitter.com/yourprofile"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <FaTwitter className="hover:text-blue-400" />
-              </a>
-              <a
-                href="https://www.instagram.com/yourprofile"
+                href="https://www.instagram.com/exohaven.iq?igsh=YXl5NzQ5Mm5keW40"
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 <FaInstagram className="hover:text-pink-500" />
               </a>
               <a
-                href="https://www.tiktok.com/@yourprofile"
+                href="https://www.tiktok.com/@exohaven.iq"
                 target="_blank"
                 rel="noopener noreferrer"
               >

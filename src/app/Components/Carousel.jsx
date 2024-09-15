@@ -85,6 +85,8 @@ export default function Carousel() {
             <div className="relative">
               <Image
                 src={img.attributes.image}
+                width={300}
+                height={300}
                 alt={`Carousel item ${img.id}`}
                 className={`w-full h-auto object-cover rounded-lg ${
                   idx === imageIndex ? "activeSlide" : "inactiveSlide"

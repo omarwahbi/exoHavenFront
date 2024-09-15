@@ -77,6 +77,8 @@ export default function Page({ params }) {
                     >
                       <Image
                         src={img.attributes.img_url}
+                        width={500}
+                        height={500}
                         className="absolute block max-w-full h-full object-cover rounded-lg object-center -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
                         alt={item.attributes.name}
                       />

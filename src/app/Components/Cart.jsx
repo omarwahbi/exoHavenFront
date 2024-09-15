@@ -101,11 +101,15 @@ const Cart = () => {
                           className="h-20 w-20 dark:hidden"
                           src={item.attributes.image}
                           alt={item.attributes.name}
+                          width={80}
+                          height={80}
                         />
                         <Image
                           className="hidden h-20 w-20 dark:block"
                           src={item.attributes.image}
                           alt={item.attributes.name}
+                          width={80}
+                          height={80}
                         />
                       </Link>
 
@@ -222,6 +226,8 @@ const Cart = () => {
                             className="h-auto max-w-full rounded-lg"
                             src={item.attributes.image}
                             alt={item.attributes.name}
+                            width={300}
+                            height={300}
                           />
                         </div>
                         <div className="absolute bottom-8 right-2 bg-black bg-opacity-50 text-white text-base p-2 rounded-e-3xl">
