@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
@@ -7,9 +8,20 @@ const Category = ({ params }) => {
   const [categories, setCategories] = useState(null);
 
   useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch(
+          `https://exohavenbackend.onrender.com/api/categories`
+        );
+        const data = await response.json();
+        setCategories(data.data);
+      } catch (error) {
+        console.error("Error fetching category:", error);
+      }
+    };
     fetchCategory(null, true);
     fetchCategories();
-  }, []);
+  }, [params.id]);
 
   const fetchCategory = async (id, all) => {
     try {
@@ -72,7 +84,7 @@ const Category = ({ params }) => {
           <Link key={item.id} href={`/item/${item.id}`}>
             <div key={item.id} className="mb-14 relative">
               <div className="justify-center flex">
-                <img
+                <Image
                   className="h-auto max-w-full rounded-lg"
                   src={item.attributes.image}
                   alt={item.attributes.name}

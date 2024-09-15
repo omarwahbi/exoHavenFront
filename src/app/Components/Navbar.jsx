@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -17,7 +18,7 @@ const Navbar = () => {
             <div>
               <Link href="/">
                 <div className="text-white font-bold text-xl">
-                  <img src="/favicon.ico" alt="logo" className="h-10 w-36" />
+                  <Image src="/favicon.ico" alt="logo" className="h-10 w-36" />
                 </div>
               </Link>
             </div>

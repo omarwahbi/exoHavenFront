@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import Slider from "react-slick";
 import { FaArrowRight, FaArrowLeft } from "react-icons/fa";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Carousel() {
   const [images, setImages] = useState([]);
@@ -82,7 +83,7 @@ export default function Carousel() {
             href={`/item/${img.id}`}
           >
             <div className="relative">
-              <img
+              <Image
                 src={img.attributes.image}
                 alt={`Carousel item ${img.id}`}
                 className={`w-full h-auto object-cover rounded-lg ${

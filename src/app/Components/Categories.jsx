@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
@@ -26,7 +27,7 @@ const Categories = () => {
       {categories.map((category) => (
         <Link href={`/subCategory/${category.id}`} key={category.id}>
           <div className="flex flex-col items-center p-4 shadow-md">
-            <img
+            <Image
               src={category.attributes.img_url}
               alt={category.attributes.name}
               className="rounded-full h-24 w-24 sm:h-36 sm:w-36 object-cover mb-4"

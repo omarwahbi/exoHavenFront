@@ -5,6 +5,7 @@ import { useCart } from "../context/CartContext";
 import useCartActions from "../context/cartActions";
 import ContinueOnWhatsApp from "./ContinueOnWhatsapp";
 import Link from "next/link";
+import Image from "next/image";
 
 const Cart = () => {
   const { cart } = useCart();
@@ -96,12 +97,12 @@ const Cart = () => {
                         href={`/item/${item.id}`}
                         className="shrink-0 md:order-1"
                       >
-                        <img
+                        <Image
                           className="h-20 w-20 dark:hidden"
                           src={item.attributes.image}
                           alt={item.attributes.name}
                         />
-                        <img
+                        <Image
                           className="hidden h-20 w-20 dark:block"
                           src={item.attributes.image}
                           alt={item.attributes.name}
@@ -217,7 +218,7 @@ const Cart = () => {
                     <Link key={item.id} href={`/item/${item.id}`}>
                       <div className="mb-14 relative">
                         <div className="justify-center flex">
-                          <img
+                          <Image
                             className="h-auto max-w-full rounded-lg"
                             src={item.attributes.image}
                             alt={item.attributes.name}

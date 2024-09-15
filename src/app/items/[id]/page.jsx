@@ -1,34 +1,35 @@
 "use client";
+import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 
 import React, { useEffect, useState } from "react";
 
-const Items = ({ params }) => {
+const Items = () => {
+  const { id } = useParams(); // Extract the id from the URL
   const [items, setItems] = useState(null);
   //   const [categories, setCategories] = useState(null);
-  const { id } = useParams(); // Extract the id from the URL
 
   useEffect(() => {
+    const fetchItems = async () => {
+      try {
+        // Determine the category ID to use
+        const subCategoryId = id;
+
+        // Construct the URL based on the 'all' parameter
+        const url = `https://exohavenbackend.onrender.com/api/items?filters[sub_category][id][$eq]=${subCategoryId}&populate=*`;
+
+        const response = await fetch(url);
+        const data = await response.json();
+        setItems(data.data);
+        console.log(data.data);
+      } catch (error) {
+        console.error("Error fetching category:", error);
+      }
+    };
+
     fetchItems();
-  }, []);
-
-  const fetchItems = async (id, all) => {
-    try {
-      // Determine the category ID to use
-      const subCategoryId = id || params.id;
-
-      // Construct the URL based on the 'all' parameter
-      const url = `https://exohavenbackend.onrender.com/api/items?filters[sub_category][id][$eq]=${subCategoryId}&populate=*`;
-
-      const response = await fetch(url);
-      const data = await response.json();
-      setItems(data.data);
-      console.log(items);
-    } catch (error) {
-      console.error("Error fetching category:", error);
-    }
-  };
+  }, [id]);
 
   if (!items) {
     return <div>Loading...</div>;
@@ -41,7 +42,7 @@ const Items = ({ params }) => {
           <Link key={item.id} href={`/item/${item.id}`}>
             <div key={item.id} className="mb-14 relative">
               <div className="justify-center flex">
-                <img
+                <Image
                   className="h-auto max-w-full rounded-lg"
                   src={item.attributes.image}
                   alt={item.attributes.name}

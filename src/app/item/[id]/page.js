@@ -7,6 +7,7 @@ import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import AddToCartButton from "@/app/Components/AddToCartBtn";
 import Quantity from "@/app/Components/Quantity";
+import Image from "next/image";
 
 export default function Page({ params }) {
   const [item, setItem] = useState(null);
@@ -15,20 +16,22 @@ export default function Page({ params }) {
 
   useEffect(() => {
     fetchItem(params.id);
-  }, []);
+  }, [params.id]);
 
   useEffect(() => {
     console.log(item);
   }, [item]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveIndex((current) =>
-        current === itemImgs.length - 1 ? 0 : current + 1
-      );
-    }, 10000); // Change slide every 10 seconds
+    if (itemImgs && itemImgs.length > 0) {
+      const interval = setInterval(() => {
+        setActiveIndex((current) =>
+          current === itemImgs.length - 1 ? 0 : current + 1
+        );
+      }, 10000); // Change slide every 10 seconds
 
-    return () => clearInterval(interval); // Clean up on component unmount
+      return () => clearInterval(interval); // Clean up on component unmount
+    }
   }, [itemImgs]);
 
   const fetchItem = async (id) => {
@@ -72,7 +75,7 @@ export default function Page({ params }) {
                       data-carousel-item
                       key={img.attributes.id}
                     >
-                      <img
+                      <Image
                         src={img.attributes.img_url}
                         className="absolute block max-w-full h-full object-cover rounded-lg object-center -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
                         alt={item.attributes.name}
