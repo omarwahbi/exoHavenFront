@@ -17,7 +17,7 @@ const Navbar = () => {
             <div>
               <Link href="/">
                 <div className="text-white font-bold text-xl">
-                  <img src="/Logo.png" alt="logo" className="h-10 w-36" />
+                  <img src="/favicon.ico" alt="logo" className="h-10 w-36" />
                 </div>
               </Link>
             </div>
@@ -28,9 +28,14 @@ const Navbar = () => {
                     Home
                   </div>
                 </Link>
-                <Link href="/services">
+                <Link href="/category">
                   <div className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
-                    Services
+                    Explore All Items
+                  </div>
+                </Link>
+                <Link href="/aboutUs">
+                  <div className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
+                    About Us
                   </div>
                 </Link>
                 <Link href="/contact">
@@ -41,17 +46,15 @@ const Navbar = () => {
               </div>
             </div>
           </div>
-          <Link href="/cart">
-            <div className="hidden md:block bg-gray- items-end justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
-              Cart
-            </div>
-          </Link>
-          <div className="-mr-2 flex md:hidden">
+
+          <div className="hidden md:block">
             <Link href="/cart">
-              <div className=" md:block bg-gray-800 inline-flex items-end justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
+              <div className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
                 Cart
               </div>
             </Link>
+          </div>
+          <div className="-mr-2 flex md:hidden">
             <button
               onClick={toggleNavbar}
               type="button"
@@ -100,19 +103,29 @@ const Navbar = () => {
       {isOpen && (
         <div className="md:hidden" id="mobile-menu">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            <Link href="/about">
+            <Link href="/">
               <div className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
-                About
+                Home
               </div>
             </Link>
-            <Link href="/services">
+            <Link href="/category">
               <div className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
-                Services
+                Explore All Items
+              </div>
+            </Link>
+            <Link href="/aboutUs">
+              <div className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
+                About Us
               </div>
             </Link>
             <Link href="/contact">
               <div className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
                 Contact
+              </div>
+            </Link>
+            <Link href="/cart">
+              <div className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
+                Cart
               </div>
             </Link>
           </div>

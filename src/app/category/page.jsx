@@ -1,7 +1,5 @@
 "use client";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-
 import React, { useEffect, useState } from "react";
 
 const Category = ({ params }) => {
@@ -9,7 +7,7 @@ const Category = ({ params }) => {
   const [categories, setCategories] = useState(null);
 
   useEffect(() => {
-    fetchCategory();
+    fetchCategory(null, true);
     fetchCategories();
   }, []);
 
@@ -20,8 +18,8 @@ const Category = ({ params }) => {
 
       // Construct the URL based on the 'all' parameter
       const url = all
-        ? "http://localhost:1337/api/items"
-        : `http://localhost:1337/api/items?filters[category][$eq]=${categoryId}`;
+        ? "https://exohavenbackend.onrender.com/api/items"
+        : `https://exohavenbackend.onrender.com/api/items?filters[category][$eq]=${categoryId}`;
 
       const response = await fetch(url);
       const data = await response.json();
@@ -33,7 +31,9 @@ const Category = ({ params }) => {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch(`http://localhost:1337/api/categories`);
+      const response = await fetch(
+        `https://exohavenbackend.onrender.com/api/categories`
+      );
       const data = await response.json();
       setCategories(data.data);
     } catch (error) {
@@ -71,15 +71,19 @@ const Category = ({ params }) => {
         {category.map((item) => (
           <Link key={item.id} href={`/item/${item.id}`}>
             <div key={item.id} className="mb-14 relative">
-              <img
-                className="h-auto max-w-full rounded-lg"
-                src={item.attributes.image}
-                alt={item.attributes.name}
-              />
-              <div className="absolute bottom-8 right-2 bg-black bg-opacity-50 text-white text-base p-2 rounded-e-3xl">
-                {item.attributes.state}
+              <div className="justify-center flex">
+                <img
+                  className="h-auto max-w-full rounded-lg"
+                  src={item.attributes.image}
+                  alt={item.attributes.name}
+                />
               </div>
-              <p>{item.attributes.name}</p>
+              <div className="absolute bottom-8 right-2 bg-black bg-opacity-50 text-white text-base p-2 rounded-e-3xl">
+                {item.attributes.out_of_stock
+                  ? "Out of Stock"
+                  : `${item.attributes.state}`}
+              </div>
+              <p className="text-center">{item.attributes.name}</p>
             </div>
           </Link>
         ))}

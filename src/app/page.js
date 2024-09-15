@@ -1,10 +1,10 @@
-import Slider from "./Components/Slider";
+import Carousel from "./Components/Carousel";
 import Categories from "./Components/Categories";
 
 export default function Home() {
   return (
     <div>
-      <Slider />
+      <Carousel />
       <Categories />
     </div>
   );

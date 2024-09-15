@@ -1,8 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import "~slick-carousel/slick/slick.css";
+@import "~slick-carousel/slick/slick-theme.css";
 
-:root {
+/* :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
@@ -30,7 +32,68 @@ body {
   .text-balance {
     text-wrap: balance;
   }
-}
+} */
 /* .primary-color {
   background-color: #1a5319;
 } */
+/* Ensure the slides take full height and the images scale correctly */
+/* Ensure that the container dynamically adjusts based on the image size */
+body {
+  color: #000;
+}
+.carousel-container {
+  width: 100%;
+  max-width: 100vw; /* Ensures full width */
+  position: relative;
+}
+
+.slide-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: auto; /* Dynamic height */
+}
+
+/* Make the images fill their container while maintaining their aspect ratio */
+.slide-img {
+  width: 100%;
+  height: auto;
+  max-height: 80vh; /* Ensures that the images don't exceed viewport height */
+  object-fit: cover;
+  object-position: center;
+  border-radius: 1rem;
+  transition: transform 300ms ease, opacity 300ms ease;
+}
+
+/* Control the scaling and opacity of the slides */
+.inactiveSlide {
+  transform: scale(0.8);
+  opacity: 0.5;
+}
+
+.activeSlide {
+  transform: scale(1.005);
+  opacity: 1;
+}
+/* Arrow positioning */
+.arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  cursor: pointer;
+  font-size: 2rem;
+  color: #000;
+}
+
+.next {
+  right: -30px;
+}
+
+.prev {
+  left: -30px;
+}
+
+.arrow:hover svg {
+  color: #68edff;
+}

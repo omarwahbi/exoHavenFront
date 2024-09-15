@@ -6,6 +6,7 @@ import FlightIcon from "@mui/icons-material/Flight";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import AddToCartButton from "@/app/Components/AddToCartBtn";
+import Quantity from "@/app/Components/Quantity";
 
 export default function Page({ params }) {
   const [item, setItem] = useState(null);
@@ -15,6 +16,10 @@ export default function Page({ params }) {
   useEffect(() => {
     fetchItem(params.id);
   }, []);
+
+  useEffect(() => {
+    console.log(item);
+  }, [item]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -29,7 +34,7 @@ export default function Page({ params }) {
   const fetchItem = async (id) => {
     try {
       const response = await fetch(
-        `http://localhost:1337/api/items/${id}?populate=images`
+        `https://exohavenbackend.onrender.com/api/items/${id}?populate=images`
       );
       const data = await response.json();
       setItem(data.data);
@@ -53,11 +58,11 @@ export default function Page({ params }) {
 
   return (
     item && (
-      <div className="w-full md:w-4/5 m-auto mt-14 mb-14">
-        <div className="flex flex-col md:flex-row md:pr-24">
+      <div className="w-full md:w-4/5 mx-auto mt-14 mb-14 px-4 md:px-0">
+        <div className="flex flex-col md:flex-row md:space-x-12">
           <div className="w-full md:w-3/5 relative">
             <div id="gallery" className="relative w-full" data-carousel="slide">
-              <div className="relative h-96 overflow-hidden rounded-lg md:h-96">
+              <div className="relative h-64 md:h-96 overflow-hidden rounded-lg">
                 {itemImgs &&
                   itemImgs.map((img, index) => (
                     <div
@@ -69,51 +74,74 @@ export default function Page({ params }) {
                     >
                       <img
                         src={img.attributes.img_url}
-                        className="absolute block max-w-full h-auto -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
-                        alt=""
+                        className="absolute block max-w-full h-full object-cover rounded-lg object-center -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
+                        alt={item.attributes.name}
                       />
                     </div>
                   ))}
               </div>
+              {/* Arrows for navigating slides */}
               <div className="absolute top-1/2 left-3 transform -translate-y-1/2">
-                <button onClick={prevSlide}>
+                <button
+                  onClick={prevSlide}
+                  className="bg-white bg-opacity-50 hover:bg-opacity-80 p-2 rounded-full"
+                >
                   <ArrowBackIosIcon />
                 </button>
               </div>
               <div className="absolute top-1/2 right-3 transform -translate-y-1/2">
-                <button onClick={nextSlide}>
+                <button
+                  onClick={nextSlide}
+                  className="bg-white bg-opacity-50 hover:bg-opacity-80 p-2 rounded-full"
+                >
                   <ArrowForwardIosIcon />
                 </button>
               </div>
             </div>
+
+            {/* Dots for active slide */}
             <div className="flex justify-center space-x-2 mt-2">
-              {itemImgs.map((_, index) => (
+              {itemImgs?.map((_, index) => (
                 <div
                   key={index}
-                  className={`h-1 w-1 rounded-full ${
+                  className={`h-2 w-2 rounded-full ${
                     index === activeIndex ? "bg-blue-500" : "bg-gray-300"
                   }`}
                 />
               ))}
             </div>
           </div>
-          <div className="w-full md:w-2/5 md:ml-20 mt-6 md:mt-0">
-            <h2 className="text-3xl md:text-6xl font-bold mb-4 md:mb-16">
+
+          {/* Product Information Section */}
+          <div className="w-full md:w-2/5 mt-6 md:mt-0">
+            <h2 className="text-2xl md:text-5xl font-bold mb-4 md:mb-8 text-gray-800">
               {item.attributes.name}
             </h2>
-            <p className="text-lg md:text-2xl">{item.attributes.description}</p>
-            <div className="mt-4 md:mt-8">
-              <span className="flex items-center">
-                <CheckCircleIcon className="mr-2" /> Quality Animals & Supplies
-              </span>
-              <span className="flex items-center mt-2">
-                <FlightIcon className="mr-2" /> Safe And Fast Shipping
-              </span>
-              <span className="flex items-center mt-2">
-                <SupportAgentIcon className="mr-2" /> Fast Respond and Instant
-                Support
-              </span>
-              <AddToCartButton item={item} />
+            <p className="text-base md:text-lg text-gray-600 mb-4">
+              {item.attributes.description}
+            </p>
+
+            <div className="space-y-4">
+              <div className="flex items-center text-lg text-gray-800">
+                <CheckCircleIcon className="mr-2 text-green-500" />
+                Quality Animals & Supplies
+              </div>
+              <div className="flex items-center text-lg text-gray-800">
+                <FlightIcon className="mr-2 text-blue-500" />
+                Safe And Fast Shipping
+              </div>
+              <div className="flex items-center text-lg text-gray-800">
+                <SupportAgentIcon className="mr-2 text-red-500" />
+                Fast Respond and Instant Support
+              </div>
+              <div className="flex flex-row justify-between items-center">
+                <div className="mt-10">
+                  <AddToCartButton item={item} />
+                </div>
+                <div className="mt-10">
+                  <Quantity item={item} />
+                </div>
+              </div>
             </div>
           </div>
         </div>
