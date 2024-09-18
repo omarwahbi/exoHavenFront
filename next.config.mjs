@@ -6,6 +6,7 @@ const nextConfig = {
       "tttworld.com",
       "eastoceansg.com",
       "encrypted-tbn0.gstatic.com",
+      "imgur.com",
     ],
   },
 };
