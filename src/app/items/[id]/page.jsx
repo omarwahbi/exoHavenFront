@@ -53,7 +53,7 @@ const Items = () => {
               <div className="absolute bottom-8 right-2 bg-black bg-opacity-50 text-white text-base p-2 rounded-e-3xl">
                 {item.attributes.out_of_stock
                   ? "Out of Stock"
-                  : `${item.attributes.state} IQD`}
+                  : `${Number(item.attributes.state).toLocaleString()} IQD`}
               </div>
               <p className="text-center">{item.attributes.name}</p>
             </div>

@@ -139,7 +139,12 @@ export default function Page({ params }) {
                 <SupportAgentIcon className="mr-2 text-red-500" />
                 Fast Respond and Instant Support
               </div>
-              <div className="flex flex-row justify-between items-center">
+              <div className="flex items-center text-lg text-gray-800 mt-5">
+                <span className="font-bold">
+                  Price: {Number(item.attributes.state).toLocaleString()} IQD
+                </span>
+              </div>
+              <div className="flex flex-row justify-between items-center ">
                 <div className="mt-10">
                   <AddToCartButton item={item} />
                 </div>
