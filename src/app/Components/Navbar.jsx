@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -57,7 +58,7 @@ const Navbar = () => {
           <div className="hidden md:block">
             <Link href="/cart">
               <div className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
-                Cart
+                <ShoppingCartIcon fontSize="medium" />
               </div>
             </Link>
           </div>
