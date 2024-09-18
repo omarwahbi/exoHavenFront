@@ -19,10 +19,6 @@ export default function Page({ params }) {
   }, [params.id]);
 
   useEffect(() => {
-    console.log(item);
-  }, [item]);
-
-  useEffect(() => {
     if (itemImgs && itemImgs.length > 0) {
       const interval = setInterval(() => {
         setActiveIndex((current) =>

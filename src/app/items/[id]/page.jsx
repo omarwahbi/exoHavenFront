@@ -22,7 +22,6 @@ const Items = () => {
         const response = await fetch(url);
         const data = await response.json();
         setItems(data.data);
-        console.log(data.data);
       } catch (error) {
         console.error("Error fetching category:", error);
       }

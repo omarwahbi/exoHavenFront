@@ -71,7 +71,6 @@ export default function Carousel() {
 
     fetchImages();
   }, []);
-  console.log(images);
 
   return (
     <div className="w-full max-w-screen-lg mx-auto my-10 relative">

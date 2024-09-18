@@ -4,7 +4,6 @@ import { useCart } from "../context/CartContext";
 
 const AddToCartButton = ({ item }) => {
   const { dispatch } = useCart();
-  console.log(item);
 
   const addToCart = () => {
     dispatch({ type: "ADD_ITEM", payload: item });
