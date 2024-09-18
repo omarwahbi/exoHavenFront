@@ -6,7 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 
 export default function Carousel() {
-  const [images, setImages] = useState([]);
+  const [images, setImages] = useState(null);
   const [imageIndex, setImageIndex] = useState(0);
 
   // Custom Arrow Components
@@ -28,7 +28,6 @@ export default function Carousel() {
 
   const settings = {
     infinite: true,
-    lazyLoad: true,
     speed: 500,
     slidesToShow: 3, // Default for large screens
     slidesToScroll: 1,
@@ -73,31 +72,39 @@ export default function Carousel() {
   }, []);
 
   return (
-    <div className="w-full max-w-screen-lg mx-auto my-10 relative">
-      <Slider {...settings}>
-        {images.map((img, idx) => (
-          <Link
-            key={img.id}
-            className="relative block"
-            href={`/item/${img.id}`}
-          >
-            <div className="relative">
-              <Image
-                src={img.attributes.image}
-                width={300}
-                height={300}
-                alt={`Carousel item ${img.id}`}
-                className={`w-full h-auto object-cover rounded-lg ${
-                  idx === imageIndex ? "activeSlide" : "inactiveSlide"
-                }`}
-              />
-              <div className="absolute top-4 left-4 bg-white text-black text-lg font-semibold px-4 py-2 rounded-lg shadow-md">
-                New Arrivals
-              </div>
-            </div>
-          </Link>
-        ))}
-      </Slider>
+    <div>
+      {images ? (
+        <div className="w-full max-w-screen-lg mx-auto my-10 relative mb-20">
+          <Slider {...settings}>
+            {images.map((img, idx) => (
+              <Link
+                key={img.id}
+                className="relative block"
+                href={`/item/${img.id}`}
+              >
+                <div className="relative">
+                  <Image
+                    src={img.attributes.image}
+                    width={300}
+                    height={300}
+                    alt={`Carousel item ${img.id}`}
+                    className={`w-full h-auto object-cover rounded-lg ${
+                      idx === imageIndex ? "activeSlide" : "inactiveSlide"
+                    }`}
+                  />
+                  <div className="absolute top-4 left-4 bg-white text-black text-lg font-semibold px-4 py-2 rounded-lg shadow-md">
+                    New Arrivals
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </Slider>
+        </div>
+      ) : (
+        <div className="justify-center h-full items-center flex mt-36">
+          <p>Loading... </p>
+        </div>
+      )}
     </div>
   );
 }
