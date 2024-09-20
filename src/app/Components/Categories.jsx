@@ -13,7 +13,7 @@ const Categories = () => {
   const fetchCategories = async () => {
     try {
       const response = await fetch(
-        "https://exohavenbackend.onrender.com/api/categories?populate=*"
+        "http://localhost:1337/api/categories?populate=*"
       );
       const data = await response.json();
       setCategories(data.data);

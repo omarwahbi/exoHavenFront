@@ -8,6 +8,7 @@ const nextConfig = {
       "encrypted-tbn0.gstatic.com",
       "i.imgur.com",
       "imgur.com",
+      "ik.imagekit.io",
     ],
   },
 };

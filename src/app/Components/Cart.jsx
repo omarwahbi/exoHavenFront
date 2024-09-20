@@ -47,19 +47,18 @@ const Cart = () => {
     }, 0);
   };
 
-  const fetchItems = async () => {
-    try {
-      const url = `https://exohavenbackend.onrender.com/api/items?pagination[limit]=3&populate=*`; // Adjust the limit or URL as needed
-      const response = await fetch(url);
-      const data = await response.json();
-      setItems(data.data); // Store fetched items in state
-    } catch (error) {
-      console.error("Error fetching items:", error);
-    }
-  };
-
   useEffect(() => {
     setIsClient(true); // Mark the component as client-side
+    const fetchItems = async () => {
+      try {
+        const url = `http://localhost:1337/api/items?pagination[limit]=3&populate=*`; // Adjust the limit or URL as needed
+        const response = await fetch(url);
+        const data = await response.json();
+        setItems(data.data); // Store fetched items in state
+      } catch (error) {
+        console.error("Error fetching items:", error);
+      }
+    };
     fetchItems(); // Fetch items when the component mounts
   }, []);
 
