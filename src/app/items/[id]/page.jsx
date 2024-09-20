@@ -17,7 +17,7 @@ const Items = () => {
         const subCategoryId = id;
 
         // Construct the URL based on the 'all' parameter
-        const url = `http://localhost:1337/api/items?filters[sub_category][id][$eq]=${subCategoryId}&populate=*`;
+        const url = `https://exohavenbackend.onrender.com/api/items?filters[sub_category][id][$eq]=${subCategoryId}&populate=*`;
 
         const response = await fetch(url);
         const data = await response.json();

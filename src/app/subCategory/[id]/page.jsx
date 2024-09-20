@@ -11,7 +11,7 @@ const SubCategories = () => {
   // const fetchSubCategories = async () => {
   //   try {
   //     const response = await fetch(
-  //       `http://localhost:1337/api/categories/${id}?populate=sub_categories&populate=*`
+  //       `https://exohavenbackend.onrender.com/api/categories/${id}?populate=sub_categories&populate=*`
   //     );
   //     const data = await response.json();
   //     setSubCategories(data.data.attributes.sub_categories?.data || []);
@@ -24,7 +24,7 @@ const SubCategories = () => {
     const fetchSubCategories = async () => {
       try {
         const response = await fetch(
-          `http://localhost:1337/api/categories/${id}?populate=*`
+          `https://exohavenbackend.onrender.com/api/categories/${id}?populate=*`
         );
         const data = await response.json();
         setSubCategories(data.data.attributes.sub_categories?.data || []);

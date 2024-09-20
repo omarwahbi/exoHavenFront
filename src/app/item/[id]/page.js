@@ -33,7 +33,7 @@ export default function Page({ params }) {
   const fetchItem = async (id) => {
     try {
       const response = await fetch(
-        `http://localhost:1337/api/items/${id}?populate=*`
+        `https://exohavenbackend.onrender.com/api/items/${id}?populate=*`
       );
       const data = await response.json();
       setItem(data.data);

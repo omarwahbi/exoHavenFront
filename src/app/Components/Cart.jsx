@@ -51,7 +51,7 @@ const Cart = () => {
     setIsClient(true); // Mark the component as client-side
     const fetchItems = async () => {
       try {
-        const url = `http://localhost:1337/api/items?pagination[limit]=3&populate=*`; // Adjust the limit or URL as needed
+        const url = `https://exohavenbackend.onrender.com/api/items?pagination[limit]=3&populate=*`; // Adjust the limit or URL as needed
         const response = await fetch(url);
         const data = await response.json();
         setItems(data.data); // Store fetched items in state

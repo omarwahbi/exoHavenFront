@@ -59,7 +59,7 @@ export default function Carousel() {
     const fetchImages = async () => {
       try {
         const response = await fetch(
-          "http://localhost:1337/api/items?filters[new_arrival][$eq]=true&populate=*"
+          "https://exohavenbackend.onrender.com/api/items?filters[new_arrival][$eq]=true&populate=*"
         );
         const data = await response.json();
         setImages(data.data);

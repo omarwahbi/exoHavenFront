@@ -10,7 +10,9 @@ const Category = ({ params }) => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch(`http://localhost:1337/api/categories`);
+        const response = await fetch(
+          `https://exohavenbackend.onrender.com/api/categories`
+        );
         const data = await response.json();
         setCategories(data.data);
       } catch (error) {
@@ -28,8 +30,8 @@ const Category = ({ params }) => {
 
       // Construct the URL based on the 'all' parameter
       const url = all
-        ? "http://localhost:1337/api/items?populate=item_thumbnail"
-        : `http://localhost:1337/api/items?filters[category][$eq]=${categoryId}&populate=item_thumbnail`;
+        ? "https://exohavenbackend.onrender.com/api/items?populate=item_thumbnail"
+        : `https://exohavenbackend.onrender.com/api/items?filters[category][$eq]=${categoryId}&populate=item_thumbnail`;
 
       const response = await fetch(url);
       const data = await response.json();
@@ -42,7 +44,7 @@ const Category = ({ params }) => {
   const fetchCategories = async () => {
     try {
       const response = await fetch(
-        `http://localhost:1337/api/categories/?populate=category_thumbnail`
+        `https://exohavenbackend.onrender.com/api/categories/?populate=category_thumbnail`
       );
       const data = await response.json();
       setCategories(data.data);
