@@ -13,7 +13,7 @@ const Categories = () => {
   const fetchCategories = async () => {
     try {
       const response = await fetch(
-        "https://exohavenbackend.onrender.com/api/categories"
+        "https://exohavenbackend.onrender.com/api/categories?populate=*"
       );
       const data = await response.json();
       setCategories(data.data);
@@ -31,7 +31,7 @@ const Categories = () => {
           <Link href={`/subCategory/${category.id}`} key={category.id}>
             <div className="flex flex-col items-center p-4 shadow-md">
               <Image
-                src={category.attributes.img_url}
+                src={category.attributes.category_thumbnail.data.attributes.url}
                 alt={category.attributes.name}
                 width={144}
                 height={144}

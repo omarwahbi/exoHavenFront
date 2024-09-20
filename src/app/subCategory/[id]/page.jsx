@@ -8,23 +8,23 @@ const SubCategories = () => {
   const { id } = useParams(); // Extract the id from the URL
   const [subCategories, setSubCategories] = useState([]);
 
-  const fetchSubCategories = async () => {
-    try {
-      const response = await fetch(
-        `https://exohavenbackend.onrender.com/api/categories/${id}?populate=sub_categories`
-      );
-      const data = await response.json();
-      setSubCategories(data.data.attributes.sub_categories?.data || []);
-    } catch (error) {
-      console.error("Error fetching sub-categories:", error);
-    }
-  };
+  // const fetchSubCategories = async () => {
+  //   try {
+  //     const response = await fetch(
+  //       `https://exohavenbackend.onrender.com/api/categories/${id}?populate=sub_categories&populate=*`
+  //     );
+  //     const data = await response.json();
+  //     setSubCategories(data.data.attributes.sub_categories?.data || []);
+  //   } catch (error) {
+  //     console.error("Error fetching sub-categories:", error);
+  //   }
+  // };
 
   useEffect(() => {
     const fetchSubCategories = async () => {
       try {
         const response = await fetch(
-          `https://exohavenbackend.onrender.com/api/categories/${id}?populate=sub_categories`
+          `https://exohavenbackend.onrender.com/api/categories/${id}?populate=sub_categories&populate=*`
         );
         const data = await response.json();
         setSubCategories(data.data.attributes.sub_categories?.data || []);
@@ -45,7 +45,10 @@ const SubCategories = () => {
           <div className="flex flex-col items-center p-4 shadow-md">
             {subCategory.attributes.subcategory_img && (
               <Image
-                src={subCategory.attributes.subcategory_img}
+                src={
+                  subCategory.attributes.subcategory_thumbnail.data.attributes
+                    .url
+                }
                 width={96}
                 height={96}
                 alt={subCategory.attributes.name || "Subcategory Image"}

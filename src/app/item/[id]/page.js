@@ -33,11 +33,11 @@ export default function Page({ params }) {
   const fetchItem = async (id) => {
     try {
       const response = await fetch(
-        `https://exohavenbackend.onrender.com/api/items/${id}?populate=images`
+        `https://exohavenbackend.onrender.com/api/items/${id}?populate=*`
       );
       const data = await response.json();
       setItem(data.data);
-      setItemImgs(data.data.attributes.images.data);
+      setItemImgs(data.data.attributes.item_images.data);
     } catch (error) {
       console.error("Error fetching item:", error);
     }
@@ -72,7 +72,7 @@ export default function Page({ params }) {
                       key={img.attributes.id}
                     >
                       <Image
-                        src={img.attributes.img_url}
+                        src={img.attributes.url}
                         width={500}
                         height={500}
                         className="absolute block max-w-full h-full object-cover rounded-lg object-center -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"

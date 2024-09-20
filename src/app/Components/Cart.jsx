@@ -49,7 +49,7 @@ const Cart = () => {
 
   const fetchItems = async () => {
     try {
-      const url = `https://exohavenbackend.onrender.com/api/items?pagination[limit]=3`; // Adjust the limit or URL as needed
+      const url = `https://exohavenbackend.onrender.com/api/items?pagination[limit]=3&populate=*`; // Adjust the limit or URL as needed
       const response = await fetch(url);
       const data = await response.json();
       setItems(data.data); // Store fetched items in state
@@ -98,14 +98,18 @@ const Cart = () => {
                       >
                         <Image
                           className="h-20 w-20 dark:hidden"
-                          src={item.attributes.image}
+                          src={
+                            item.attributes.item_thumbnail.data.attributes.url
+                          }
                           alt={item.attributes.name}
                           width={80}
                           height={80}
                         />
                         <Image
                           className="hidden h-20 w-20 dark:block"
-                          src={item.attributes.image}
+                          src={
+                            item.attributes.item_thumbnail.data.attributes.url
+                          }
                           alt={item.attributes.name}
                           width={80}
                           height={80}
@@ -223,7 +227,9 @@ const Cart = () => {
                         <div className="justify-center flex">
                           <Image
                             className="h-auto max-w-full rounded-lg"
-                            src={item.attributes.image}
+                            src={
+                              item.attributes.item_thumbnail.data.attributes.url
+                            }
                             alt={item.attributes.name}
                             width={300}
                             height={300}

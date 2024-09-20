@@ -30,8 +30,8 @@ const Category = ({ params }) => {
 
       // Construct the URL based on the 'all' parameter
       const url = all
-        ? "https://exohavenbackend.onrender.com/api/items"
-        : `https://exohavenbackend.onrender.com/api/items?filters[category][$eq]=${categoryId}`;
+        ? "https://exohavenbackend.onrender.com/api/items?populate=item_thumbnail"
+        : `https://exohavenbackend.onrender.com/api/items?filters[category][$eq]=${categoryId}&populate=item_thumbnail`;
 
       const response = await fetch(url);
       const data = await response.json();
@@ -44,7 +44,7 @@ const Category = ({ params }) => {
   const fetchCategories = async () => {
     try {
       const response = await fetch(
-        `https://exohavenbackend.onrender.com/api/categories`
+        `https://exohavenbackend.onrender.com/api/categories/?populate=category_thumbnail`
       );
       const data = await response.json();
       setCategories(data.data);
@@ -86,7 +86,7 @@ const Category = ({ params }) => {
               <div className="justify-center flex">
                 <Image
                   className="h-auto max-w-full rounded-lg"
-                  src={item.attributes.image}
+                  src={item.attributes.item_images.data.attributes.url}
                   alt={item.attributes.name}
                   width={300}
                   height={300}

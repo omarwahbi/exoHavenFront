@@ -43,7 +43,7 @@ const Items = () => {
               <div className="justify-center flex">
                 <Image
                   className="h-auto max-w-full rounded-lg"
-                  src={item.attributes.image}
+                  src={item.attributes.item_thumbnail.data.attributes.url}
                   alt={item.attributes.name}
                   width={300}
                   height={300}

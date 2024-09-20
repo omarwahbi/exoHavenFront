@@ -59,7 +59,7 @@ export default function Carousel() {
     const fetchImages = async () => {
       try {
         const response = await fetch(
-          "https://exohavenbackend.onrender.com/api/items?filters[new_arrival][$eq]=true"
+          "https://exohavenbackend.onrender.com/api/items?filters[new_arrival][$eq]=true&populate=*"
         );
         const data = await response.json();
         setImages(data.data);
@@ -84,7 +84,7 @@ export default function Carousel() {
               >
                 <div className="relative">
                   <Image
-                    src={img.attributes.image}
+                    src={img.attributes.item_images.data.attributes.url}
                     width={300}
                     height={300}
                     alt={`Carousel item ${img.id}`}
