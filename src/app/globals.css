@@ -1,0 +1,470 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import "~slick-carousel/slick/slick.css";
+@import "~slick-carousel/slick/slick-theme.css";
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-rgb: 255, 255, 255;
+  /* Modern green palette */
+  --green1: #E8F5E9;
+  --green2: #C8E6C9;
+  --green3: #81C784;
+  --green4: #4CAF50;
+  --green5: #2E7D32;
+  /* Secondary accent colors */
+  --accent1: #f0f9ff;
+  --accent2: #e0f2fe;
+  --accent3: #7dd3fc;
+  --accent4: #0ea5e9;
+  --accent5: #0369a1;
+  /* Neutral tones */
+  --neutral1: #f8fafc;
+  --neutral2: #f1f5f9;
+  --neutral3: #e2e8f0;
+  --neutral4: #94a3b8;
+  --neutral5: #64748b;
+  /* Body background */
+  --body-background: var(--neutral1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-rgb: 0, 0, 0;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: var(--body-background);
+}
+
+/* Modern background patterns */
+.bg-pattern-grid {
+  background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%2381C784' fill-opacity='0.05' fill-rule='evenodd'%3E%3Cpath d='M0 0h40v40H0V0zm40 40h40v40H40V40zm-40 0h2l-2 2V40zm0-4h4l-4 4v-4zm0-4h6l-6 6v-6z'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+.bg-pattern-dots {
+  background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%234CAF50' fill-opacity='0.07' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='3'/%3E%3Ccircle cx='13' cy='13' r='3'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* Glass morphism */
+.glass {
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+}
+
+.glass-dark {
+  background: rgba(20, 20, 20, 0.25);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+}
+
+/* Fix for select options text color */
+option {
+  color: #333 !important;  /* Force dark text color */
+  background-color: white !important; /* Force white background */
+}
+
+select {
+  color-scheme: light !important; /* Force light color scheme for dropdown */
+  -webkit-appearance: menulist !important; /* Fix dropdown appearance in WebKit */
+  background-color: white !important;
+  color: #333 !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+/* Ensure dropdown arrows are visible */
+select::-ms-expand {
+  display: block !important;
+}
+
+/* Ensure proper contrast for option text */
+select option:checked,
+select option:hover,
+select option:focus {
+  background-color: #4A9A51 !important;
+  color: white !important;
+}
+
+/* Fix for radio buttons */
+input[type="radio"] {
+  accent-color: #4A9A51 !important;
+  width: 1.25rem !important;
+  height: 1.25rem !important;
+}
+
+/* Custom styled radio buttons */
+.custom-radio {
+  display: flex;
+  align-items: center;
+  background-color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.custom-radio:hover {
+  border-color: #4A9A51;
+}
+
+.custom-radio input {
+  margin-right: 0.5rem;
+}
+
+/* Font classes */
+.font-cairo {
+  font-family: var(--font-cairo), Arial, sans-serif;
+}
+
+.font-inter {
+  font-family: var(--font-inter), system-ui, sans-serif;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--green3);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--green4);
+}
+
+/* Focus styles for accessibility */
+*:focus-visible {
+  outline: 2px solid var(--green4);
+  outline-offset: 2px;
+}
+
+/* Custom animation classes - updated for better performance */
+.fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+  will-change: opacity;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.scale-in {
+  animation: scaleIn 0.3s ease-out forwards;
+  will-change: transform, opacity;
+}
+
+@keyframes scaleIn {
+  0% {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* New slide animations */
+.slide-in-up {
+  animation: slideInUp 0.4s ease-out forwards;
+  will-change: transform, opacity;
+}
+
+@keyframes slideInUp {
+  0% {
+    transform: translateY(15px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.slide-in-down {
+  animation: slideInDown 0.4s ease-out forwards;
+  will-change: transform, opacity;
+}
+
+@keyframes slideInDown {
+  0% {
+    transform: translateY(-15px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Custom utility classes */
+.text-balance {
+  text-wrap: balance;
+}
+
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Better RTL support */
+[dir="rtl"] .space-x-reverse > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 1;
+}
+
+/* Custom button active state */
+.btn-active:active {
+  transform: scale(0.98);
+}
+
+/* .primary-color {
+  background-color: #1a5319;
+} */
+/* Ensure the slides take full height and the images scale correctly */
+/* Ensure that the container dynamically adjusts based on the image size */
+/* For the entire page */
+/* For the entire website */
+html,
+body {
+  overflow: hidden; /* Completely hides the scrollbar */
+  overflow-y: auto; /* Allows vertical scrolling without scrollbar */
+  scrollbar-width: none; /* For Firefox */
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none; /* For Chrome, Safari, and Edge */
+}
+
+.carousel-container {
+  width: 100%;
+  max-width: 100vw; /* Ensures full width */
+  position: relative;
+}
+p {
+  white-space: pre-wrap;
+}
+
+.slide-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: auto; /* Dynamic height */
+}
+
+/* Make the images fill their container while maintaining their aspect ratio */
+.slide-img {
+  width: 100%;
+  height: auto;
+  max-height: 80vh; /* Ensures that the images don't exceed viewport height */
+  object-fit: cover;
+  object-position: center;
+  border-radius: 1rem;
+  transition: transform 300ms ease, opacity 300ms ease;
+}
+
+/* Control the scaling and opacity of the slides */
+.inactiveSlide {
+  transform: scale(0.8);
+  opacity: 0.5;
+}
+
+.activeSlide {
+  transform: scale(1.005);
+  opacity: 1;
+}
+/* Arrow positioning */
+.arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  cursor: pointer;
+  font-size: 2rem;
+  color: #000;
+}
+
+.next {
+  right: -30px;
+}
+
+.prev {
+  left: -30px;
+}
+
+.arrow:hover svg {
+  color: #68edff;
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 3.9%;
+    --primary: 0 0% 9%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 96.1%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+    --accent: 0 0% 96.1%;
+    --accent-foreground: 0 0% 9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: 0 0% 3.9%;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.5rem;
+  }
+  .dark {
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Swiper carousel custom styles */
+.swiper {
+  width: 100%;
+  padding-bottom: 35px;
+}
+
+.swiper-wrapper {
+  padding: 10px 0;
+}
+
+.swiper-slide {
+  height: auto;
+  transition: all 0.3s ease;
+}
+
+/* 3D Carousel specific styles */
+.new-arrivals-3d-carousel .swiper-slide {
+  width: 240px;
+  transition: transform 0.4s;
+  filter: brightness(0.8);
+}
+
+.new-arrivals-3d-carousel .swiper-slide-active {
+  filter: brightness(1);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  z-index: 2;
+}
+
+.new-arrivals-3d-carousel .swiper-slide-shadow-left,
+.new-arrivals-3d-carousel .swiper-slide-shadow-right {
+  background-image: linear-gradient(to left, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0));
+  border-radius: 8px;
+}
+
+.swiper-pagination {
+  position: absolute;
+  bottom: 0 !important;
+}
+
+.swiper-pagination-bullet {
+  width: 6px;
+  height: 6px;
+  background: #ccc;
+  opacity: 0.5;
+  transition: all 0.3s ease;
+}
+
+.swiper-pagination-bullet-active {
+  opacity: 1;
+  background: var(--green4, #2c7a32);
+  width: 16px;
+  border-radius: 3px;
+}
+
+/* Add elegant hover effects for the new arrivals carousel */
+.new-arrivals-carousel .swiper-slide {
+  transform: scale(0.95);
+  transition: transform 0.3s ease;
+}
+
+.new-arrivals-carousel .swiper-slide-active {
+  transform: scale(1);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
