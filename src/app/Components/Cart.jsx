@@ -357,11 +357,7 @@ const Cart = () => {
                                 {item.attributes.name}
                               </Link>
                             </div>
-                            {item.attributes.Item_ID && (
-                              <p className="mt-1 text-sm text-gray-500">
-                                الرمز: {item.attributes.Item_ID}
-                              </p>
-                            )}
+                  
                             {item.attributes.description && (
                               <p className="mt-1 text-sm text-gray-500 line-clamp-1">
                                 {item.attributes.description}

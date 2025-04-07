@@ -219,12 +219,7 @@ export default function Page({ params }) {
           {/* Product Information Section */}
           <div className="w-full lg:w-1/2 border-t lg:border-t-0 lg:border-r border-gray-100">
             <div className="p-4 md:p-6" dir="rtl">
-              {/* Product Item ID */}
-              {item.attributes.Item_ID && (
-                <div className="text-sm text-gray-600 mb-2">
-                  رمز المنتج: {item.attributes.Item_ID}
-                </div>
-              )}
+
 
               {/* Product name */}
               <h1 className="text-2xl md:text-3xl font-bold mb-2 text-gray-800">

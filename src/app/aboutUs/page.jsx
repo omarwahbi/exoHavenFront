@@ -35,12 +35,11 @@ const AboutUs = () => {
           <div className="space-y-6">
             <h2 className="text-3xl font-bold text-green5 mb-4">رحلتنا</h2>
             <p className="text-lg text-gray-700 leading-relaxed">
-              في إكزو هيفن، نحن شغوفون بتقديم أفضل الحيوانات الغريبة والإكسسوارات
+              في إكزو هيفن، نحن شغوفون بتقديم أفضل الإكسسوارات والمستلزمات
               المتخصصة للسحالي والزواحف الأخرى. هدفنا هو خلق ملاذ لعشاق الزواحف، حيث
               نقدم كل ما تحتاجه للعناية بحيواناتك الأليفة الفريدة. مع النصائح من
               الخبراء ومنتجات عالية الجودة، نسعى لمساعدتك في بناء الملاذ المثالي
-              لرفاقك الغريبين.
-            </p>
+             لحيواناتك الغريبة.            </p>
             <div className="pt-4">
               <div className="flex items-center mb-3">
                 <div className="h-10 w-10 rounded-full bg-green4 flex items-center justify-center mr-3">
