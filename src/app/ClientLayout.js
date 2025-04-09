@@ -6,6 +6,7 @@ import Navbar from "./Components/Navbar";
 import Footer from "./Components/Footer";
 import Spinner from "./Components/Spinner";
 import TopProgressBar from "./Components/TopProgressBar";
+import GoogleAnalyticsScript from "./Components/GoogleAnalyticsScript";
 
 const ClientLayout = ({ children }) => {
   // Initialize QueryClient with improved caching settings
@@ -83,6 +84,7 @@ const ClientLayout = ({ children }) => {
       <Suspense fallback={null}>
         <TopProgressBar />
       </Suspense>
+      <GoogleAnalyticsScript />
       <div className="flex flex-col min-h-screen bg-green1">
         <Navbar />
         
