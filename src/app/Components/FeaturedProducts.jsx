@@ -53,7 +53,7 @@ const FeaturedProducts = () => {
             </h2>
           </div>
           <Link
-            href="/items"
+            href="/category"
             className="text-sm font-medium text-green3 hover:text-green4 transition-colors flex items-center group"
           >
             عرض المزيد
