@@ -3,6 +3,7 @@ import useCartActions from "../context/cartActions";
 import { useCart } from "../context/CartContext";
 import { motion } from "framer-motion";
 import { FaPlus, FaMinus } from "react-icons/fa";
+import { calculateSalePrice, isSaleActive } from "@/utils/saleUtils";
 
 export default function Quantity({ item, removeOnZero = false }) {
   const { cart } = useCart();
@@ -75,9 +76,17 @@ export default function Quantity({ item, removeOnZero = false }) {
       {quantity > 0 && (
         <div className="ml-3 sm:ml-4 text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-300">
           {item.attributes.state && (
-            <span>
-              {(item.attributes.state * quantity).toLocaleString()} IQD
-            </span>
+            <>
+              {isSaleActive() ? (
+                <span>
+                  {(calculateSalePrice(item.attributes.state) * quantity).toLocaleString()} IQD
+                </span>
+              ) : (
+                <span>
+                  {(item.attributes.state * quantity).toLocaleString()} IQD
+                </span>
+              )}
+            </>
           )}
         </div>
       )}

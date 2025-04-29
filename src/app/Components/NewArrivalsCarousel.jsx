@@ -3,11 +3,12 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { FaArrowLeft, FaEye } from "react-icons/fa";
+import { FaArrowLeft, FaEye, FaTag } from "react-icons/fa";
 import Spinner from "./Spinner";
 import { useQuery } from "@tanstack/react-query";
 import { fetchNewArrivals } from "@/services/api";
 import { QueryKeys } from "@/utils/queryKeys";
+import { isSaleActive, calculateSalePrice } from "@/utils/saleUtils";
 // Import Swiper React components
 import { Swiper, SwiperSlide } from 'swiper/react';
 // Import Swiper styles
@@ -139,6 +140,14 @@ export default function NewArrivalsCarousel() {
                           جديد
                         </div>
                         
+                        {/* Sale badge - Only shown if sale is active */}
+                        {isSaleActive() && !img.attributes.out_of_stock && (
+                          <div className="absolute top-1 right-1 bg-red-600 text-white text-[10px] font-medium px-1.5 py-0.5 rounded-full z-10 flex items-center gap-0.5 animate-pulse">
+                            <FaTag className="text-[8px]" />
+                            <span>-15%</span>
+                          </div>
+                        )}
+                        
                         <div className="absolute inset-0 bg-gradient-to-t from-green5/60 via-green5/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                           <div className="bg-white/80 p-1.5 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">
                             <FaEye className="text-green4 text-sm" />
@@ -152,9 +161,20 @@ export default function NewArrivalsCarousel() {
                         </h3>
                         {img.attributes.state && (
                           <div className="flex items-center justify-between mt-0.5">
-                            <span className="font-bold text-green4 text-xs">
-                              {img.attributes.state.toLocaleString()} IQD
-                            </span>
+                            {isSaleActive() && !img.attributes.out_of_stock ? (
+                              <div>
+                                <span className="text-gray-500 line-through text-[10px] block">
+                                  {img.attributes.state.toLocaleString()} IQD
+                                </span>
+                                <span className="font-bold text-red-600 text-xs">
+                                  {calculateSalePrice(img.attributes.state).toLocaleString()} IQD
+                                </span>
+                              </div>
+                            ) : (
+                              <span className="font-bold text-green4 text-xs">
+                                {img.attributes.state.toLocaleString()} IQD
+                              </span>
+                            )}
                           </div>
                         )}
                       </div>

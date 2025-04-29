@@ -5,10 +5,11 @@ import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
-import { FaEye, FaArrowLeft } from "react-icons/fa";
+import { FaEye, FaArrowLeft, FaTag } from "react-icons/fa";
 import Spinner from "../Components/Spinner";
 import { fetchNewArrivals } from "@/services/api";
 import { QueryKeys } from "@/utils/queryKeys";
+import { isSaleActive, calculateSalePrice } from "@/utils/saleUtils";
 
 export default function ItemsPage() {
   const searchParams = useSearchParams();
@@ -132,6 +133,14 @@ export default function ItemsPage() {
                           جديد
                         </div>
                       )}
+                      
+                      {/* Sale badge */}
+                      {isSaleActive() && !item.attributes.out_of_stock && (
+                        <div className="absolute top-0 left-0 bg-red-600 text-white text-xs font-bold px-2 py-1 m-2 rounded-full animate-pulse flex items-center gap-1">
+                          <FaTag className="text-[10px]" />
+                          <span>-15%</span>
+                        </div>
+                      )}
                     </Link>
                     
                     <div className="p-3 flex-grow flex flex-col">
@@ -142,9 +151,20 @@ export default function ItemsPage() {
                       </Link>
                       
                       <div className="mt-auto pt-2 flex justify-between items-center">
-                        <span className="font-bold text-green4">
-                          {Number(item.attributes.state).toLocaleString()} IQD
-                        </span>
+                        {isSaleActive() && !item.attributes.out_of_stock ? (
+                          <div>
+                            <span className="text-gray-500 line-through text-xs block">
+                              {Number(item.attributes.state).toLocaleString()} IQD
+                            </span>
+                            <span className="font-bold text-red-600">
+                              {calculateSalePrice(item.attributes.state).toLocaleString()} IQD
+                            </span>
+                          </div>
+                        ) : (
+                          <span className="font-bold text-green4">
+                            {Number(item.attributes.state).toLocaleString()} IQD
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>

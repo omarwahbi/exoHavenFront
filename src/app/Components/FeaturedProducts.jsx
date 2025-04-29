@@ -4,10 +4,11 @@ import Link from "next/link";
 import Image from "next/image";
 import Spinner from "./Spinner";
 import { motion } from "framer-motion";
-import { FaStar, FaArrowLeft, FaEye } from "react-icons/fa";
+import { FaStar, FaArrowLeft, FaEye, FaTag } from "react-icons/fa";
 import { useQuery } from "@tanstack/react-query";
 import { fetchFeaturedProducts } from "@/services/api";
 import { QueryKeys } from "@/utils/queryKeys";
+import { calculateSalePrice, isSaleActive } from "@/utils/saleUtils";
 
 const FeaturedProducts = () => {
   // Fetch featured products using React Query
@@ -83,6 +84,15 @@ const FeaturedProducts = () => {
                         priority={index < 2}
                       />
                     </div>
+                    
+                    {/* Sale tag - Display only if sale is active */}
+                    {isSaleActive() && (
+                      <div className="absolute top-2 left-2 bg-red-600 text-[10px] sm:text-xs font-medium text-white px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full shadow-sm flex items-center animate-pulse">
+                        <FaTag className="mr-0.5 text-[8px] sm:text-xs" />
+                        <span className="mt-px">خصم 15%</span>
+                      </div>
+                    )}
+
                     <div className="absolute top-2 right-2 bg-green3 text-[10px] sm:text-xs font-medium text-white px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full shadow-sm flex items-center">
                       <FaStar className="mr-0.5 text-[8px] sm:text-xs" />
                       <span className="mt-px">مميز</span>
@@ -108,9 +118,22 @@ const FeaturedProducts = () => {
 
                     <div className="mt-auto">
                       {product.attributes.state && (
-                        <p className="text-green4 font-bold text-sm sm:text-base md:text-lg">
-                          {product.attributes.state.toLocaleString()} IQD
-                        </p>
+                        <>
+                          {isSaleActive() ? (
+                            <>
+                              <p className="text-gray-500 line-through text-xs sm:text-sm">
+                                {product.attributes.state.toLocaleString()} IQD
+                              </p>
+                              <p className="text-red-600 font-bold text-sm sm:text-base md:text-lg">
+                                {calculateSalePrice(product.attributes.state).toLocaleString()} IQD
+                              </p>
+                            </>
+                          ) : (
+                            <p className="text-green4 font-bold text-sm sm:text-base md:text-lg">
+                              {product.attributes.state.toLocaleString()} IQD
+                            </p>
+                          )}
+                        </>
                       )}
                       <div className="mt-2 sm:mt-3 bg-green1 rounded-lg p-1.5 sm:p-2 text-center text-xs sm:text-sm font-medium text-green4 group-hover:bg-green4 group-hover:text-white transition-all duration-300">
                         عرض المنتج

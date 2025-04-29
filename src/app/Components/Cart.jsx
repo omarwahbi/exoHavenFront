@@ -17,6 +17,7 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { useQuery } from "@tanstack/react-query";
 import { fetchSuggestedItems } from "@/services/api";
 import { QueryKeys } from "@/utils/queryKeys";
+import { calculateSalePrice, isSaleActive } from "@/utils/saleUtils";
 
 const Cart = () => {
   const { cart } = useCart();
@@ -95,9 +96,10 @@ const Cart = () => {
   };
 
   const getItemNamesWithQuantities = (cart) => {
-    // Calculate the total price
+    // Calculate total with sale prices if applicable
     const subtotal = cart.reduce((sum, item) => {
-      return sum + item.attributes.state * item.quantity;
+      const price = isSaleActive() ? calculateSalePrice(item.attributes.state) : item.attributes.state;
+      return sum + price * item.quantity;
     }, 0);
 
     // Determine if delivery is free
@@ -105,13 +107,15 @@ const Cart = () => {
     const deliveryFee = isDeliveryFree ? 0 : (deliveryLocation === 'baghdad' ? BAGHDAD_DELIVERY_FEE : OTHER_GOVERNORATES_DELIVERY_FEE);
     const grandTotal = subtotal + deliveryFee;
 
-    // Format each item detail
+    // Format each item detail with sale price if applicable
     const itemDetails = cart
       .map(
-        (item) =>
-          `${item.attributes.name}\nالعدد: ${item.quantity}\nالسعر: ${(
-            item.attributes.state * item.quantity
-          ).toLocaleString()} IQD\n`
+        (item) => {
+          const price = isSaleActive() ? calculateSalePrice(item.attributes.state) : item.attributes.state;
+          return `${item.attributes.name}\nالعدد: ${item.quantity}\nالسعر: ${(
+            price * item.quantity
+          ).toLocaleString()} IQD\n`;
+        }
       )
       .join("\n- ");
 
@@ -130,7 +134,13 @@ const Cart = () => {
 
   const calculateTotalCost = (cart) => {
     return cart.reduce((total, item) => {
-      const cost = parseInt(item.attributes.state, 10); // Convert state to an integer
+      let cost = parseInt(item.attributes.state, 10); // Convert state to an integer
+      
+      // Apply sale discount if active
+      if (isSaleActive()) {
+        cost = calculateSalePrice(cost);
+      }
+      
       if (!isNaN(cost)) {
         return total + cost * item.quantity; // Multiply by the quantity and add to total
       }
@@ -221,6 +231,12 @@ const Cart = () => {
               جديد
             </div>
           )}
+          {/* Sale tag */}
+          {isSaleActive() && !product.attributes.out_of_stock && (
+            <div className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded animate-pulse">
+              خصم 15%
+            </div>
+          )}
         </div>
         <div className="p-3 flex-grow flex flex-col">
           <h4 className="font-medium text-gray-800 mb-1 line-clamp-1 group-hover:text-green4 transition-colors text-right">
@@ -232,11 +248,22 @@ const Cart = () => {
             </p>
           )}
           <div className="mt-auto text-right">
-            <span className={`font-bold ${product.attributes.out_of_stock ? 'text-gray-400' : 'text-green4'}`}>
-              {product.attributes.out_of_stock
-                ? "غير متوفر"
-                : `${Number(product.attributes.state).toLocaleString()} IQD`}
-            </span>
+            {product.attributes.out_of_stock ? (
+              <span className="font-bold text-gray-400">غير متوفر</span>
+            ) : isSaleActive() ? (
+              <div>
+                <span className="text-gray-500 line-through text-xs block">
+                  {Number(product.attributes.state).toLocaleString()} IQD
+                </span>
+                <span className="font-bold text-red-600">
+                  {calculateSalePrice(product.attributes.state).toLocaleString()} IQD
+                </span>
+              </div>
+            ) : (
+              <span className="font-bold text-green4">
+                {Number(product.attributes.state).toLocaleString()} IQD
+              </span>
+            )}
           </div>
         </div>
       </div>
@@ -392,10 +419,22 @@ const Cart = () => {
                               </div>
                               <div className="text-end whitespace-nowrap">
                                 <p className="text-base font-bold text-gray-900">
-                                  {(
-                                    item.attributes.state * item.quantity
-                                  ).toLocaleString()}{" "}
-                                  <span className="text-sm font-normal">IQD</span>
+                                  {isSaleActive() ? (
+                                    <>
+                                      <span className="text-sm font-normal line-through text-gray-500 block">
+                                        {(item.attributes.state * item.quantity).toLocaleString()} IQD
+                                      </span>
+                                      <span className="text-red-600">
+                                        {(calculateSalePrice(item.attributes.state) * item.quantity).toLocaleString()}{" "}
+                                        <span className="text-sm font-normal">IQD</span>
+                                      </span>
+                                    </>
+                                  ) : (
+                                    <>
+                                      {(item.attributes.state * item.quantity).toLocaleString()}{" "}
+                                      <span className="text-sm font-normal">IQD</span>
+                                    </>
+                                  )}
                                 </p>
                               </div>
                             </div>

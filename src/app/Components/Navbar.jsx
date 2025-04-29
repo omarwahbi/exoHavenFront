@@ -198,11 +198,11 @@ const Navbar = () => {
             onClick={toggleNavbar}
           >
             <motion.div 
-              className="fixed inset-y-0 right-0 w-4/5 max-w-xs bg-white h-full shadow-xl overflow-y-auto"
+              className="fixed inset-y-0 left-0 w-4/5 max-w-xs bg-white h-full shadow-xl overflow-y-auto"
               dir="rtl"
-              initial={{ x: "100%" }}
+              initial={{ x: "-100%" }}
               animate={{ x: 0 }}
-              exit={{ x: "100%" }}
+              exit={{ x: "-100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 250 }}
               onClick={(e) => e.stopPropagation()}
             >

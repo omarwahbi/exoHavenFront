@@ -6,10 +6,11 @@ import { useParams, useRouter } from "next/navigation";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import React, { useRef, useCallback, useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { FaEye, FaShoppingCart, FaPlus, FaMinus } from "react-icons/fa";
+import { FaEye, FaShoppingCart, FaPlus, FaMinus, FaTag } from "react-icons/fa";
 import { useCart } from "@/app/context/CartContext";
 import { fetchSubCategoryById, fetchSubCategoryItems } from "@/services/api";
 import { QueryKeys } from "@/utils/queryKeys";
+import { isSaleActive, calculateSalePrice } from "@/utils/saleUtils";
 
 const Items = () => {
   const { id } = useParams();
@@ -239,6 +240,21 @@ const Items = () => {
                               نفذت الكمية
                             </div>
                           )}
+                          
+                          {/* New arrival badge */}
+                          {item.attributes.new_arrival && !item.attributes.out_of_stock && (
+                            <div className="absolute top-0 right-0 bg-green4 text-white text-xs font-bold px-3 py-1 m-2 rounded">
+                              جديد
+                            </div>
+                          )}
+                          
+                          {/* Sale badge */}
+                          {isSaleActive() && !item.attributes.out_of_stock && (
+                            <div className="absolute top-0 left-0 bg-red-600 text-white text-xs font-bold px-2 py-1 m-2 rounded-full animate-pulse flex items-center gap-1">
+                              <FaTag className="text-[10px]" />
+                              <span>-15%</span>
+                            </div>
+                          )}
                         </Link>
                         
                         <div className="p-3 flex-grow flex flex-col">
@@ -249,10 +265,21 @@ const Items = () => {
                           </Link>
                           
                           <div className="mt-auto pt-2 flex justify-between items-center">
-                            <span className={`font-bold ${item.attributes.out_of_stock ? 'text-gray-400' : 'text-green4'}`}>
-                              {item.attributes.out_of_stock
-                                ? "غير متوفر"
-                                : `${Number(item.attributes.state).toLocaleString()} د.ع`}
+                            <span className={`font-bold ${item.attributes.out_of_stock ? 'text-gray-400' : ''}`}>
+                              {item.attributes.out_of_stock ? (
+                                "غير متوفر"
+                              ) : isSaleActive() ? (
+                                <div>
+                                  <span className="text-gray-500 line-through text-xs block">
+                                    {Number(item.attributes.state).toLocaleString()} د.ع
+                                  </span>
+                                  <span className="text-red-600">
+                                    {calculateSalePrice(item.attributes.state).toLocaleString()} د.ع
+                                  </span>
+                                </div>
+                              ) : (
+                                `${Number(item.attributes.state).toLocaleString()} د.ع`
+                              )}
                             </span>
                             
                             {/* Cart interaction button */}

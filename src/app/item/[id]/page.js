@@ -16,6 +16,8 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchItemById, fetchRelatedProducts } from "@/services/api";
 import { QueryKeys } from "@/utils/queryKeys";
 import { useCart } from "@/app/context/CartContext";
+import { calculateSalePrice, isSaleActive } from "@/utils/saleUtils";
+import { FaTag } from "react-icons/fa";
 
 export default function Page({ params }) {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -244,14 +246,37 @@ export default function Page({ params }) {
                     وصل حديثاً
                   </span>
                 )}
+                
+                {/* Sale tag */}
+                {isSaleActive() && !item.attributes.out_of_stock && (
+                  <span className="inline-block bg-red-100 text-red-800 text-sm font-medium px-3 py-1 rounded-full mr-2 animate-pulse">
+                    <FaTag className="inline-block ml-1" size={12} />
+                    خصم 15%
+                  </span>
+                )}
               </div>
 
               {/* Price */}
               <div className="my-5">
-                <span className="text-3xl font-bold text-green5">
-                  {Number(item.attributes.state).toLocaleString()} 
-                  <span className="text-lg font-medium mr-1">د.ع</span>
-                </span>
+                {isSaleActive() && !item.attributes.out_of_stock ? (
+                  <>
+                    <div className="flex flex-col">
+                      <span className="text-lg line-through text-gray-500 mb-1">
+                        {Number(item.attributes.state).toLocaleString()} 
+                        <span className="text-sm font-medium mr-1">د.ع</span>
+                      </span>
+                      <span className="text-3xl font-bold text-red-600">
+                        {calculateSalePrice(item.attributes.state).toLocaleString()} 
+                        <span className="text-lg font-medium mr-1">د.ع</span>
+                      </span>
+                    </div>
+                  </>
+                ) : (
+                  <span className="text-3xl font-bold text-green5">
+                    {Number(item.attributes.state).toLocaleString()} 
+                    <span className="text-lg font-medium mr-1">د.ع</span>
+                  </span>
+                )}
               </div>
 
               {/* Description */}
@@ -358,17 +383,34 @@ export default function Page({ params }) {
                         نفذت الكمية
                       </div>
                     )}
+                    {/* Sale tag - Display only if sale is active */}
+                    {isSaleActive() && !product.attributes.out_of_stock && (
+                      <div className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded animate-pulse">
+                        خصم 15%
+                      </div>
+                    )}
                   </div>
                   <div className="p-3">
                     <h3 className="font-medium text-gray-800 mb-1 line-clamp-1 group-hover:text-green4 transition-colors text-right">
                       {product.attributes.name}
                     </h3>
                     <div className="text-right">
-                      <span className={`font-bold ${product.attributes.out_of_stock ? 'text-gray-400' : 'text-green5'}`}>
-                        {product.attributes.out_of_stock
-                          ? "غير متوفر"
-                          : `${Number(product.attributes.state).toLocaleString()} د.ع`}
-                      </span>
+                      {product.attributes.out_of_stock ? (
+                        <span className="font-bold text-gray-400">غير متوفر</span>
+                      ) : isSaleActive() ? (
+                        <div>
+                          <span className="text-gray-500 line-through text-sm block">
+                            {Number(product.attributes.state).toLocaleString()} د.ع
+                          </span>
+                          <span className="font-bold text-red-600">
+                            {calculateSalePrice(product.attributes.state).toLocaleString()} د.ع
+                          </span>
+                        </div>
+                      ) : (
+                        <span className="font-bold text-green5">
+                          {Number(product.attributes.state).toLocaleString()} د.ع
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>

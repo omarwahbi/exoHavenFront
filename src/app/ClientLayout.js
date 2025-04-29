@@ -7,6 +7,7 @@ import Footer from "./Components/Footer";
 import Spinner from "./Components/Spinner";
 import TopProgressBar from "./Components/TopProgressBar";
 import GoogleAnalyticsScript from "./Components/GoogleAnalyticsScript";
+import SaleBanner from "./Components/SaleBanner";
 
 const ClientLayout = ({ children }) => {
   // Initialize QueryClient with improved caching settings
@@ -87,6 +88,7 @@ const ClientLayout = ({ children }) => {
       <GoogleAnalyticsScript />
       <div className="flex flex-col min-h-screen bg-green1">
         <Navbar />
+        <SaleBanner />
         
         <main className="flex-grow">
           {isLoading ? (

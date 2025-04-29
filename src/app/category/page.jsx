@@ -10,12 +10,14 @@ import {
 } from "@tanstack/react-query";
 import Spinner from "../Components/Spinner";
 import { motion } from "framer-motion";
-import { FaSearch, FaFilter, FaShoppingCart, FaEye, FaPlus, FaMinus, FaCheck } from "react-icons/fa";
+import { FaSearch, FaFilter, FaShoppingCart, FaEye, FaPlus, FaMinus, FaCheck, FaTag } from "react-icons/fa";
 import { useCart } from "../context/CartContext";
 import { fetchCategories } from "@/services/api";
 import api from "@/services/api";
 import { QueryKeys } from "@/utils/queryKeys";
 import { cancelAllRequests } from "@/services/api";
+import { isSaleActive, calculateSalePrice } from "@/utils/saleUtils";
+import SaleBanner from "../Components/SaleBanner";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -307,6 +309,8 @@ const Category = ({ params }) => {
           </p>
         </div>
       </div>
+      
+
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Enhanced Sticky Filters Bar */}
@@ -638,6 +642,21 @@ const Category = ({ params }) => {
                               نفذت الكمية
                             </div>
                           )}
+                          
+                          {/* New arrival badge */}
+                          {item.attributes.new_arrival && !item.attributes.out_of_stock && (
+                            <div className="absolute top-0 right-0 bg-blue-500 text-white text-xs font-bold px-2 py-1 m-2 rounded">
+                              جديد
+                            </div>
+                          )}
+                          
+                          {/* Sale badge */}
+                          {isSaleActive() && !item.attributes.out_of_stock && (
+                            <div className="absolute top-0 left-0 bg-red-600 text-white text-xs font-bold px-2 py-1 m-2 rounded-full animate-pulse">
+                              <FaTag className="inline-block ml-1" size={10} />
+                              خصم 15%
+                            </div>
+                          )}
                         </Link>
                         
                         <div className="p-3 flex-grow flex flex-col">
@@ -648,10 +667,21 @@ const Category = ({ params }) => {
                           </Link>
                           
                           <div className="mt-auto pt-2 flex justify-between items-center">
-                            <span className={`font-bold ${item.attributes.out_of_stock ? 'text-gray-400' : 'text-green4'}`}>
-                              {item.attributes.out_of_stock
-                                ? "غير متوفر"
-                                : `${Number(item.attributes.state).toLocaleString()} IQD`}
+                            <span className={`font-bold ${item.attributes.out_of_stock ? 'text-gray-400' : ''}`}>
+                              {item.attributes.out_of_stock ? (
+                                "غير متوفر"
+                              ) : isSaleActive() ? (
+                                <div>
+                                  <span className="text-gray-500 line-through text-xs block">
+                                    {Number(item.attributes.state).toLocaleString()} IQD
+                                  </span>
+                                  <span className="text-red-600">
+                                    {calculateSalePrice(item.attributes.state).toLocaleString()} IQD
+                                  </span>
+                                </div>
+                              ) : (
+                                `${Number(item.attributes.state).toLocaleString()} IQD`
+                              )}
                             </span>
                             
                             {/* Cart interaction button */}
@@ -711,6 +741,21 @@ const Category = ({ params }) => {
                               نفذت الكمية
                             </div>
                           )}
+                          
+                          {/* New arrival badge */}
+                          {item.attributes.new_arrival && !item.attributes.out_of_stock && (
+                            <div className="absolute top-0 right-0 bg-blue-500 text-white text-xs font-bold px-2 py-1 m-1 rounded">
+                              جديد
+                            </div>
+                          )}
+                          
+                          {/* Sale badge */}
+                          {isSaleActive() && !item.attributes.out_of_stock && (
+                            <div className="absolute top-0 left-0 bg-red-600 text-white text-xs font-bold px-2 py-1 m-1 rounded animate-pulse">
+                              <FaTag className="inline-block ml-1" size={10} />
+                              خصم 15%
+                            </div>
+                          )}
                         </Link>
                         
                         <div className="flex-grow p-4 flex flex-col">
@@ -725,10 +770,21 @@ const Category = ({ params }) => {
                           </p>
                           
                           <div className="mt-auto flex justify-between items-center">
-                            <span className={`font-bold ${item.attributes.out_of_stock ? 'text-gray-400' : 'text-green4'}`}>
-                              {item.attributes.out_of_stock
-                                ? "غير متوفر"
-                                : `${Number(item.attributes.state).toLocaleString()} IQD`}
+                            <span className={`font-bold ${item.attributes.out_of_stock ? 'text-gray-400' : ''}`}>
+                              {item.attributes.out_of_stock ? (
+                                "غير متوفر"
+                              ) : isSaleActive() ? (
+                                <div>
+                                  <span className="text-gray-500 line-through text-xs block">
+                                    {Number(item.attributes.state).toLocaleString()} IQD
+                                  </span>
+                                  <span className="text-red-600">
+                                    {calculateSalePrice(item.attributes.state).toLocaleString()} IQD
+                                  </span>
+                                </div>
+                              ) : (
+                                `${Number(item.attributes.state).toLocaleString()} IQD`
+                              )}
                             </span>
                             
                             {/* Cart interaction for list view */}
