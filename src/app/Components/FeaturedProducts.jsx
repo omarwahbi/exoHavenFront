@@ -2,7 +2,7 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import Spinner from "./Spinner";
+import { ProductGridSkeleton } from "./SkeletonLoader";
 import { motion } from "framer-motion";
 import { FaStar, FaArrowLeft, FaEye, FaTag } from "react-icons/fa";
 import { useQuery } from "@tanstack/react-query";
@@ -12,8 +12,8 @@ import { calculateSalePrice, isSaleActive } from "@/utils/saleUtils";
 
 const FeaturedProducts = () => {
   // Fetch featured products using React Query
-  const { 
-    data: products = [], 
+  const {
+    data: products = [],
     isLoading,
     error
   } = useQuery({
@@ -23,8 +23,27 @@ const FeaturedProducts = () => {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center py-8">
-        <Spinner size="lg" text="جاري تحميل المنتجات" />
+      <div className="py-12 px-4 sm:py-20">
+        <div className="max-w-screen-xl mx-auto">
+          <motion.div
+            className="flex flex-col md:flex-row items-center justify-between mb-8 sm:mb-14"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <div className="flex flex-col items-center md:items-start mb-4 md:mb-0">
+              <div className="flex items-center">
+                <div className="h-10 w-1.5 bg-gradient-to-b from-green3 to-green4 rounded-full mr-3 hidden md:block"></div>
+                <h2 className="text-2xl mx-1 sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-green4 to-green3 bg-clip-text text-transparent text-center md:text-right">
+                  منتجات مميزة
+                </h2>
+              </div>
+              <p className="text-sm text-gray-600 mt-2 text-center md:text-right md:mr-6">اكتشف أفضل المنتجات المختارة بعناية</p>
+            </div>
+          </motion.div>
+
+          <ProductGridSkeleton count={4} />
+        </div>
       </div>
     );
   }

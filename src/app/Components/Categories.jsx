@@ -2,7 +2,7 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import Spinner from "./Spinner";
+import { CategoryGridSkeleton } from "./SkeletonLoader";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { fetchCategories } from "@/services/api";
@@ -10,10 +10,10 @@ import { QueryKeys } from "@/utils/queryKeys";
 
 const Categories = () => {
   // Fetch categories using React Query
-  const { 
+  const {
     data: categories = [],
     isLoading,
-    error 
+    error
   } = useQuery({
     queryKey: [QueryKeys.categories],
     queryFn: fetchCategories
@@ -40,8 +40,27 @@ const Categories = () => {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center py-10">
-        <Spinner size="lg" text="جاري تحميل الفئات" />
+      <div className="py-12 sm:py-16 px-4 bg-gradient-to-br from-green1/40 via-green1/20 to-transparent rounded-3xl sm:rounded-4xl my-8 sm:my-12 max-w-screen-xl mx-auto border border-green2/30">
+        <motion.div
+          className="flex flex-col md:flex-row items-center justify-between mb-8 sm:mb-12"
+          initial={{ opacity: 0, y: -30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <div className="flex flex-col items-center md:items-start mb-3 md:mb-0">
+            <div className="flex items-center">
+              <div className="h-10 w-1.5 bg-gradient-to-b from-green3 to-green4 rounded-full mr-3 hidden md:block"></div>
+              <h2 className="text-2xl mx-1 sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-green4 to-green3 bg-clip-text text-transparent text-center md:text-right">
+                تصفح حسب الفئة
+              </h2>
+            </div>
+            <p className="text-sm text-gray-600 mt-2 text-center md:text-right md:mr-6">
+              اختر من مجموعة متنوعة من الفئات المميزة
+            </p>
+          </div>
+        </motion.div>
+
+        <CategoryGridSkeleton count={5} />
       </div>
     );
   }

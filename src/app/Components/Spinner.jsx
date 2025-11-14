@@ -1,6 +1,12 @@
 import React from "react";
+import { motion } from "framer-motion";
 
-const Spinner = ({ size = "default", text = "جاري التحميل..." }) => {
+const Spinner = ({
+  size = "default",
+  text = "جاري التحميل...",
+  variant = "ring",
+  className = ""
+}) => {
   const spinnerSizes = {
     sm: "w-8 h-8",
     default: "w-12 h-12",
@@ -8,36 +14,148 @@ const Spinner = ({ size = "default", text = "جاري التحميل..." }) => {
     xl: "w-20 h-20",
   };
 
-  return (
-    <div 
-      role="status" 
-      className="flex flex-col items-center justify-center animate-pulse bg-transparent"
+  const dotSizes = {
+    sm: "w-2 h-2",
+    default: "w-3 h-3",
+    lg: "w-4 h-4",
+    xl: "w-5 h-5",
+  };
+
+  // Ring Spinner (Modern SVG spinner with gradient)
+  const RingSpinner = () => (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.3 }}
     >
       <svg
         aria-hidden="true"
-        className={`${spinnerSizes[size]} text-green2 fill-green4 animate-spin`}
+        className={`${spinnerSizes[size]} animate-spin`}
         viewBox="0 0 100 101"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
+        <defs>
+          <linearGradient id="spinnerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#4CAF50" />
+            <stop offset="50%" stopColor="#81C784" />
+            <stop offset="100%" stopColor="#2E7D32" />
+          </linearGradient>
+        </defs>
         <path
           d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
           fill="currentColor"
-          className="opacity-25"
+          className="opacity-20 text-green2"
         />
         <path
           d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-          fill="currentFill"
+          fill="url(#spinnerGradient)"
         />
       </svg>
-      
+    </motion.div>
+  );
+
+  // Dots Spinner (Three bouncing dots)
+  const DotsSpinner = () => (
+    <div className="flex gap-2 items-center justify-center">
+      {[0, 1, 2].map((index) => (
+        <motion.div
+          key={index}
+          className={`${dotSizes[size]} rounded-full bg-gradient-to-br from-green4 to-green5`}
+          animate={{
+            y: ["0%", "-50%", "0%"],
+            scale: [1, 1.2, 1],
+          }}
+          transition={{
+            duration: 0.6,
+            repeat: Infinity,
+            delay: index * 0.15,
+            ease: "easeInOut",
+          }}
+        />
+      ))}
+    </div>
+  );
+
+  // Pulse Spinner (Expanding circles)
+  const PulseSpinner = () => (
+    <div className="relative flex items-center justify-center">
+      {[0, 1].map((index) => (
+        <motion.div
+          key={index}
+          className={`${spinnerSizes[size]} absolute rounded-full border-4 border-green4`}
+          initial={{ opacity: 1, scale: 0 }}
+          animate={{
+            opacity: [1, 0.5, 0],
+            scale: [0, 1, 1.5],
+          }}
+          transition={{
+            duration: 1.5,
+            repeat: Infinity,
+            delay: index * 0.75,
+            ease: "easeOut",
+          }}
+        />
+      ))}
+      <motion.div
+        className={`${dotSizes[size]} rounded-full bg-gradient-to-br from-green4 to-green5`}
+        animate={{
+          scale: [1, 1.2, 1],
+        }}
+        transition={{
+          duration: 1,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+      />
+    </div>
+  );
+
+  // Select spinner variant
+  const renderSpinner = () => {
+    switch (variant) {
+      case "dots":
+        return <DotsSpinner />;
+      case "pulse":
+        return <PulseSpinner />;
+      case "ring":
+      default:
+        return <RingSpinner />;
+    }
+  };
+
+  return (
+    <div
+      role="status"
+      className={`flex flex-col items-center justify-center gap-4 ${className}`}
+    >
+      {renderSpinner()}
+
       {text && (
-        <div className="mt-3 text-sm font-medium text-green4 dark:text-green2" dir="rtl">
-          {text}
-          <span className="inline-block animate-blink">...</span>
-        </div>
+        <motion.div
+          className="text-sm font-medium text-green4 dark:text-green2"
+          dir="rtl"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.1 }}
+        >
+          <span>{text}</span>
+          <motion.span
+            className="inline-block ml-1"
+            animate={{
+              opacity: [1, 0.3, 1],
+            }}
+            transition={{
+              duration: 1.5,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          >
+            ...
+          </motion.span>
+        </motion.div>
       )}
-      
+
       <span className="sr-only">Loading...</span>
     </div>
   );
