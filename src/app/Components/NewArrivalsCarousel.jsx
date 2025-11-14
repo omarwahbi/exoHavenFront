@@ -100,14 +100,6 @@ export default function NewArrivalsCarousel() {
               pagination={false}
               modules={[EffectCoverflow, Autoplay]}
               className="pb-2"
-              preventClicks={false}
-              preventClicksPropagation={false}
-              slideToClickedSlide={true}
-              threshold={50}
-              touchRatio={0.5}
-              shortSwipes={false}
-              longSwipes={true}
-              longSwipesRatio={0.3}
               breakpoints={{
                 640: {
                   slidesPerView: 2,
@@ -129,7 +121,7 @@ export default function NewArrivalsCarousel() {
             >
               {images.map((img) => (
                 <SwiperSlide key={img.id} className="w-[260px] md:w-[240px] h-auto">
-                  <div className="overflow-hidden rounded-lg bg-white shadow-md h-full transform transition-all duration-300 border border-gray-100 flex flex-col">
+                  <div className="overflow-hidden rounded-lg bg-white shadow-md h-full transform transition-all duration-300 border border-gray-100">
                     <Link
                       className="group block"
                       href={`/item/${img.id}`}
@@ -150,19 +142,25 @@ export default function NewArrivalsCarousel() {
 
                         {/* Sale badge - Only shown if sale is active */}
                         {isSaleActive() && !img.attributes.out_of_stock && (
-                          <div className="absolute top-1 right-1 bg-amber-500 text-white text-[10px] font-medium px-1.5 py-0.5 rounded-lg z-10 flex items-center gap-0.5">
+                          <div className="absolute top-1 right-1 bg-amber-500 text-white text-[10px] font-medium px-1.5 py-0.5 rounded-full z-10 flex items-center gap-0.5">
                             <FaTag className="text-[8px]" />
                             <span>-10%</span>
                           </div>
                         )}
+
+                        <div className="absolute inset-0 bg-gradient-to-t from-green5/60 via-green5/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                          <div className="bg-white/80 p-1.5 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">
+                            <FaEye className="text-green4 text-sm" />
+                          </div>
+                        </div>
                       </div>
 
-                      <div className="p-2 flex-grow flex flex-col">
-                        <h3 className="font-bold text-gray-800 text-xs line-clamp-2 group-hover:text-green4 transition-colors min-h-[2rem] mb-1">
+                      <div className="p-2">
+                        <h3 className="font-bold text-gray-800 text-xs line-clamp-1 group-hover:text-green4 transition-colors">
                           {img.attributes.name}
                         </h3>
                         {img.attributes.state && (
-                          <div className="flex items-center justify-between mt-auto">
+                          <div className="flex items-center justify-between mt-0.5">
                             {isSaleActive() && !img.attributes.out_of_stock ? (
                               <div>
                                 <span className="text-gray-500 line-through text-[10px] block">
