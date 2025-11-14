@@ -121,9 +121,9 @@ export default function NewArrivalsCarousel() {
             >
               {images.map((img) => (
                 <SwiperSlide key={img.id} className="w-[260px] md:w-[240px] h-auto">
-                  <div className="overflow-hidden rounded-lg bg-white shadow-md h-full transform transition-all duration-300 border border-gray-100">
-                    <Link 
-                      className="group block"
+                  <div className="overflow-hidden rounded-lg bg-white shadow-md h-full transform transition-all duration-300 border border-gray-100 flex flex-col">
+                    <Link
+                      className="group block h-full flex flex-col"
                       href={`/item/${img.id}`}
                     >
                       <div className="relative aspect-[4/3] overflow-hidden">
@@ -135,11 +135,11 @@ export default function NewArrivalsCarousel() {
                           className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-700 ease-out"
                           priority
                         />
-                        
+
                         <div className="absolute top-1 left-1 bg-green4 text-white text-[10px] font-medium px-1.5 py-0.5 rounded-sm z-10">
                           جديد
                         </div>
-                        
+
                         {/* Sale badge - Only shown if sale is active */}
                         {isSaleActive() && !img.attributes.out_of_stock && (
                           <div className="absolute top-1 right-1 bg-red-600 text-white text-[10px] font-medium px-1.5 py-0.5 rounded-full z-10 flex items-center gap-0.5 animate-pulse">
@@ -147,20 +147,20 @@ export default function NewArrivalsCarousel() {
                             <span>-10%</span>
                           </div>
                         )}
-                        
+
                         <div className="absolute inset-0 bg-gradient-to-t from-green5/60 via-green5/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                           <div className="bg-white/80 p-1.5 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">
                             <FaEye className="text-green4 text-sm" />
                           </div>
                         </div>
                       </div>
-                      
-                      <div className="p-2">
-                        <h3 className="font-bold text-gray-800 text-xs line-clamp-1 group-hover:text-green4 transition-colors">
+
+                      <div className="p-2 flex-grow flex flex-col">
+                        <h3 className="font-bold text-gray-800 text-xs line-clamp-2 group-hover:text-green4 transition-colors min-h-[2rem] mb-1">
                           {img.attributes.name}
                         </h3>
                         {img.attributes.state && (
-                          <div className="flex items-center justify-between mt-0.5">
+                          <div className="flex items-center justify-between mt-auto">
                             {isSaleActive() && !img.attributes.out_of_stock ? (
                               <div>
                                 <span className="text-gray-500 line-through text-[10px] block">

@@ -259,7 +259,7 @@ const Items = () => {
                         
                         <div className="p-3 flex-grow flex flex-col">
                           <Link href={`/item/${item.id}`}>
-                            <h3 className="font-medium text-gray-800 mb-1 line-clamp-1 hover:text-green4 transition-colors">
+                            <h3 className="font-medium text-gray-800 mb-2 line-clamp-2 hover:text-green4 transition-colors min-h-[2.5rem]">
                               {item.attributes.name}
                             </h3>
                           </Link>

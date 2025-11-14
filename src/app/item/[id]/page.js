@@ -367,8 +367,8 @@ export default function Page({ params }) {
           <h2 className="text-2xl font-bold mb-6 text-right text-gray-800">منتجات ذات صلة</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {relatedProducts.map((product, index) => (
-              <Link href={`/item/${product.id}`} key={product.id} className="group">
-                <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300">
+              <Link href={`/item/${product.id}`} key={product.id} className="group h-full">
+                <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 h-full flex flex-col">
                   <div className="relative pt-[100%]">
                     <Image
                       src={product.attributes.item_thumbnail.data.attributes.url}
@@ -390,11 +390,11 @@ export default function Page({ params }) {
                       </div>
                     )}
                   </div>
-                  <div className="p-3">
-                    <h3 className="font-medium text-gray-800 mb-1 line-clamp-1 group-hover:text-green4 transition-colors text-right">
+                  <div className="p-3 flex-grow flex flex-col">
+                    <h3 className="font-medium text-gray-800 mb-2 line-clamp-2 group-hover:text-green4 transition-colors text-right min-h-[2.5rem]">
                       {product.attributes.name}
                     </h3>
-                    <div className="text-right">
+                    <div className="text-right mt-auto">
                       {product.attributes.out_of_stock ? (
                         <span className="font-bold text-gray-400">غير متوفر</span>
                       ) : isSaleActive() ? (
