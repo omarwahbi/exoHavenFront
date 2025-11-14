@@ -4,55 +4,59 @@ import { cn } from "@/lib/utils"
 import { motion } from "framer-motion"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex items-center justify-center whitespace-nowrap font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98]",
   {
     variants: {
       variant: {
-        default: "bg-green4 text-primary-foreground hover:bg-green3 shadow-sm hover:shadow-md transition-all duration-300",
-        destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-sm hover:shadow-md transition-all duration-300",
-        outline:
-          "border border-input bg-background hover:bg-accent hover:text-accent-foreground shadow-sm hover:shadow-md transition-all duration-300",
+        primary:
+          "bg-brand-teal text-white shadow-md hover:shadow-card-hover hover:bg-brand-teal-600",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80 shadow-sm hover:shadow-md transition-all duration-300",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
-        gradient: "bg-gradient-to-br from-green4 to-green3 text-white hover:shadow-lg shadow-sm hover:shadow-green3/30 transition-all duration-300",
+          "bg-brand-forest text-white shadow-md hover:shadow-card-hover hover:bg-brand-forest-600",
+        accent:
+          "bg-brand-amber text-neutral-900 shadow-md hover:shadow-card-hover hover:bg-brand-amber-600",
+        outline:
+          "border-2 border-brand-teal text-brand-teal bg-transparent hover:bg-brand-teal hover:text-white",
+        outlineSecondary:
+          "border-2 border-neutral-300 text-neutral-700 bg-transparent hover:bg-neutral-100 hover:border-neutral-400",
+        ghost:
+          "text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900",
+        link:
+          "text-brand-teal underline-offset-4 hover:underline hover:text-brand-teal-700",
+        destructive:
+          "bg-red-600 text-white shadow-md hover:shadow-card-hover hover:bg-red-700",
+        gradient:
+          "bg-gradient-to-r from-brand-teal to-brand-forest text-white shadow-md hover:shadow-lg",
       },
       size: {
-        default: "h-9 px-4 py-2",
-        sm: "h-8 rounded-md px-3 text-xs",
-        lg: "h-10 rounded-md px-8",
-        xl: "h-12 rounded-md px-8 text-base",
-        icon: "h-9 w-9",
-        pill: "h-9 px-5 rounded-full",
-      },
-      roundedness: {
-        default: "rounded-md",
-        sm: "rounded-sm",
-        lg: "rounded-lg",
-        xl: "rounded-xl",
-        full: "rounded-full",
+        sm: "h-9 px-3 text-sm rounded-lg",
+        default: "h-11 px-5 text-base rounded-lg",
+        lg: "h-12 px-6 text-base rounded-lg",
+        xl: "h-14 px-8 text-lg rounded-xl",
+        icon: "h-10 w-10 rounded-lg",
       },
     },
     defaultVariants: {
-      variant: "default",
+      variant: "primary",
       size: "default",
-      roundedness: "default",
     },
   }
 )
 
 const Button = React.forwardRef(
-  ({ className, variant, size, roundedness, children, asChild = false, ...props }, ref) => {
+  ({ className, variant, size, children, asChild = false, animate = true, ...props }, ref) => {
     const Comp = asChild ? motion.slot : motion.button
+
+    const animationProps = animate ? {
+      whileHover: { y: -2 },
+      whileTap: { y: 0 },
+      transition: { type: "spring", stiffness: 400, damping: 25 }
+    } : {};
+
     return (
       <Comp
-        className={cn(buttonVariants({ variant, size, roundedness, className }))}
+        className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-        transition={{ type: "spring", stiffness: 400, damping: 17 }}
+        {...animationProps}
         {...props}
       >
         {children}
