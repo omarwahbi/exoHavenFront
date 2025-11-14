@@ -30,7 +30,7 @@ export default function DarkModeToggle() {
   return (
     <motion.button
       onClick={toggleDarkMode}
-      className="fixed bottom-6 left-6 z-50 p-3 rounded-full bg-brand-orange-600 dark:bg-brand-green-700 text-white shadow-2xl hover:shadow-3xl transition-all duration-300"
+      className="fixed bottom-6 left-6 z-50 p-3 rounded-full bg-brand-green-700 dark:bg-brand-green-600 text-white shadow-2xl hover:shadow-3xl transition-all duration-300"
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.95 }}
       aria-label="Toggle dark mode"

@@ -47,14 +47,14 @@ const FeaturedProducts = () => {
           transition={{ duration: 0.5 }}
         >
           <div className="flex items-center mb-4 md:mb-0">
-            <div className="h-12 w-2 bg-gradient-to-b from-brand-orange-600 to-brand-green-700 rounded-full mr-3 hidden md:block"></div>
+            <div className="h-12 w-2 bg-gradient-to-b from-brand-green-700 to-brand-teal-700 rounded-full mr-3 hidden md:block"></div>
             <h2 className="text-3xl mx-1 sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-gray-100 text-center md:text-right">
               منتجات مميزة
             </h2>
           </div>
           <Link
             href="/category"
-            className="text-base font-semibold text-brand-orange-600 dark:text-brand-orange-500 hover:text-brand-orange-700 dark:hover:text-brand-orange-400 transition-colors flex items-center group"
+            className="text-base font-semibold text-brand-green-700 dark:text-brand-green-600 hover:text-brand-green-800 dark:hover:text-brand-green-500 transition-colors flex items-center group"
           >
             عرض المزيد
             <FaArrowLeft className="mr-2 text-sm group-hover:translate-x-[-4px] transition-transform duration-300" />

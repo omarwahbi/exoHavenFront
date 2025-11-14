@@ -9,9 +9,9 @@ const badgeVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-brand-orange-600 text-white border-transparent dark:bg-brand-orange-500",
-        secondary:
           "bg-brand-green-700 text-white border-transparent dark:bg-brand-green-600",
+        secondary:
+          "bg-brand-forest-700 text-white border-transparent dark:bg-brand-forest-600",
         sale:
           "bg-red-600 text-white border-transparent dark:bg-red-500",
         new:
@@ -21,7 +21,7 @@ const badgeVariants = cva(
         outOfStock:
           "bg-gray-100 text-gray-600 border border-gray-300 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600",
         featured:
-          "bg-gradient-to-r from-brand-orange-600 to-brand-green-700 text-white border-transparent dark:from-brand-orange-500 dark:to-brand-green-600",
+          "bg-gradient-to-r from-brand-green-700 to-brand-teal-700 text-white border-transparent dark:from-brand-green-600 dark:to-brand-teal-600",
         expert:
           "bg-brand-yellow-100 text-brand-yellow-900 border border-brand-yellow-200 dark:bg-brand-yellow-900 dark:text-brand-yellow-100 dark:border-brand-yellow-700",
         outline:

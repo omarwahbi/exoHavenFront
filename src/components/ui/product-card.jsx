@@ -75,7 +75,7 @@ function ProductCardContent({ product, regularPrice, salePrice, hasDiscount }) {
   return (
     <div className="p-4 flex-grow flex flex-col">
       <div className="flex-grow">
-        <h3 className="font-bold text-base md:text-lg text-gray-900 dark:text-gray-100 mb-2 line-clamp-1 group-hover:text-brand-orange-600 dark:group-hover:text-brand-orange-400 transition-colors">
+        <h3 className="font-bold text-base md:text-lg text-gray-900 dark:text-gray-100 mb-2 line-clamp-1 group-hover:text-brand-green-700 dark:group-hover:text-brand-green-500 transition-colors">
           {product.attributes.name}
         </h3>
         <p className="text-gray-600 dark:text-gray-400 text-sm line-clamp-2 mb-3">
@@ -89,7 +89,7 @@ function ProductCardContent({ product, regularPrice, salePrice, hasDiscount }) {
           salePrice={salePrice}
           hasDiscount={hasDiscount}
         />
-        <div className="mt-3 bg-brand-orange-600 rounded-xl px-4 py-2.5 text-center text-sm font-bold text-white group-hover:bg-brand-orange-700 dark:bg-brand-orange-500 dark:group-hover:bg-brand-orange-600 transition-all duration-300 shadow-md">
+        <div className="mt-3 bg-brand-green-700 rounded-xl px-4 py-2.5 text-center text-sm font-bold text-white group-hover:bg-brand-green-800 dark:bg-brand-green-600 dark:group-hover:bg-brand-green-700 transition-all duration-300 shadow-md">
           عرض المنتج
         </div>
       </div>

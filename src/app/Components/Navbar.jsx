@@ -66,14 +66,14 @@ const Navbar = () => {
         <motion.div
           className={`px-4 py-2 rounded-xl text-base font-bold relative group
                      ${isActive
-                       ? 'text-brand-orange-600 dark:text-brand-orange-500 bg-brand-orange-50 dark:bg-brand-orange-900/20'
-                       : 'text-gray-700 dark:text-gray-300 hover:text-brand-orange-600 dark:hover:text-brand-orange-500 hover:bg-gray-100 dark:hover:bg-gray-800'}`}
+                       ? 'text-brand-green-700 dark:text-brand-green-600 bg-brand-green-50 dark:bg-brand-green-900/20'
+                       : 'text-gray-700 dark:text-gray-300 hover:text-brand-green-700 dark:hover:text-brand-green-600 hover:bg-gray-100 dark:hover:bg-gray-800'}`}
           whileHover={{ scale: 1.02 }}
           transition={{ type: "spring", stiffness: 400, damping: 20 }}
         >
           {children}
           <span
-            className={`absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-brand-orange-600 to-brand-green-700 transform rounded-full
+            className={`absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-brand-green-700 to-brand-teal-700 transform rounded-full
                       ${isActive
                         ? 'scale-x-100'
                         : 'scale-x-0 origin-left transition-transform group-hover:scale-x-100'}
@@ -91,7 +91,7 @@ const Navbar = () => {
           <div className="flex items-center">
             <motion.div whileHover={{ scale: 1.05 }}>
               <Link href="/">
-                <div className="text-brand-orange-600 dark:text-brand-orange-500 font-bold text-xl">
+                <div className="text-brand-green-700 dark:text-brand-green-600 font-bold text-xl">
                   <Image
                     height={30}
                     width={90}
@@ -119,8 +119,8 @@ const Navbar = () => {
                 <motion.div
                   className={`text-white p-2 md:p-2.5 rounded-xl transition-colors duration-300 flex items-center shadow-lg
                             ${pathname === '/cart'
-                              ? 'bg-brand-orange-700 dark:bg-brand-orange-600'
-                              : 'bg-brand-orange-600 dark:bg-brand-orange-500 hover:bg-brand-orange-700 dark:hover:bg-brand-orange-600 hover:shadow-xl'}`}
+                              ? 'bg-brand-green-800 dark:bg-brand-green-700'
+                              : 'bg-brand-green-700 dark:bg-brand-green-600 hover:bg-brand-green-800 dark:hover:bg-brand-green-700 hover:shadow-xl'}`}
                   whileHover={{ y: -2 }}
                   whileTap={{ scale: 0.95 }}
                   initial={{ scale: 1 }}
@@ -142,7 +142,7 @@ const Navbar = () => {
             <motion.button
               onClick={toggleNavbar}
               type="button"
-              className="md:hidden bg-brand-orange-600 dark:bg-brand-orange-500 inline-flex items-center justify-center p-2 rounded-xl text-white hover:text-white hover:bg-brand-orange-700 dark:hover:bg-brand-orange-600 focus:outline-none shadow-lg"
+              className="md:hidden bg-brand-green-700 dark:bg-brand-green-600 inline-flex items-center justify-center p-2 rounded-xl text-white hover:text-white hover:bg-brand-green-800 dark:hover:bg-brand-green-700 focus:outline-none shadow-lg"
               aria-controls="mobile-menu"
               aria-expanded={isOpen ? "true" : "false"}
               whileTap={{ scale: 0.95 }}
@@ -206,7 +206,7 @@ const Navbar = () => {
               onClick={(e) => e.stopPropagation()}
             >
               {/* Mobile menu header */}
-              <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gradient-to-r from-brand-orange-600 to-brand-green-700">
+              <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gradient-to-r from-brand-green-700 to-brand-teal-700">
                 <div className="text-white font-bold text-lg">
                   القائمة
                 </div>
@@ -234,11 +234,11 @@ const Navbar = () => {
               {/* Mobile menu links */}
               <div className="p-4 space-y-3">
                 <Link href="/" onClick={handleLinkClick}>
-                  <motion.div 
+                  <motion.div
                     className={`flex items-center p-3 rounded-lg transition-colors duration-200
                                 ${pathname === '/'
-                                  ? 'bg-brand-orange-50 dark:bg-brand-orange-900/20 text-brand-orange-600 dark:text-brand-orange-500'
-                                  : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-brand-orange-600 dark:hover:text-brand-orange-500'}`}
+                                  ? 'bg-brand-green-50 dark:bg-brand-green-900/20 text-brand-green-700 dark:text-brand-green-600'
+                                  : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-brand-green-700 dark:hover:text-brand-green-600'}`}
                     whileTap={{ scale: 0.98 }}
                   >
                     <svg 
@@ -260,11 +260,11 @@ const Navbar = () => {
                 </Link>
                 
                 <Link href="/category" onClick={handleLinkClick}>
-                  <motion.div 
+                  <motion.div
                     className={`flex items-center p-3 rounded-lg transition-colors duration-200
-                                ${pathname.startsWith('/category') 
-                                  ? 'bg-brand-orange-50 dark:bg-brand-orange-900/20 text-brand-orange-600 dark:text-brand-orange-500'
-                                  : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-brand-orange-600 dark:hover:text-brand-orange-500'}`}
+                                ${pathname.startsWith('/category')
+                                  ? 'bg-brand-green-50 dark:bg-brand-green-900/20 text-brand-green-700 dark:text-brand-green-600'
+                                  : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-brand-green-700 dark:hover:text-brand-green-600'}`}
                     whileTap={{ scale: 0.98 }}
                   >
                     <svg 
@@ -286,11 +286,11 @@ const Navbar = () => {
                 </Link>
                 
                 <Link href="/aboutUs" onClick={handleLinkClick}>
-                  <motion.div 
+                  <motion.div
                     className={`flex items-center p-3 rounded-lg transition-colors duration-200
-                                ${pathname === '/aboutUs' 
-                                  ? 'bg-brand-orange-50 dark:bg-brand-orange-900/20 text-brand-orange-600 dark:text-brand-orange-500'
-                                  : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-brand-orange-600 dark:hover:text-brand-orange-500'}`}
+                                ${pathname === '/aboutUs'
+                                  ? 'bg-brand-green-50 dark:bg-brand-green-900/20 text-brand-green-700 dark:text-brand-green-600'
+                                  : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-brand-green-700 dark:hover:text-brand-green-600'}`}
                     whileTap={{ scale: 0.98 }}
                   >
                     <svg 
@@ -312,11 +312,11 @@ const Navbar = () => {
                 </Link>
                 
                 <Link href="/contact" onClick={handleLinkClick}>
-                  <motion.div 
+                  <motion.div
                     className={`flex items-center p-3 rounded-lg transition-colors duration-200
-                                ${pathname === '/contact' 
-                                  ? 'bg-brand-orange-50 dark:bg-brand-orange-900/20 text-brand-orange-600 dark:text-brand-orange-500'
-                                  : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-brand-orange-600 dark:hover:text-brand-orange-500'}`}
+                                ${pathname === '/contact'
+                                  ? 'bg-brand-green-50 dark:bg-brand-green-900/20 text-brand-green-700 dark:text-brand-green-600'
+                                  : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-brand-green-700 dark:hover:text-brand-green-600'}`}
                     whileTap={{ scale: 0.98 }}
                   >
                     <svg 
@@ -338,11 +338,11 @@ const Navbar = () => {
                 </Link>
                 
                 <Link href="/cart" onClick={handleLinkClick}>
-                  <motion.div 
+                  <motion.div
                     className={`flex items-center p-3 rounded-lg transition-colors duration-200
-                                ${pathname === '/cart' 
-                                  ? 'bg-brand-orange-50 dark:bg-brand-orange-900/20 text-brand-orange-600 dark:text-brand-orange-500'
-                                  : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-brand-orange-600 dark:hover:text-brand-orange-500'}`}
+                                ${pathname === '/cart'
+                                  ? 'bg-brand-green-50 dark:bg-brand-green-900/20 text-brand-green-700 dark:text-brand-green-600'
+                                  : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-brand-green-700 dark:hover:text-brand-green-600'}`}
                     whileTap={{ scale: 0.98 }}
                   >
                     <svg 

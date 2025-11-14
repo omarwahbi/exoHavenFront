@@ -8,7 +8,7 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-gray-900 dark:bg-gray-950 text-white py-12 md:py-16 border-t-4 border-brand-orange-600">
+    <footer className="bg-gray-900 dark:bg-gray-950 text-white py-12 md:py-16 border-t-4 border-brand-green-700">
       <div className="max-w-screen-xl mx-auto px-4 md:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
           {/* Logo and Description */}
@@ -101,7 +101,7 @@ const Footer = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 whileHover={{ y: -5, scale: 1.1 }}
-                className="bg-brand-orange-600 dark:bg-brand-orange-500 p-3 rounded-xl hover:bg-brand-orange-700 dark:hover:bg-brand-orange-600 transition-colors duration-300 shadow-lg"
+                className="bg-brand-teal-700 dark:bg-brand-teal-600 p-3 rounded-xl hover:bg-brand-teal-800 dark:hover:bg-brand-teal-700 transition-colors duration-300 shadow-lg"
               >
                 <FaInstagram className="text-white text-xl" />
               </motion.a>
@@ -119,7 +119,7 @@ const Footer = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 whileHover={{ y: -5, scale: 1.1 }}
-                className="bg-brand-orange-600 dark:bg-brand-orange-500 p-3 rounded-xl hover:bg-brand-orange-700 dark:hover:bg-brand-orange-600 transition-colors duration-300 shadow-lg"
+                className="bg-brand-amber dark:bg-brand-amber-light p-3 rounded-xl hover:bg-brand-amber-dark dark:hover:bg-brand-amber transition-colors duration-300 shadow-lg"
               >
                 <FaTwitter className="text-white text-xl" />
               </motion.a>

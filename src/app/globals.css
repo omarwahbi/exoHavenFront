@@ -5,23 +5,27 @@
 @import "~slick-carousel/slick/slick-theme.css";
 
 :root {
-  --foreground-rgb: 31, 41, 55;
+  --foreground-rgb: 17, 24, 39;
   --background-rgb: 255, 255, 255;
 
-  --brand-orange: #EA580C;
-  --brand-orange-light: #FB923C;
-  --brand-orange-dark: #C2410C;
+  --brand-green: #047857;
+  --brand-green-light: #10B981;
+  --brand-green-dark: #065F46;
 
-  --brand-green: #15803D;
-  --brand-green-light: #22C55E;
-  --brand-green-dark: #166534;
+  --brand-forest: #15803D;
+  --brand-forest-light: #22C55E;
+  --brand-forest-dark: #166534;
 
-  --brand-yellow: #FBBF24;
-  --brand-yellow-light: #FDE047;
-  --brand-yellow-dark: #CA8A04;
+  --brand-teal: #0D9488;
+  --brand-teal-light: #14B8A6;
+  --brand-teal-dark: #0F766E;
+
+  --brand-amber: #F59E0B;
+  --brand-amber-light: #FBBF24;
+  --brand-amber-dark: #D97706;
 
   --body-background: #FFFFFF;
-  --text-primary: #1F2937;
+  --text-primary: #111827;
   --text-secondary: #4B5563;
 }
 
@@ -49,7 +53,7 @@ body {
 }
 
 .bg-pattern-dots {
-  background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23EA580C' fill-opacity='0.04' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='2'/%3E%3Ccircle cx='13' cy='13' r='2'/%3E%3C/g%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23047857' fill-opacity='0.04' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='2'/%3E%3Ccircle cx='13' cy='13' r='2'/%3E%3C/g%3E%3C/svg%3E");
 }
 
 .dark .bg-texture {
@@ -79,13 +83,13 @@ select::-ms-expand {
 select option:checked,
 select option:hover,
 select option:focus {
-  background-color: var(--brand-orange) !important;
+  background-color: var(--brand-green) !important;
   color: white !important;
 }
 
 /* Fix for radio buttons */
 input[type="radio"] {
-  accent-color: var(--brand-orange) !important;
+  accent-color: var(--brand-green) !important;
   width: 1.25rem !important;
   height: 1.25rem !important;
 }
@@ -103,7 +107,7 @@ input[type="radio"] {
 }
 
 .custom-radio:hover {
-  border-color: var(--brand-orange);
+  border-color: var(--brand-green);
 }
 
 .custom-radio input {
@@ -116,7 +120,7 @@ input[type="radio"] {
 }
 
 .dark .custom-radio:hover {
-  border-color: var(--brand-orange);
+  border-color: var(--brand-green);
 }
 
 /* Font classes */
@@ -220,16 +224,16 @@ input[type="radio"] {
 }
 
 .dark ::-webkit-scrollbar-thumb {
-  background: var(--brand-orange);
+  background: var(--brand-green);
 }
 
 .dark ::-webkit-scrollbar-thumb:hover {
-  background: var(--brand-orange-light);
+  background: var(--brand-green-light);
 }
 
 /* Focus styles for accessibility */
 *:focus-visible {
-  outline: 2px solid var(--brand-orange);
+  outline: 2px solid var(--brand-green);
   outline-offset: 2px;
 }
 
@@ -526,7 +530,7 @@ p {
 
 .swiper-pagination-bullet-active {
   opacity: 1;
-  background: var(--brand-orange);
+  background: var(--brand-green);
   width: 16px;
   border-radius: 3px;
 }
