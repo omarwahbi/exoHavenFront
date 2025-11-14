@@ -47,7 +47,7 @@ const SaleHero = () => {
             transition={{ delay: 0.2 }}
           >
             <span className="text-gray-800">خصم </span>
-            <span className="text-green4 font-extrabold">15%</span>
+            <span className="text-green4 font-extrabold">10%</span>
             <span className="text-gray-800"> على كل شيء</span>
           </motion.h2>
 
@@ -57,7 +57,7 @@ const SaleHero = () => {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
           >
-            استمتع بخصم 15% على جميع منتجاتنا حتى نهاية 2026. عرض طويل الأمد على ملحقات الحيوانات الغريبة.
+            استمتع بخصم 10% على جميع منتجاتنا حتى نهاية 2026. عرض طويل الأمد على ملحقات الحيوانات الغريبة.
           </motion.p>
 
           <motion.div

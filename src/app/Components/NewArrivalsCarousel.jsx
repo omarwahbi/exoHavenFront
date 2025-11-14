@@ -144,7 +144,7 @@ export default function NewArrivalsCarousel() {
                         {isSaleActive() && !img.attributes.out_of_stock && (
                           <div className="absolute top-1 right-1 bg-red-600 text-white text-[10px] font-medium px-1.5 py-0.5 rounded-full z-10 flex items-center gap-0.5 animate-pulse">
                             <FaTag className="text-[8px]" />
-                            <span>-15%</span>
+                            <span>-10%</span>
                           </div>
                         )}
                         

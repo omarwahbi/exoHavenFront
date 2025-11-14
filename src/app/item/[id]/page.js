@@ -251,7 +251,7 @@ export default function Page({ params }) {
                 {isSaleActive() && !item.attributes.out_of_stock && (
                   <span className="inline-block bg-red-100 text-red-800 text-sm font-medium px-3 py-1 rounded-full mr-2 animate-pulse">
                     <FaTag className="inline-block ml-1" size={12} />
-                    خصم 15%
+                    خصم 10%
                   </span>
                 )}
               </div>
@@ -386,7 +386,7 @@ export default function Page({ params }) {
                     {/* Sale tag - Display only if sale is active */}
                     {isSaleActive() && !product.attributes.out_of_stock && (
                       <div className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded animate-pulse">
-                        خصم 15%
+                        خصم 10%
                       </div>
                     )}
                   </div>

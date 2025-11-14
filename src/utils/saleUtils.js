@@ -1,4 +1,4 @@
-// Utility functions for the 15% off sale (active for 1 year)
+// Utility functions for the 10% off sale (active until end of 2026)
 
 /**
  * Checks if the sale is currently active
