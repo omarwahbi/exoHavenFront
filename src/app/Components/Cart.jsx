@@ -29,7 +29,7 @@ const Cart = () => {
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [clearCartConfirm, setClearCartConfirm] = useState(false);
   const [deliveryLocation, setDeliveryLocation] = useState('baghdad'); // 'baghdad' or 'other'
-  const [userAddress, setUserAddress] = useState('بغداد-الكرخ-حي الجامعة'); // User's custom address - initialized with default
+  const [userAddress, setUserAddress] = useState(''); // User's custom address
   
   // Constants
   const BAGHDAD_DELIVERY_FEE = 5000;
@@ -177,14 +177,6 @@ const Cart = () => {
     setTotalState(total);
   }, [cart]);
 
-  // Update default address when delivery location changes
-  useEffect(() => {
-    if (deliveryLocation === 'baghdad') {
-      setUserAddress('بغداد-الكرخ-حي الجامعة');
-    } else {
-      setUserAddress('كربلاء-الحسينية');
-    }
-  }, [deliveryLocation]);
 
   if (!isClient) {
     // Render nothing on server-side to avoid mismatch
@@ -563,10 +555,11 @@ const Cart = () => {
                             type="text"
                             value={userAddress}
                             onChange={(e) => setUserAddress(e.target.value)}
+                            placeholder={deliveryLocation === 'baghdad' ? 'بغداد-الكرخ-حي الجامعة' : 'كربلاء-الحسينية'}
                             className="w-full px-3 py-2.5 text-sm border-2 border-gray-300 rounded-lg focus:outline-none focus:border-green4 focus:ring-2 focus:ring-green4/30 transition-colors bg-white text-gray-900"
                             dir="rtl"
                           />
-                          <p className="text-xs text-gray-500 mt-1.5">يمكنك تعديل العنوان • مثال: المحافظة-المدينة-الحي</p>
+                          <p className="text-xs text-gray-500 mt-1.5">مثال: المحافظة-المدينة-الحي أو الشارع</p>
                         </div>
                       </div>
                       

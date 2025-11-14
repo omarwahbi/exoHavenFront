@@ -10,7 +10,7 @@ const SaleBanner = () => {
 
   useEffect(() => {
     // Check if sale is still active
-    const endDate = new Date(2025, 10, 14, 23, 59, 59); // November 14, 2025
+    const endDate = new Date(2026, 11, 31, 23, 59, 59); // December 31, 2026
     const now = new Date();
 
     if (now > endDate) {

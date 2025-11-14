@@ -6,8 +6,8 @@
  */
 export const isSaleActive = () => {
   const now = new Date();
-  // Sale is active for 1 year from November 14, 2024
-  const saleEndDate = new Date(2025, 10, 14, 23, 59, 59); // November 14, 2025
+  // Sale is active until end of 2026
+  const saleEndDate = new Date(2026, 11, 31, 23, 59, 59); // December 31, 2026
   return now < saleEndDate;
 };
 
