@@ -19,139 +19,167 @@ const HeroSection = () => {
   });
 
   return (
-    <section className="bg-gradient-to-br from-green3 to-green4 text-white py-10 sm:py-16 px-4 sm:px-6 lg:px-8 mb-6 sm:mb-8 rounded-b-xl sm:rounded-b-3xl shadow-lg">
-      <div className="max-w-screen-xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 sm:gap-8">
-        <motion.div 
-          className="md:w-1/2 text-center md:text-right"
-          initial={{ opacity: 0, y: 20 }}
+    <section className="relative overflow-hidden bg-gradient-to-br from-green2 via-green3 to-green4 text-white py-12 sm:py-20 px-4 sm:px-6 lg:px-8 mb-8 sm:mb-12 rounded-b-2xl sm:rounded-b-4xl shadow-xl">
+      {/* Modern gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-mesh opacity-30"></div>
+      <div className="absolute inset-0 bg-pattern-dots opacity-20"></div>
+
+      <div className="relative max-w-screen-xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 sm:gap-12">
+        <motion.div
+          className="md:w-1/2 text-center md:text-right z-10"
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         >
-          <span className="bg-white/20 backdrop-blur-sm text-white text-xs sm:text-sm px-3 py-1 rounded-full inline-block mb-3">متجر عصري</span>
-          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 sm:mb-4">أحدث المنتجات المضافة</h1>
-          <p className="text-base sm:text-lg mb-4 sm:mb-6 text-white/90">تصفح أحدث المنتجات التي تمت إضافتها حديثاً إلى متجرنا</p>
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+          <motion.span
+            className="glass text-white text-xs sm:text-sm px-4 py-1.5 rounded-full inline-block mb-4 font-medium shadow-sm"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
           >
-            <Link href="/category" className="inline-block bg-white text-green4 font-bold py-2 sm:py-3 px-4 sm:px-6 rounded-full shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-              تسوق الآن
+            متجر عصري
+          </motion.span>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-3 sm:mb-5 tracking-tight leading-tight">
+            أحدث المنتجات المضافة
+          </h1>
+          <p className="text-base sm:text-lg md:text-xl mb-6 sm:mb-8 text-white/95 leading-relaxed">
+            تصفح أحدث المنتجات التي تمت إضافتها حديثاً إلى متجرنا
+          </p>
+          <motion.div
+            whileHover={{ scale: 1.05, y: -2 }}
+            whileTap={{ scale: 0.97 }}
+            transition={{ type: "spring", stiffness: 400, damping: 17 }}
+          >
+            <Link href="/category" className="inline-flex items-center gap-2 bg-white text-green4 font-bold py-3 sm:py-3.5 px-6 sm:px-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-400 hover:-translate-y-0.5 group">
+              <span>تسوق الآن</span>
+              <svg className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l-5 5 5 5" />
+              </svg>
             </Link>
           </motion.div>
         </motion.div>
-        
-        <motion.div 
-          className="w-full md:w-1/2 bg-white/20 backdrop-blur-sm p-4 sm:p-8 rounded-xl sm:rounded-2xl shadow-lg mt-6 md:mt-0"
-          initial={{ opacity: 0, y: 20 }}
+
+        <motion.div
+          className="w-full md:w-1/2 frosted p-5 sm:p-10 rounded-2xl sm:rounded-3xl shadow-2xl mt-6 md:mt-0 z-10"
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
+          transition={{ duration: 0.6, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
         >
           {isLoading ? (
-            <div className="h-56 sm:h-72 flex items-center justify-center">
+            <div className="h-64 sm:h-80 flex items-center justify-center">
               <Spinner />
             </div>
           ) : (
-            <div className="relative h-56 sm:h-72 overflow-hidden rounded-lg sm:rounded-xl">
+            <div className="relative h-64 sm:h-80 overflow-hidden rounded-xl sm:rounded-2xl">
               {/* Product Showcase Grid */}
-              <div className="absolute inset-0 grid grid-cols-2 gap-2 p-2">
-                <div className="flex flex-col gap-2">
+              <div className="absolute inset-0 grid grid-cols-2 gap-3 p-3">
+                <div className="flex flex-col gap-3">
                   {/* First product image */}
                   {products.length > 0 && products[0]?.attributes?.item_thumbnail?.data?.attributes?.url ? (
-                    <Link 
-                      href={`/item/${products[0]?.id}`} 
-                      className="relative h-full rounded-lg overflow-hidden border-2 border-white/20 group z-20"
+                    <Link
+                      href={`/item/${products[0]?.id}`}
+                      className="relative h-full rounded-xl overflow-hidden border-2 border-white/40 bg-white shadow-sm group z-20 transition-all duration-400 hover:shadow-card-hover hover:scale-[1.02]"
                     >
                       <div className="relative w-full h-full">
-                        <Image 
+                        <Image
                           src={products[0].attributes.item_thumbnail.data.attributes.url}
                           alt={products[0].attributes.name || "Featured Product 1"}
                           fill
                           sizes="(max-width: 768px) 40vw, (max-width: 1024px) 30vw, 20vw"
-                          className="object-contain"
+                          className="object-contain p-2"
                           priority
                         />
-                        <div className="absolute inset-0 bg-gradient-to-b from-green2/10 to-green2/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-                          <span className="text-white text-xs sm:text-sm font-semibold bg-green4/70 px-2 py-1 rounded-full">
+                        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-green4/20 opacity-0 group-hover:opacity-100 transition-opacity duration-400 pointer-events-none"></div>
+                        <div className="absolute inset-x-0 bottom-0 p-2 transform translate-y-full group-hover:translate-y-0 transition-transform duration-400 pointer-events-none">
+                          <span className="text-white text-[10px] sm:text-xs font-bold bg-green4/90 px-2 py-1 rounded-lg inline-block shadow-sm backdrop-blur-sm line-clamp-1">
                             {products[0]?.attributes?.name || "منتج #1"}
                           </span>
                         </div>
                       </div>
                     </Link>
                   ) : (
-                    <div className="relative h-full rounded-lg overflow-hidden border-2 border-white/20 bg-green2/80 flex items-center justify-center">
-                      <span className="text-white text-xs sm:text-sm font-semibold">منتج #1</span>
+                    <div className="relative h-full rounded-xl overflow-hidden border-2 border-white/40 bg-gradient-to-br from-green1 to-green2 flex items-center justify-center shadow-sm">
+                      <span className="text-green5 text-xs sm:text-sm font-semibold">منتج #1</span>
                     </div>
                   )}
-                  
+
                   {/* Second product image */}
                   {products.length > 1 && products[1]?.attributes?.item_thumbnail?.data?.attributes?.url ? (
-                    <Link 
-                      href={`/item/${products[1]?.id}`} 
-                      className="relative h-full rounded-lg overflow-hidden border-2 border-white/20 group z-20"
+                    <Link
+                      href={`/item/${products[1]?.id}`}
+                      className="relative h-full rounded-xl overflow-hidden border-2 border-white/40 bg-white shadow-sm group z-20 transition-all duration-400 hover:shadow-card-hover hover:scale-[1.02]"
                     >
                       <div className="relative w-full h-full">
-                        <Image 
+                        <Image
                           src={products[1].attributes.item_thumbnail.data.attributes.url}
                           alt={products[1].attributes.name || "Featured Product 2"}
                           fill
                           sizes="(max-width: 768px) 40vw, (max-width: 1024px) 30vw, 20vw"
-                          className="object-contain"
+                          className="object-contain p-2"
                           priority
                         />
-                        <div className="absolute inset-0 bg-gradient-to-b from-green3/10 to-green3/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-                          <span className="text-white text-xs sm:text-sm font-semibold bg-green4/70 px-2 py-1 rounded-full">
+                        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-green4/20 opacity-0 group-hover:opacity-100 transition-opacity duration-400 pointer-events-none"></div>
+                        <div className="absolute inset-x-0 bottom-0 p-2 transform translate-y-full group-hover:translate-y-0 transition-transform duration-400 pointer-events-none">
+                          <span className="text-white text-[10px] sm:text-xs font-bold bg-green4/90 px-2 py-1 rounded-lg inline-block shadow-sm backdrop-blur-sm line-clamp-1">
                             {products[1]?.attributes?.name || "منتج #2"}
                           </span>
                         </div>
                       </div>
                     </Link>
                   ) : (
-                    <div className="relative h-full rounded-lg overflow-hidden border-2 border-white/20 bg-green3/80 flex items-center justify-center">
+                    <div className="relative h-full rounded-xl overflow-hidden border-2 border-white/40 bg-gradient-to-br from-green2 to-green3 flex items-center justify-center shadow-sm">
                       <span className="text-white text-xs sm:text-sm font-semibold">منتج #2</span>
                     </div>
                   )}
                 </div>
-                
+
                 {/* Third product image - larger */}
                 {products.length > 2 && products[2]?.attributes?.item_thumbnail?.data?.attributes?.url ? (
-                  <Link 
-                    href={`/item/${products[2]?.id}`} 
-                    className="relative h-full rounded-lg overflow-hidden border-2 border-white/20 group z-20"
+                  <Link
+                    href={`/item/${products[2]?.id}`}
+                    className="relative h-full rounded-xl overflow-hidden border-2 border-white/40 bg-white shadow-sm group z-20 transition-all duration-400 hover:shadow-card-hover hover:scale-[1.02]"
                   >
                     <div className="relative w-full h-full">
-                      <Image 
+                      <Image
                         src={products[2].attributes.item_thumbnail.data.attributes.url}
                         alt={products[2].attributes.name || "Featured Product 3"}
                         fill
                         sizes="(max-width: 768px) 50vw, (max-width: 1024px) 40vw, 25vw"
-                        className="object-contain"
+                        className="object-contain p-3"
                         priority
                       />
-                      <div className="absolute inset-0 bg-gradient-to-b from-green4/10 to-green4/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-                        <span className="text-white text-xs sm:text-sm font-semibold bg-green4/70 px-2 py-1 rounded-full">
+                      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-green4/20 opacity-0 group-hover:opacity-100 transition-opacity duration-400 pointer-events-none"></div>
+                      <div className="absolute inset-x-0 bottom-0 p-2 transform translate-y-full group-hover:translate-y-0 transition-transform duration-400 pointer-events-none">
+                        <span className="text-white text-[10px] sm:text-xs font-bold bg-green4/90 px-3 py-1.5 rounded-lg inline-block shadow-sm backdrop-blur-sm line-clamp-1">
                           {products[2]?.attributes?.name || "منتج #3"}
                         </span>
                       </div>
                     </div>
                   </Link>
                 ) : (
-                  <div className="relative h-full rounded-lg overflow-hidden border-2 border-white/20 bg-green4/80 flex items-center justify-center">
+                  <div className="relative h-full rounded-xl overflow-hidden border-2 border-white/40 bg-gradient-to-br from-green3 to-green4 flex items-center justify-center shadow-sm">
                     <span className="text-white text-xs sm:text-sm font-semibold">منتج #3</span>
                   </div>
                 )}
               </div>
-              
-              {/* Overlay with dots pattern - make sure they don't block clicks */}
-              <div className="absolute inset-0 bg-gradient-to-tr from-green1/30 to-transparent mix-blend-overlay pointer-events-none z-10"></div>
-              <div className="absolute inset-0 opacity-10 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgdmlld0JveD0iMCAwIDYwIDYwIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCI+PGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iNiIvPjxjaXJjbGUgY3g9IjQ4IiBjeT0iMTIiIHI9IjYiLz48Y2lyY2xlIGN4PSIxMiIgY3k9IjQ4IiByPSI2Ii8+PGNpcmNsZSBjeD0iNDgiIGN5PSI0OCIgcj0iNiIvPjxjaXJjbGUgY3g9IjMwIiBjeT0iMzAiIHI9IjYiLz48L2c+PC9zdmc+')]
-              pointer-events-none z-10"></div>
-              
+
               {/* Floating badges */}
-              <div className="absolute top-3 right-3 bg-white/20 backdrop-blur-sm text-white text-[10px] px-2 py-1 rounded-full z-30 pointer-events-none">جديد</div>
-              <div className="absolute bottom-3 left-3 bg-white/20 backdrop-blur-sm text-white text-[10px] px-2 py-1 rounded-full z-30 pointer-events-none">حصري</div>
+              <motion.div
+                className="absolute top-3 right-3 glass-green text-green5 text-[10px] sm:text-xs px-3 py-1.5 rounded-full z-30 pointer-events-none font-bold shadow-sm"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.8, duration: 0.4 }}
+              >
+                جديد
+              </motion.div>
+              <motion.div
+                className="absolute bottom-3 left-3 glass-green text-green5 text-[10px] sm:text-xs px-3 py-1.5 rounded-full z-30 pointer-events-none font-bold shadow-sm"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.9, duration: 0.4 }}
+              >
+                حصري
+              </motion.div>
             </div>
           )}
         </motion.div>

@@ -8,16 +8,25 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-green5 text-white py-8 md:py-12">
-      <div className="max-w-screen-xl mx-auto px-4 md:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+    <footer className="relative bg-gradient-to-br from-green5 via-green5 to-green4 text-white py-12 md:py-16 mt-20 overflow-hidden">
+      {/* Background decoration */}
+      <div className="absolute inset-0 bg-pattern-dots opacity-10"></div>
+      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-green3 via-green2 to-green3"></div>
+
+      <div className="relative max-w-screen-xl mx-auto px-4 md:px-6 lg:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-14">
           {/* Logo and Description */}
-          <div className="flex flex-col items-center md:items-start">
-            <motion.div 
-              whileHover={{ scale: 1.05 }}
-              className="mb-4"
+          <motion.div
+            className="flex flex-col items-center md:items-start"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <motion.div
+              whileHover={{ scale: 1.05, rotate: -2 }}
+              className="mb-6"
             >
-              <div className="bg-white rounded-md p-2 inline-block">
+              <div className="bg-white rounded-2xl p-3 inline-block shadow-lg">
                 <Image
                   src="/favicon.png"
                   alt="ExoHaven Logo"
@@ -27,117 +36,105 @@ const Footer = () => {
                 />
               </div>
             </motion.div>
-            <p className="text-gray-200 text-sm text-center md:text-right max-w-xs">
+            <p className="text-green1 text-sm md:text-base text-center md:text-right max-w-xs leading-relaxed">
               نوفر تشكيلة واسعة من منتجات الحيوانات وملحقاتها عالية الجودة. استكشف مجموعتنا اليوم!
             </p>
-          </div>
+          </motion.div>
 
           {/* Quick Links */}
-          <div className="text-center md:text-right">
-            <h3 className="text-lg font-bold mb-4 border-b border-green4 pb-2 inline-block">
-              روابط سريعة
+          <motion.div
+            className="text-center md:text-right"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
+            <h3 className="text-xl font-bold mb-6 relative inline-block">
+              <span className="relative z-10">روابط سريعة</span>
+              <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-green3 to-green2 rounded-full"></div>
             </h3>
-            <ul className="space-y-2" dir="rtl">
-              <li>
-                <Link href="/">
-                  <motion.span 
-                    className="text-gray-200 hover:text-white transition-colors duration-300 inline-block"
-                    whileHover={{ x: -5 }}
-                  >
-                    الرئيسية
-                  </motion.span>
-                </Link>
-              </li>
-              <li>
-                <Link href="/category">
-                  <motion.span 
-                    className="text-gray-200 hover:text-white transition-colors duration-300 inline-block"
-                    whileHover={{ x: -5 }}
-                  >
-                    كل المواد
-                  </motion.span>
-                </Link>
-              </li>
-              <li>
-                <Link href="/aboutUs">
-                  <motion.span 
-                    className="text-gray-200 hover:text-white transition-colors duration-300 inline-block"
-                    whileHover={{ x: -5 }}
-                  >
-                    من نحن؟
-                  </motion.span>
-                </Link>
-              </li>
-              <li>
-                <Link href="/contact">
-                  <motion.span 
-                    className="text-gray-200 hover:text-white transition-colors duration-300 inline-block"
-                    whileHover={{ x: -5 }}
-                  >
-                    اتصل بنا
-                  </motion.span>
-                </Link>
-              </li>
+            <ul className="space-y-3" dir="rtl">
+              {[
+                { href: "/", label: "الرئيسية" },
+                { href: "/category", label: "كل المواد" },
+                { href: "/aboutUs", label: "من نحن؟" },
+                { href: "/contact", label: "اتصل بنا" }
+              ].map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href}>
+                    <motion.span
+                      className="text-green1 hover:text-white transition-colors duration-300 inline-flex items-center gap-2 group"
+                      whileHover={{ x: -5 }}
+                    >
+                      <svg className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l-5 5 5 5" />
+                      </svg>
+                      <span className="font-medium">{link.label}</span>
+                    </motion.span>
+                  </Link>
+                </li>
+              ))}
             </ul>
-          </div>
+          </motion.div>
 
           {/* Contact & Social */}
-          <div className="text-center md:text-right">
-            <h3 className="text-lg font-bold mb-4 border-b border-green4 pb-2 inline-block" dir="rtl">
-              تواصل معنا
+          <motion.div
+            className="text-center md:text-right"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <h3 className="text-xl font-bold mb-6 relative inline-block" dir="rtl">
+              <span className="relative z-10">تواصل معنا</span>
+              <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-green3 to-green2 rounded-full"></div>
             </h3>
-            <div className="flex justify-center md:justify-start gap-4 mb-6" dir="rtl">
-              <motion.a 
-                href="https://wa.me/9647838984924" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                whileHover={{ y: -5, scale: 1.1 }}
-                className="bg-green4 p-2 rounded-full hover:bg-green3 transition-colors duration-300"
-              >
-                <FaWhatsapp className="text-white text-xl" />
-              </motion.a>
-              <motion.a 
-                href="#" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                whileHover={{ y: -5, scale: 1.1 }}
-                className="bg-green4 p-2 rounded-full hover:bg-green3 transition-colors duration-300"
-              >
-                <FaInstagram className="text-white text-xl" />
-              </motion.a>
-              <motion.a 
-                href="#" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                whileHover={{ y: -5, scale: 1.1 }}
-                className="bg-green4 p-2 rounded-full hover:bg-green3 transition-colors duration-300"
-              >
-                <FaFacebook className="text-white text-xl" />
-              </motion.a>
-              <motion.a 
-                href="#" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                whileHover={{ y: -5, scale: 1.1 }}
-                className="bg-green4 p-2 rounded-full hover:bg-green3 transition-colors duration-300"
-              >
-                <FaTwitter className="text-white text-xl" />
-              </motion.a>
+            <div className="flex justify-center md:justify-start gap-3 mb-6" dir="rtl">
+              {[
+                { Icon: FaWhatsapp, href: "https://wa.me/9647838984924", label: "WhatsApp" },
+                { Icon: FaInstagram, href: "#", label: "Instagram" },
+                { Icon: FaFacebook, href: "#", label: "Facebook" },
+                { Icon: FaTwitter, href: "#", label: "Twitter" }
+              ].map(({ Icon, href, label }) => (
+                <motion.a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  whileHover={{ y: -6, scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="bg-green4/50 backdrop-blur-sm p-3 rounded-xl hover:bg-white hover:text-green4 transition-all duration-400 shadow-md hover:shadow-lg group"
+                  aria-label={label}
+                >
+                  <Icon className="text-xl" />
+                </motion.a>
+              ))}
             </div>
-            <p className="text-gray-200 text-sm" dir="rtl">
-              هاتف: 9647838984924+
-            </p>
-            <p className="text-gray-200 text-sm" dir="rtl">
-              البريد الإلكتروني: info@exohaven.com
-            </p>
-          </div>
+            <div className="space-y-3" dir="rtl">
+              <p className="text-green1 text-sm md:text-base flex items-center justify-center md:justify-start gap-2">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                </svg>
+                <span className="font-medium">9647838984924+</span>
+              </p>
+              <p className="text-green1 text-sm md:text-base flex items-center justify-center md:justify-start gap-2">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                <span className="font-medium">info@exohaven.com</span>
+              </p>
+            </div>
+          </motion.div>
         </div>
 
-        <div className="border-t border-green3 mt-8 pt-6 text-center">
-          <p className="text-sm text-gray-300">
+        <motion.div
+          className="border-t border-green3/30 mt-12 pt-8 text-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+        >
+          <p className="text-sm md:text-base text-green1 font-medium">
             © {currentYear} ExoHaven. جميع الحقوق محفوظة.
           </p>
-        </div>
+        </motion.div>
       </div>
     </footer>
   );

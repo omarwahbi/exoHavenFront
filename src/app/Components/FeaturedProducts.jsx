@@ -39,103 +39,106 @@ const FeaturedProducts = () => {
   }
 
   return (
-    <div className="py-10 px-4 sm:py-16">
+    <div className="py-12 px-4 sm:py-20">
       <div className="max-w-screen-xl mx-auto">
         <motion.div
-          className="flex flex-col md:flex-row items-center justify-between mb-6 sm:mb-10"
-          initial={{ opacity: 0, y: 20 }}
+          className="flex flex-col md:flex-row items-center justify-between mb-8 sm:mb-14"
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         >
-          <div className="flex items-center mb-3 md:mb-0">
-            <div className="h-8 w-1.5 bg-green4 rounded-full mr-3 hidden md:block"></div>
-            <h2 className="text-xl mx-1 sm:text-2xl md:text-3xl font-bold text-green4 text-center md:text-right">
-              منتجات مميزة
-            </h2>
+          <div className="flex flex-col items-center md:items-start mb-4 md:mb-0">
+            <div className="flex items-center">
+              <div className="h-10 w-1.5 bg-gradient-to-b from-green3 to-green4 rounded-full mr-3 hidden md:block"></div>
+              <h2 className="text-2xl mx-1 sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-green4 to-green3 bg-clip-text text-transparent text-center md:text-right">
+                منتجات مميزة
+              </h2>
+            </div>
+            <p className="text-sm text-gray-600 mt-2 text-center md:text-right md:mr-6">اكتشف أفضل المنتجات المختارة بعناية</p>
           </div>
           <Link
             href="/category"
-            className="text-sm font-medium text-green3 hover:text-green4 transition-colors flex items-center group"
+            className="group flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green4 to-green3 text-white font-bold rounded-2xl shadow-green hover:shadow-green-lg transition-all duration-400 hover:-translate-y-0.5"
           >
-            عرض المزيد
-            <FaArrowLeft className="mr-2 text-xs group-hover:translate-x-[-4px] transition-transform duration-300" />
+            <span>عرض المزيد</span>
+            <FaArrowLeft className="text-sm group-hover:translate-x-[-4px] transition-transform duration-300" />
           </Link>
         </motion.div>
 
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 md:gap-7">
           {products.map((product, index) => (
             <motion.div
               key={product.id}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
+              transition={{ duration: 0.5, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
               className="group"
             >
               <Link href={`/item/${product.id}`}>
-                <div className="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 group-hover:shadow-xl h-full flex flex-col">
+                <div className="bg-white rounded-2xl shadow-card overflow-hidden transition-all duration-400 group-hover:shadow-card-hover group-hover:-translate-y-1 h-full flex flex-col border border-gray-100">
                   <div className="relative">
-                    <div className="aspect-square overflow-hidden">
+                    <div className="aspect-square overflow-hidden bg-gradient-to-br from-gray-50 to-white">
                       <Image
                         src={product.attributes.item_thumbnail.data.attributes.url}
                         alt={product.attributes.name}
                         width={400}
                         height={400}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 p-4"
                         priority={index < 2}
                       />
                     </div>
-                    
+
                     {/* Sale tag - Display only if sale is active */}
                     {isSaleActive() && (
-                      <div className="absolute top-2 left-2 bg-red-600 text-[10px] sm:text-xs font-medium text-white px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full shadow-sm flex items-center animate-pulse">
-                        <FaTag className="mr-0.5 text-[8px] sm:text-xs" />
-                        <span className="mt-px">خصم 10%</span>
+                      <div className="absolute top-3 left-3 bg-gradient-to-r from-red-600 to-red-500 text-[10px] sm:text-xs font-bold text-white px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl shadow-md flex items-center gap-1 animate-pulse">
+                        <FaTag className="text-[9px] sm:text-xs" />
+                        <span>خصم 10%</span>
                       </div>
                     )}
 
-                    <div className="absolute top-2 right-2 bg-green3 text-[10px] sm:text-xs font-medium text-white px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full shadow-sm flex items-center">
-                      <FaStar className="mr-0.5 text-[8px] sm:text-xs" />
-                      <span className="mt-px">مميز</span>
+                    <div className="absolute top-3 right-3 glass-green text-green5 text-[10px] sm:text-xs font-bold px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl shadow-sm flex items-center gap-1">
+                      <FaStar className="text-[9px] sm:text-xs" />
+                      <span>مميز</span>
                     </div>
 
                     {/* Quick view button - visible on touch/hover */}
-                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <div className="bg-black/50 backdrop-blur-sm p-2 sm:p-3 rounded-full transform scale-90 group-hover:scale-100 transition-transform duration-300">
-                        <FaEye className="text-white text-sm sm:text-base" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-400">
+                      <div className="bg-white/95 backdrop-blur-sm p-3 sm:p-4 rounded-2xl transform scale-90 group-hover:scale-100 transition-transform duration-400 shadow-lg">
+                        <FaEye className="text-green4 text-base sm:text-lg" />
                       </div>
                     </div>
                   </div>
 
-                  <div className="p-3 sm:p-4 flex-grow flex flex-col justify-between">
+                  <div className="p-4 sm:p-5 flex-grow flex flex-col justify-between">
                     <div>
-                      <h3 className="font-bold text-sm sm:text-base md:text-lg text-gray-800 mb-1 sm:mb-2 line-clamp-1 group-hover:text-green4 transition-colors">
+                      <h3 className="font-bold text-sm sm:text-base md:text-lg text-gray-900 mb-1.5 sm:mb-2 line-clamp-1 group-hover:text-green4 transition-colors duration-300">
                         {product.attributes.name}
                       </h3>
-                      <p className="text-gray-600 text-xs sm:text-sm line-clamp-2 mb-2 sm:mb-3">
+                      <p className="text-gray-600 text-xs sm:text-sm line-clamp-2 mb-3 sm:mb-4 leading-relaxed">
                         {product.attributes.description}
                       </p>
                     </div>
 
-                    <div className="mt-auto">
+                    <div className="mt-auto space-y-3">
                       {product.attributes.state && (
-                        <>
+                        <div>
                           {isSaleActive() ? (
                             <>
-                              <p className="text-gray-500 line-through text-xs sm:text-sm">
+                              <p className="text-gray-400 line-through text-xs sm:text-sm font-medium">
                                 {product.attributes.state.toLocaleString()} IQD
                               </p>
-                              <p className="text-red-600 font-bold text-sm sm:text-base md:text-lg">
+                              <p className="text-red-600 font-bold text-base sm:text-lg md:text-xl">
                                 {calculateSalePrice(product.attributes.state).toLocaleString()} IQD
                               </p>
                             </>
                           ) : (
-                            <p className="text-green4 font-bold text-sm sm:text-base md:text-lg">
+                            <p className="text-green4 font-bold text-base sm:text-lg md:text-xl">
                               {product.attributes.state.toLocaleString()} IQD
                             </p>
                           )}
-                        </>
+                        </div>
                       )}
-                      <div className="mt-2 sm:mt-3 bg-green1 rounded-lg p-1.5 sm:p-2 text-center text-xs sm:text-sm font-medium text-green4 group-hover:bg-green4 group-hover:text-white transition-all duration-300">
+                      <div className="bg-gradient-to-r from-green1 to-green2/50 rounded-xl p-2.5 sm:p-3 text-center text-xs sm:text-sm font-bold text-green5 group-hover:from-green4 group-hover:to-green3 group-hover:text-white transition-all duration-400 shadow-sm">
                         عرض المنتج
                       </div>
                     </div>
