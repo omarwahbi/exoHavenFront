@@ -103,6 +103,11 @@ export default function NewArrivalsCarousel() {
               preventClicks={false}
               preventClicksPropagation={false}
               slideToClickedSlide={true}
+              threshold={50}
+              touchRatio={0.5}
+              shortSwipes={false}
+              longSwipes={true}
+              longSwipesRatio={0.3}
               breakpoints={{
                 640: {
                   slidesPerView: 2,
