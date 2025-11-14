@@ -1,4 +1,4 @@
-// Utility functions for the 15% off sale (until June 1, 2025)
+// Utility functions for the 15% off sale (active for 1 year)
 
 /**
  * Checks if the sale is currently active
@@ -6,8 +6,8 @@
  */
 export const isSaleActive = () => {
   const now = new Date();
-  // Use the year 2025, month 5 (June, zero-indexed), day 1
-  const saleEndDate = new Date(2025, 5, 1, 23, 59, 59);
+  // Sale is active for 1 year from November 14, 2024
+  const saleEndDate = new Date(2025, 10, 14, 23, 59, 59); // November 14, 2025
   return now < saleEndDate;
 };
 

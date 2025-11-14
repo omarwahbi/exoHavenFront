@@ -136,7 +136,7 @@ export default function ItemsPage() {
                       
                       {/* Sale badge */}
                       {isSaleActive() && !item.attributes.out_of_stock && (
-                        <div className="absolute top-0 left-0 bg-red-600 text-white text-xs font-bold px-2 py-1 m-2 rounded-full animate-pulse flex items-center gap-1">
+                        <div className="absolute top-2 left-2 bg-green4/20 border border-green4/40 text-green4 text-xs font-semibold px-2.5 py-1 m-0 rounded-full flex items-center gap-1">
                           <FaTag className="text-[10px]" />
                           <span>-15%</span>
                         </div>
