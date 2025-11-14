@@ -3,18 +3,23 @@ import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { motion } from "framer-motion";
 
-const ContinueOnWhatsApp = ({ messageText, totalPrice = 0 }) => {
+const ContinueOnWhatsApp = ({ messageText, totalPrice = 0, onValidate }) => {
   const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "+9647838984924";
-  
+
   const formatMessageForWhatsApp = (text) => {
     // Replace newlines with URL-encoded newlines and encode the entire message
     return encodeURIComponent(`${text}\n`);
   };
 
   const handleContinueOnWhatsApp = () => {
+    // Run validation check if provided
+    if (onValidate && !onValidate()) {
+      return; // Stop if validation fails
+    }
+
     const formattedMessage = formatMessageForWhatsApp(messageText);
     const whatsappURL = `https://wa.me/${whatsappNumber}?text=${formattedMessage}`;
-    
+
     // Open WhatsApp in a new tab
     window.open(whatsappURL, '_blank', 'noopener,noreferrer');
   };

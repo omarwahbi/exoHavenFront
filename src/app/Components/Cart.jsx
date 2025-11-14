@@ -30,6 +30,7 @@ const Cart = () => {
   const [clearCartConfirm, setClearCartConfirm] = useState(false);
   const [deliveryLocation, setDeliveryLocation] = useState('baghdad'); // 'baghdad' or 'other'
   const [userAddress, setUserAddress] = useState(''); // User's custom address
+  const [addressError, setAddressError] = useState(false); // Track if address is required but empty
   
   // Constants
   const BAGHDAD_DELIVERY_FEE = 5000;
@@ -87,6 +88,22 @@ const Cart = () => {
     } else {
       confirmClearCart();
     }
+  };
+
+  const validateAddress = () => {
+    const trimmedAddress = userAddress.trim();
+    if (!trimmedAddress) {
+      setAddressError(true);
+      // Scroll to the address field
+      const addressInput = document.querySelector('input[type="text"][required]');
+      if (addressInput) {
+        addressInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        addressInput.focus();
+      }
+      return false;
+    }
+    setAddressError(false);
+    return true;
   };
 
   const getDeliveryFee = () => {
@@ -550,16 +567,35 @@ const Cart = () => {
 
                         {/* Address input field */}
                         <div className="mt-3">
-                          <label className="block text-xs font-medium text-gray-700 mb-1.5">عنوان التوصيل</label>
+                          <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                            عنوان التوصيل <span className="text-red-500">*</span>
+                          </label>
                           <input
                             type="text"
                             value={userAddress}
-                            onChange={(e) => setUserAddress(e.target.value)}
+                            onChange={(e) => {
+                              setUserAddress(e.target.value);
+                              if (addressError && e.target.value.trim()) {
+                                setAddressError(false);
+                              }
+                            }}
                             placeholder={deliveryLocation === 'baghdad' ? 'بغداد-الكرخ-حي الجامعة' : 'كربلاء-الحسينية'}
-                            className="w-full px-3 py-2.5 text-sm border-2 border-gray-300 rounded-lg focus:outline-none focus:border-green4 focus:ring-2 focus:ring-green4/30 transition-colors bg-white text-gray-900"
+                            className={`w-full px-3 py-2.5 text-sm border-2 rounded-lg focus:outline-none transition-colors bg-white text-gray-900 ${
+                              addressError
+                                ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/30'
+                                : 'border-gray-300 focus:border-green4 focus:ring-2 focus:ring-green4/30'
+                            }`}
                             dir="rtl"
+                            required
                           />
-                          <p className="text-xs text-gray-500 mt-1.5">مثال: المحافظة-المدينة-الحي أو الشارع</p>
+                          {addressError ? (
+                            <p className="text-xs text-red-500 mt-1.5 flex items-center">
+                              <span className="mr-1">⚠️</span>
+                              يرجى إدخال عنوان التوصيل للمتابعة
+                            </p>
+                          ) : (
+                            <p className="text-xs text-gray-500 mt-1.5">مثال: المحافظة-المدينة-الحي أو الشارع</p>
+                          )}
                         </div>
                       </div>
                       
@@ -593,6 +629,7 @@ const Cart = () => {
                       <ContinueOnWhatsApp
                         messageText={itemsToMessage}
                         totalPrice={calculateGrandTotal(totalState)}
+                        onValidate={validateAddress}
                       />
                       
                       <div className="mt-4 text-center text-sm text-gray-500">
