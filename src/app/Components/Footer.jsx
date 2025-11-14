@@ -8,7 +8,7 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-neutral-900 text-white py-12 md:py-16 border-t-2 border-brand-teal">
+    <footer className="bg-gray-900 dark:bg-gray-950 text-white py-12 md:py-16 border-t-4 border-brand-orange-600">
       <div className="max-w-screen-xl mx-auto px-4 md:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
           {/* Logo and Description */}
@@ -17,7 +17,7 @@ const Footer = () => {
               whileHover={{ scale: 1.05 }}
               className="mb-4"
             >
-              <div className="bg-white rounded-lg p-2 inline-block shadow-lg">
+              <div className="bg-white rounded-xl p-3 inline-block shadow-xl">
                 <Image
                   src="/favicon.png"
                   alt="ExoHaven Logo"
@@ -27,21 +27,21 @@ const Footer = () => {
                 />
               </div>
             </motion.div>
-            <p className="text-neutral-300 text-sm text-center md:text-right max-w-xs leading-relaxed">
+            <p className="text-gray-300 dark:text-gray-400 text-sm text-center md:text-right max-w-xs leading-relaxed">
               نوفر تشكيلة واسعة من منتجات الحيوانات وملحقاتها عالية الجودة. استكشف مجموعتنا اليوم!
             </p>
           </div>
 
           {/* Quick Links */}
           <div className="text-center md:text-right">
-            <h3 className="text-lg font-bold mb-4 border-b-2 border-brand-amber pb-2 inline-block">
+            <h3 className="text-lg font-bold mb-4 border-b-2 border-brand-yellow pb-2 inline-block">
               روابط سريعة
             </h3>
             <ul className="space-y-3" dir="rtl">
               <li>
                 <Link href="/">
                   <motion.span
-                    className="text-neutral-300 hover:text-brand-amber transition-colors duration-300 inline-block"
+                    className="text-gray-300 dark:text-gray-400 hover:text-brand-yellow dark:hover:text-brand-yellow transition-colors duration-300 inline-block"
                     whileHover={{ x: -5 }}
                   >
                     الرئيسية
@@ -51,7 +51,7 @@ const Footer = () => {
               <li>
                 <Link href="/category">
                   <motion.span
-                    className="text-neutral-300 hover:text-brand-amber transition-colors duration-300 inline-block"
+                    className="text-gray-300 dark:text-gray-400 hover:text-brand-yellow dark:hover:text-brand-yellow transition-colors duration-300 inline-block"
                     whileHover={{ x: -5 }}
                   >
                     كل المواد
@@ -61,7 +61,7 @@ const Footer = () => {
               <li>
                 <Link href="/aboutUs">
                   <motion.span
-                    className="text-neutral-300 hover:text-brand-amber transition-colors duration-300 inline-block"
+                    className="text-gray-300 dark:text-gray-400 hover:text-brand-yellow dark:hover:text-brand-yellow transition-colors duration-300 inline-block"
                     whileHover={{ x: -5 }}
                   >
                     من نحن؟
@@ -71,7 +71,7 @@ const Footer = () => {
               <li>
                 <Link href="/contact">
                   <motion.span
-                    className="text-neutral-300 hover:text-brand-amber transition-colors duration-300 inline-block"
+                    className="text-gray-300 dark:text-gray-400 hover:text-brand-yellow dark:hover:text-brand-yellow transition-colors duration-300 inline-block"
                     whileHover={{ x: -5 }}
                   >
                     اتصل بنا
@@ -83,7 +83,7 @@ const Footer = () => {
 
           {/* Contact & Social */}
           <div className="text-center md:text-right">
-            <h3 className="text-lg font-bold mb-4 border-b-2 border-brand-amber pb-2 inline-block" dir="rtl">
+            <h3 className="text-lg font-bold mb-4 border-b-2 border-brand-yellow pb-2 inline-block" dir="rtl">
               تواصل معنا
             </h3>
             <div className="flex justify-center md:justify-start gap-3 mb-6" dir="rtl">
@@ -92,7 +92,7 @@ const Footer = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 whileHover={{ y: -5, scale: 1.1 }}
-                className="bg-brand-teal p-3 rounded-lg hover:bg-brand-teal-600 transition-colors duration-300 shadow-md"
+                className="bg-brand-green-700 dark:bg-brand-green-600 p-3 rounded-xl hover:bg-brand-green-800 dark:hover:bg-brand-green-700 transition-colors duration-300 shadow-lg"
               >
                 <FaWhatsapp className="text-white text-xl" />
               </motion.a>
@@ -101,7 +101,7 @@ const Footer = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 whileHover={{ y: -5, scale: 1.1 }}
-                className="bg-brand-teal p-3 rounded-lg hover:bg-brand-teal-600 transition-colors duration-300 shadow-md"
+                className="bg-brand-orange-600 dark:bg-brand-orange-500 p-3 rounded-xl hover:bg-brand-orange-700 dark:hover:bg-brand-orange-600 transition-colors duration-300 shadow-lg"
               >
                 <FaInstagram className="text-white text-xl" />
               </motion.a>
@@ -110,7 +110,7 @@ const Footer = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 whileHover={{ y: -5, scale: 1.1 }}
-                className="bg-brand-teal p-3 rounded-lg hover:bg-brand-teal-600 transition-colors duration-300 shadow-md"
+                className="bg-brand-green-700 dark:bg-brand-green-600 p-3 rounded-xl hover:bg-brand-green-800 dark:hover:bg-brand-green-700 transition-colors duration-300 shadow-lg"
               >
                 <FaFacebook className="text-white text-xl" />
               </motion.a>
@@ -119,22 +119,22 @@ const Footer = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 whileHover={{ y: -5, scale: 1.1 }}
-                className="bg-brand-teal p-3 rounded-lg hover:bg-brand-teal-600 transition-colors duration-300 shadow-md"
+                className="bg-brand-orange-600 dark:bg-brand-orange-500 p-3 rounded-xl hover:bg-brand-orange-700 dark:hover:bg-brand-orange-600 transition-colors duration-300 shadow-lg"
               >
                 <FaTwitter className="text-white text-xl" />
               </motion.a>
             </div>
-            <p className="text-neutral-300 text-sm mb-2" dir="rtl">
+            <p className="text-gray-300 dark:text-gray-400 text-sm mb-2" dir="rtl">
               هاتف: 9647838984924+
             </p>
-            <p className="text-neutral-300 text-sm" dir="rtl">
+            <p className="text-gray-300 dark:text-gray-400 text-sm" dir="rtl">
               البريد الإلكتروني: info@exohaven.com
             </p>
           </div>
         </div>
 
-        <div className="border-t border-neutral-700 mt-10 pt-8 text-center">
-          <p className="text-sm text-neutral-400">
+        <div className="border-t border-gray-700 dark:border-gray-800 mt-10 pt-8 text-center">
+          <p className="text-sm text-gray-400 dark:text-gray-500">
             © {currentYear} ExoHaven. جميع الحقوق محفوظة.
           </p>
         </div>

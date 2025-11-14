@@ -8,6 +8,7 @@ import Spinner from "./Components/Spinner";
 import TopProgressBar from "./Components/TopProgressBar";
 import GoogleAnalyticsScript from "./Components/GoogleAnalyticsScript";
 import SaleBanner from "./Components/SaleBanner";
+import DarkModeToggle from "./Components/DarkModeToggle";
 
 const ClientLayout = ({ children }) => {
   // Initialize QueryClient with improved caching settings
@@ -70,7 +71,7 @@ const ClientLayout = ({ children }) => {
   // Don't render full content until after mount to prevent hydration mismatch
   if (!isMounted) {
     return (
-      <div className="flex flex-col min-h-screen bg-green1">
+      <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900">
         <div className="flex-grow">
           <div className="flex justify-center h-[50vh] items-center">
             <Spinner size="lg" />
@@ -86,13 +87,13 @@ const ClientLayout = ({ children }) => {
         <TopProgressBar />
       </Suspense>
       <GoogleAnalyticsScript />
-      <div className="flex flex-col min-h-screen bg-green1">
+      <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900">
         <Navbar />
         <SaleBanner />
-        
+
         <main className="flex-grow">
           {isLoading ? (
-            <div className="flex justify-center h-[50vh] items-center fade-in bg-green1">
+            <div className="flex justify-center h-[50vh] items-center fade-in bg-white dark:bg-gray-900">
               <Spinner size="lg" />
             </div>
           ) : (
@@ -101,8 +102,9 @@ const ClientLayout = ({ children }) => {
             </div>
           )}
         </main>
-        
+
         <Footer />
+        <DarkModeToggle />
       </div>
     </QueryClientProvider>
   );

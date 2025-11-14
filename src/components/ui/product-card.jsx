@@ -19,7 +19,7 @@ export function ProductCard({ product, index = 0, showFeaturedBadge = false }) {
       className="group h-full"
     >
       <Link href={`/item/${product.id}`}>
-        <div className="bg-white rounded-xl shadow-card overflow-hidden transition-all duration-300 group-hover:shadow-card-hover h-full flex flex-col">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden transition-all duration-300 group-hover:shadow-2xl group-hover:scale-[1.02] h-full flex flex-col border border-gray-100 dark:border-gray-700">
           <ProductCardImage
             product={product}
             index={index}
@@ -75,21 +75,21 @@ function ProductCardContent({ product, regularPrice, salePrice, hasDiscount }) {
   return (
     <div className="p-4 flex-grow flex flex-col">
       <div className="flex-grow">
-        <h3 className="font-semibold text-base md:text-lg text-neutral-900 mb-2 line-clamp-1 group-hover:text-brand-teal transition-colors">
+        <h3 className="font-bold text-base md:text-lg text-gray-900 dark:text-gray-100 mb-2 line-clamp-1 group-hover:text-brand-orange-600 dark:group-hover:text-brand-orange-400 transition-colors">
           {product.attributes.name}
         </h3>
-        <p className="text-neutral-600 text-sm line-clamp-2 mb-3">
+        <p className="text-gray-600 dark:text-gray-400 text-sm line-clamp-2 mb-3">
           {product.attributes.description}
         </p>
       </div>
 
-      <div className="mt-auto pt-3 border-t border-neutral-200">
+      <div className="mt-auto pt-3 border-t border-gray-200 dark:border-gray-700">
         <ProductCardPrice
           regularPrice={regularPrice}
           salePrice={salePrice}
           hasDiscount={hasDiscount}
         />
-        <div className="mt-3 bg-neutral-100 rounded-lg px-4 py-2.5 text-center text-sm font-medium text-neutral-700 group-hover:bg-brand-teal group-hover:text-white transition-all duration-300">
+        <div className="mt-3 bg-brand-orange-600 rounded-xl px-4 py-2.5 text-center text-sm font-bold text-white group-hover:bg-brand-orange-700 dark:bg-brand-orange-500 dark:group-hover:bg-brand-orange-600 transition-all duration-300 shadow-md">
           عرض المنتج
         </div>
       </div>
@@ -103,10 +103,10 @@ function ProductCardPrice({ regularPrice, salePrice, hasDiscount }) {
   if (hasDiscount && salePrice) {
     return (
       <div className="flex items-baseline gap-2">
-        <p className="text-brand-clay font-bold text-lg">
+        <p className="text-red-600 dark:text-red-500 font-bold text-lg">
           {salePrice.toLocaleString()} IQD
         </p>
-        <p className="text-neutral-500 line-through text-sm">
+        <p className="text-gray-500 dark:text-gray-400 line-through text-sm">
           {regularPrice.toLocaleString()} IQD
         </p>
       </div>
@@ -114,7 +114,7 @@ function ProductCardPrice({ regularPrice, salePrice, hasDiscount }) {
   }
 
   return (
-    <p className="text-brand-teal font-bold text-lg">
+    <p className="text-brand-green-700 dark:text-brand-green-500 font-bold text-lg">
       {regularPrice.toLocaleString()} IQD
     </p>
   );

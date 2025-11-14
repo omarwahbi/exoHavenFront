@@ -56,7 +56,7 @@ export const metadata = {
 
 // Viewport configuration
 export const viewport = {
-  themeColor: "#4A9A51", // Updated to richer green
+  themeColor: "#EA580C", // Bold Orange brand color
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
