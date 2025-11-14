@@ -5,8 +5,8 @@
 @import "~slick-carousel/slick/slick-theme.css";
 
 :root {
-  --foreground-rgb: 43, 45, 42;
-  --background-rgb: 248, 247, 245;
+  --foreground-rgb: 17, 24, 39;
+  --background-rgb: 255, 255, 255;
 
   --brand-teal: #0D4C4A;
   --brand-teal-light: #4AB5AD;
@@ -25,14 +25,14 @@
   --brand-clay-dark: #824036;
 
   --neutral-50: #FDFCFB;
-  --neutral-100: #F8F7F5;
-  --neutral-200: #EFEDEA;
-  --neutral-300: #E0DDD8;
-  --neutral-500: #9B9790;
-  --neutral-700: #4F4C47;
-  --neutral-900: #2B2D2A;
+  --neutral-100: #F9FAFB;
+  --neutral-200: #E5E7EB;
+  --neutral-300: #D1D5DB;
+  --neutral-500: #6B7280;
+  --neutral-700: #374151;
+  --neutral-900: #111827;
 
-  --body-background: var(--neutral-100);
+  --body-background: #FFFFFF;
 }
 
 @media (prefers-color-scheme: dark) {
