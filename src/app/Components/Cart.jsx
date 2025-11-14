@@ -239,7 +239,7 @@ const Cart = () => {
           {/* Sale tag */}
           {isSaleActive() && !product.attributes.out_of_stock && (
             <div className="absolute top-2 left-2 bg-green4/20 border border-green4/40 text-green4 text-xs font-semibold px-2.5 py-1 rounded-full">
-              -15%
+              -10%
             </div>
           )}
         </div>

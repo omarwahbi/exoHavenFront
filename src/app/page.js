@@ -3,7 +3,6 @@ import Categories from "./Components/Categories";
 import FeaturedProducts from "./Components/FeaturedProducts";
 import CtaBanner from "./Components/CtaBanner";
 import HeroSection from "./Components/HeroSection";
-import SaleHero from "./Components/SaleHero";
 
 export default function Home() {
   return (
@@ -12,10 +11,7 @@ export default function Home() {
       <section className="bg-gradient-to-br from-green1 via-accent2/20 to-green2/40">
         <HeroSection />
       </section>
-      
-      {/* Sale Hero - Limited Time 15% Off */}
-      <SaleHero />
-      
+
       {/* Carousel section with glass effect */}
       <section className="py-12 ">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
