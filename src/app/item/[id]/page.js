@@ -249,7 +249,7 @@ export default function Page({ params }) {
                 
                 {/* Sale tag */}
                 {isSaleActive() && !item.attributes.out_of_stock && (
-                  <span className="inline-block bg-red-100 text-red-800 text-sm font-medium px-3 py-1 rounded-full mr-2 animate-pulse">
+                  <span className="inline-block bg-amber-100 text-amber-800 text-sm font-medium px-3 py-1 rounded-full mr-2">
                     <FaTag className="inline-block ml-1" size={12} />
                     خصم 10%
                   </span>
@@ -262,18 +262,18 @@ export default function Page({ params }) {
                   <>
                     <div className="flex flex-col">
                       <span className="text-lg line-through text-gray-500 mb-1">
-                        {Number(item.attributes.state).toLocaleString()} 
+                        {Number(item.attributes.state).toLocaleString()}
                         <span className="text-sm font-medium mr-1">د.ع</span>
                       </span>
-                      <span className="text-3xl font-bold text-red-600">
-                        {calculateSalePrice(item.attributes.state).toLocaleString()} 
+                      <span className="text-3xl font-bold text-amber-600">
+                        {calculateSalePrice(item.attributes.state).toLocaleString()}
                         <span className="text-lg font-medium mr-1">د.ع</span>
                       </span>
                     </div>
                   </>
                 ) : (
                   <span className="text-3xl font-bold text-green5">
-                    {Number(item.attributes.state).toLocaleString()} 
+                    {Number(item.attributes.state).toLocaleString()}
                     <span className="text-lg font-medium mr-1">د.ع</span>
                   </span>
                 )}
@@ -385,8 +385,8 @@ export default function Page({ params }) {
                     )}
                     {/* Sale tag - Display only if sale is active */}
                     {isSaleActive() && !product.attributes.out_of_stock && (
-                      <div className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded animate-pulse">
-                        خصم 10%
+                      <div className="absolute top-2 left-2 bg-amber-500 text-white text-xs font-semibold px-2 py-1 rounded-lg">
+                        -10%
                       </div>
                     )}
                   </div>
@@ -402,7 +402,7 @@ export default function Page({ params }) {
                           <span className="text-gray-500 line-through text-sm block">
                             {Number(product.attributes.state).toLocaleString()} د.ع
                           </span>
-                          <span className="font-bold text-red-600">
+                          <span className="font-bold text-amber-600">
                             {calculateSalePrice(product.attributes.state).toLocaleString()} د.ع
                           </span>
                         </div>

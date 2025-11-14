@@ -109,9 +109,9 @@ const FeaturedProducts = () => {
 
                     {/* Sale tag - Display only if sale is active */}
                     {isSaleActive() && (
-                      <div className="absolute top-3 left-3 bg-gradient-to-r from-red-600 to-red-500 text-[10px] sm:text-xs font-bold text-white px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl shadow-md flex items-center gap-1 animate-pulse">
+                      <div className="absolute top-3 left-3 bg-amber-500 text-[10px] sm:text-xs font-semibold text-white px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-lg shadow-sm flex items-center gap-1">
                         <FaTag className="text-[9px] sm:text-xs" />
-                        <span>خصم 10%</span>
+                        <span>-10%</span>
                       </div>
                     )}
 
@@ -146,7 +146,7 @@ const FeaturedProducts = () => {
                               <p className="text-gray-400 line-through text-xs sm:text-sm font-medium">
                                 {product.attributes.state.toLocaleString()} IQD
                               </p>
-                              <p className="text-red-600 font-bold text-base sm:text-lg md:text-xl">
+                              <p className="text-amber-600 font-bold text-base sm:text-lg md:text-xl">
                                 {calculateSalePrice(product.attributes.state).toLocaleString()} IQD
                               </p>
                             </>
