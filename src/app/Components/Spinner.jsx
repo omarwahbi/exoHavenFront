@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 
 const Spinner = ({
   size = "default",
-  text = "جاري التحميل...",
+  text = "جاري التحميل",
   variant = "ring",
   className = ""
 }) => {
