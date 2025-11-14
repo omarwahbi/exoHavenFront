@@ -66,7 +66,18 @@ module.exports = {
   					900: '#78350F',
   					DEFAULT: '#F59E0B',
   				},
+  				yellow: '#FBBF24',
   			},
+  			// Legacy color names for backward compatibility - mapped to green palette
+  			green1: '#ECFDF5', // brand-green-50
+  			green2: '#D1FAE5', // brand-green-100
+  			green3: '#A7F3D0', // brand-green-200
+  			green4: '#6EE7B7', // brand-green-300
+  			green5: '#34D399', // brand-green-400
+  			accent1: '#F0FDFA', // brand-teal-50
+  			accent2: '#CCFBF1', // brand-teal-100
+  			accent3: '#99F6E4', // brand-teal-200
+  			accent4: '#FFFBEB', // brand-amber-50
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {
