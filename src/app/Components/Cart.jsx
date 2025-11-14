@@ -589,8 +589,7 @@ const Cart = () => {
                             required
                           />
                           {addressError ? (
-                            <p className="text-xs text-red-500 mt-1.5 flex items-center">
-                              <span className="mr-1">⚠️</span>
+                            <p className="text-xs text-red-500 mt-1.5">
                               يرجى إدخال عنوان التوصيل للمتابعة
                             </p>
                           ) : (
