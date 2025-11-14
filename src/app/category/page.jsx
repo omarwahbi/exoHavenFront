@@ -654,7 +654,7 @@ const Category = ({ params }) => {
                           {isSaleActive() && !item.attributes.out_of_stock && (
                             <div className="absolute top-0 left-0 bg-red-600 text-white text-xs font-bold px-2 py-1 m-2 rounded-full animate-pulse">
                               <FaTag className="inline-block ml-1" size={10} />
-                              خصم 15%
+                              خصم 10%
                             </div>
                           )}
                         </Link>
@@ -753,7 +753,7 @@ const Category = ({ params }) => {
                           {isSaleActive() && !item.attributes.out_of_stock && (
                             <div className="absolute top-0 left-0 bg-red-600 text-white text-xs font-bold px-2 py-1 m-1 rounded animate-pulse">
                               <FaTag className="inline-block ml-1" size={10} />
-                              خصم 15%
+                              خصم 10%
                             </div>
                           )}
                         </Link>

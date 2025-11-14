@@ -89,7 +89,7 @@ const FeaturedProducts = () => {
                     {isSaleActive() && (
                       <div className="absolute top-2 left-2 bg-red-600 text-[10px] sm:text-xs font-medium text-white px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full shadow-sm flex items-center animate-pulse">
                         <FaTag className="mr-0.5 text-[8px] sm:text-xs" />
-                        <span className="mt-px">خصم 15%</span>
+                        <span className="mt-px">خصم 10%</span>
                       </div>
                     )}
 

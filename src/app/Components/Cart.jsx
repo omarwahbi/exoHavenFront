@@ -29,6 +29,7 @@ const Cart = () => {
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [clearCartConfirm, setClearCartConfirm] = useState(false);
   const [deliveryLocation, setDeliveryLocation] = useState('baghdad'); // 'baghdad' or 'other'
+  const [userAddress, setUserAddress] = useState(''); // User's custom address
   
   // Constants
   const BAGHDAD_DELIVERY_FEE = 5000;
@@ -127,7 +128,10 @@ const Cart = () => {
       deliveryText = `${deliveryFee.toLocaleString()} IQD ${deliveryLocation === 'baghdad' ? '(داخل بغداد)' : '(المحافظات الأخرى)'}`;
     }
 
-    return `${itemDetails}\n\nإجمالي السلة: ${subtotal.toLocaleString()} IQD\nرسوم التوصيل: ${deliveryText}\nالمجموع الكلي: ${grandTotal.toLocaleString()} IQD`;
+    // Include address in the message
+    const addressLine = userAddress ? `\nعنوان التوصيل: ${userAddress}` : '';
+
+    return `${itemDetails}\n\nإجمالي السلة: ${subtotal.toLocaleString()} IQD\nرسوم التوصيل: ${deliveryText}\nالمجموع الكلي: ${grandTotal.toLocaleString()} IQD${addressLine}`;
   };
 
   const itemsToMessage = getItemNamesWithQuantities(cart);
@@ -172,6 +176,7 @@ const Cart = () => {
     const total = calculateTotalCost(cart);
     setTotalState(total);
   }, [cart]);
+
 
   if (!isClient) {
     // Render nothing on server-side to avoid mismatch
@@ -233,8 +238,8 @@ const Cart = () => {
           )}
           {/* Sale tag */}
           {isSaleActive() && !product.attributes.out_of_stock && (
-            <div className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded animate-pulse">
-              خصم 15%
+            <div className="absolute top-2 left-2 bg-green4/20 border border-green4/40 text-green4 text-xs font-semibold px-2.5 py-1 rounded-full">
+              -10%
             </div>
           )}
         </div>
@@ -513,38 +518,50 @@ const Cart = () => {
                       </div>
                       
                       {/* Delivery location selector */}
-                      {totalState < FREE_DELIVERY_THRESHOLD && (
-                        <div className="bg-gray-50 p-3 rounded-lg">
-                          <div className="flex items-center mb-2">
-                            <LocationOnIcon className="ml-1 text-green4" fontSize="small" />
-                            <p className="text-sm font-medium text-gray-700">موقع التوصيل</p>
-                          </div>
-                          <div className="flex items-center space-x-4 space-x-reverse">
-                            <label className="flex items-center cursor-pointer bg-white px-3 py-2 rounded-lg border border-gray-200 hover:border-green4 transition-colors">
-                              <input
-                                type="radio"
-                                name="deliveryLocation"
-                                value="baghdad"
-                                checked={deliveryLocation === 'baghdad'}
-                                onChange={() => setDeliveryLocation('baghdad')}
-                                className="mr-2 accent-green4 w-4 h-4"
-                              />
-                              <span className="text-sm text-gray-700 mr-1">بغداد</span>
-                            </label>
-                            <label className="flex items-center cursor-pointer bg-white px-3 py-2 rounded-lg border border-gray-200 hover:border-green4 transition-colors">
-                              <input
-                                type="radio"
-                                name="deliveryLocation"
-                                value="other"
-                                checked={deliveryLocation === 'other'}
-                                onChange={() => setDeliveryLocation('other')}
-                                className="mr-2 accent-green4 w-4 h-4"
-                              />
-                              <span className="text-sm text-gray-700 mr-1">المحافظات الأخرى</span>
-                            </label>
-                          </div>
+                      <div className="bg-gray-50 p-3 rounded-lg">
+                        <div className="flex items-center mb-2">
+                          <LocationOnIcon className="ml-1 text-green4" fontSize="small" />
+                          <p className="text-sm font-medium text-gray-700">موقع التوصيل</p>
                         </div>
-                      )}
+                        <div className="flex items-center space-x-4 space-x-reverse mb-3">
+                          <label className="flex items-center cursor-pointer bg-white px-3 py-2 rounded-lg border border-gray-200 hover:border-green4 transition-colors">
+                            <input
+                              type="radio"
+                              name="deliveryLocation"
+                              value="baghdad"
+                              checked={deliveryLocation === 'baghdad'}
+                              onChange={() => setDeliveryLocation('baghdad')}
+                              className="mr-2 accent-green4 w-4 h-4"
+                            />
+                            <span className="text-sm text-gray-700 mr-1">بغداد</span>
+                          </label>
+                          <label className="flex items-center cursor-pointer bg-white px-3 py-2 rounded-lg border border-gray-200 hover:border-green4 transition-colors">
+                            <input
+                              type="radio"
+                              name="deliveryLocation"
+                              value="other"
+                              checked={deliveryLocation === 'other'}
+                              onChange={() => setDeliveryLocation('other')}
+                              className="mr-2 accent-green4 w-4 h-4"
+                            />
+                            <span className="text-sm text-gray-700 mr-1">المحافظات الأخرى</span>
+                          </label>
+                        </div>
+
+                        {/* Address input field */}
+                        <div className="mt-3">
+                          <label className="block text-xs font-medium text-gray-700 mb-1.5">عنوان التوصيل</label>
+                          <input
+                            type="text"
+                            value={userAddress}
+                            onChange={(e) => setUserAddress(e.target.value)}
+                            placeholder={deliveryLocation === 'baghdad' ? 'بغداد-الكرخ-حي الجامعة' : 'كربلاء-الحسينية'}
+                            className="w-full px-3 py-2.5 text-sm border-2 border-gray-300 rounded-lg focus:outline-none focus:border-green4 focus:ring-2 focus:ring-green4/30 transition-colors bg-white text-gray-900"
+                            dir="rtl"
+                          />
+                          <p className="text-xs text-gray-500 mt-1.5">مثال: المحافظة-المدينة-الحي أو الشارع</p>
+                        </div>
+                      </div>
                       
                       <div className="flex items-center justify-between pt-2 text-green4">
                         <div className="flex items-center">

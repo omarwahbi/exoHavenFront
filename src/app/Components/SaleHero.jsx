@@ -2,7 +2,7 @@
 import React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { FaTag, FaClock, FaShoppingCart } from "react-icons/fa";
+import { FaTag, FaShoppingCart } from "react-icons/fa";
 import { isSaleActive } from "@/utils/saleUtils";
 
 const SaleHero = () => {
@@ -10,84 +10,72 @@ const SaleHero = () => {
   if (!isSaleActive()) return null;
 
   return (
-    <div className="bg-gradient-to-br from-red-600 via-red-500 to-red-700 py-8 px-4 sm:py-8 relative overflow-hidden shadow-xl">
-      {/* Decorative elements */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-10">
-        <div className="absolute -left-10 -top-10 w-40 h-40 bg-white rounded-full"></div>
-        <div className="absolute right-10 top-10 w-20 h-20 bg-white rounded-full"></div>
-        <div className="absolute left-1/4 bottom-5 w-32 h-32 bg-white rounded-full"></div>
-        <div className="absolute right-1/3 -bottom-10 w-48 h-48 bg-white rounded-full"></div>
+    <div className="bg-gradient-to-r from-white via-green1/40 to-white py-10 px-4 sm:py-12 relative overflow-hidden border-b border-green3/20">
+      {/* Subtle decorative background */}
+      <div className="absolute inset-0 opacity-30">
+        <div className="absolute top-10 right-10 w-32 h-32 bg-green2/20 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 left-1/4 w-40 h-40 bg-accent2/10 rounded-full blur-3xl"></div>
       </div>
-      
+
       <div className="max-w-screen-xl mx-auto relative z-10">
-        <motion.div 
-          className="text-center text-white"
-          initial={{ opacity: 0, y: 30 }}
+        <motion.div
+          className="text-center"
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ 
-            duration: 0.7,
+          transition={{
+            duration: 0.6,
             ease: "easeOut"
           }}
         >
-          <motion.div 
-            className="flex flex-col sm:flex-row items-center justify-center mb-6 gap-3"
-            initial={{ scale: 0.9 }}
+          {/* Offer announcement */}
+          <motion.div
+            className="flex flex-col sm:flex-row items-center justify-center mb-4 gap-2"
+            initial={{ scale: 0.95 }}
             animate={{ scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
           >
-            {/* Sale tag icon with animation */}
-            <motion.div
-              animate={{ 
-                rotate: [0, -10, 10, -5, 5, 0],
-                scale: [1, 1.1, 1]
-              }}
-              transition={{ 
-                duration: 2.5,
-                repeat: Infinity,
-                repeatType: "loop"
-              }}
-              className="bg-white text-red-600 p-2 rounded-full shadow-lg"
-            >
-              <FaTag className="text-2xl" />
-            </motion.div>
-            
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-shadow relative">
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-white to-red-100">
-                عرض خاص! خصم 15% على جميع المنتجات
-              </span>
-              {/* Yellow accent badge */}
-              <span className="absolute -top-3 -right-3 bg-yellow-400 text-red-600 text-xs font-bold py-1 px-2 rounded-full transform rotate-12 shadow-md">
-                حصرياً
-              </span>
-            </h2>
+            <div className="inline-flex items-center gap-2 bg-green2/30 border border-green3/40 px-4 py-1.5 rounded-full">
+              <FaTag className="text-sm text-green4" />
+              <span className="text-xs sm:text-sm font-medium text-green5">عرض مميز</span>
+            </div>
           </motion.div>
-          
-          <motion.p 
-            className="text-lg mb-8 inline-flex items-center justify-center px-4 py-2 bg-red-700 bg-opacity-30 rounded-full shadow-inner"
+
+          <motion.h2
+            className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
+            transition={{ delay: 0.2 }}
           >
-            <FaClock className="mr-2" />
-            <span className="border-b border-white border-dashed">استمتع بخصم 15% على جميع منتجاتنا حتى 1/6/2025</span>
+            <span className="text-gray-800">خصم </span>
+            <span className="text-green4 font-extrabold">10%</span>
+            <span className="text-gray-800"> على كل شيء</span>
+          </motion.h2>
+
+          <motion.p
+            className="text-sm sm:text-base text-gray-600 mb-8 max-w-2xl mx-auto"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+          >
+            استمتع بخصم 10% على جميع منتجاتنا حتى نهاية 2026. عرض طويل الأمد على ملحقات الحيوانات الغريبة.
           </motion.p>
-          
+
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
+            transition={{ delay: 0.4 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
-            <Link 
-              href="/category" 
-              className="group flex items-center gap-2 bg-white text-red-600 px-8 py-3 rounded-full font-bold hover:bg-red-50 transition-all shadow-lg hover:shadow-xl transform hover:scale-105"
+            <Link
+              href="/category"
+              className="group inline-flex items-center gap-2 bg-green4 hover:bg-green5 text-white px-8 py-3 rounded-lg font-medium transition-all duration-300 shadow-sm hover:shadow-md"
             >
-              <FaShoppingCart className="transition-transform group-hover:rotate-12" />
+              <FaShoppingCart className="text-sm transition-transform group-hover:translate-x-1" />
               <span>تسوق الآن</span>
             </Link>
-            
-            <span className="text-white/80 text-sm sm:text-base">
-              واستمتع بالتوصيل المجاني لطلبات أكثر من 50,000 د.ع
+
+            <span className="text-gray-500 text-xs sm:text-sm">
+              توصيل مجاني للطلبات فوق 50,000 د.ع
             </span>
           </motion.div>
         </motion.div>

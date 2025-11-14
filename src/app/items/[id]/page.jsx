@@ -252,7 +252,7 @@ const Items = () => {
                           {isSaleActive() && !item.attributes.out_of_stock && (
                             <div className="absolute top-0 left-0 bg-red-600 text-white text-xs font-bold px-2 py-1 m-2 rounded-full animate-pulse flex items-center gap-1">
                               <FaTag className="text-[10px]" />
-                              <span>-15%</span>
+                              <span>-10%</span>
                             </div>
                           )}
                         </Link>

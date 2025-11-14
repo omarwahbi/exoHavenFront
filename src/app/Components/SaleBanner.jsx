@@ -1,124 +1,37 @@
 "use client";
 import { motion } from "framer-motion";
-import { useState, useEffect } from "react";
-import { FaGift, FaTimes, FaClock, FaCalendarAlt } from "react-icons/fa";
+import { useState } from "react";
+import { FaTimes } from "react-icons/fa";
+import { isSaleActive } from "@/utils/saleUtils";
 
 const SaleBanner = () => {
   const [isVisible, setIsVisible] = useState(true);
-  const [timeLeft, setTimeLeft] = useState("");
-  const [days, setDays] = useState(0);
-  
-  useEffect(() => {
-    // Check if sale is still active
-    const endDate = new Date(2025, 5, 1, 23, 59, 59); // June 1, 2025
-    const now = new Date();
-    
-    if (now > endDate) {
-      setIsVisible(false);
-      return;
-    }
-    
-    // Update countdown timer
-    const updateTimer = () => {
-      const now = new Date();
-      const difference = endDate - now;
-      
-      if (difference <= 0) {
-        setIsVisible(false);
-        return;
-      }
-      
-      const daysRemaining = Math.floor(difference / (1000 * 60 * 60 * 24));
-      setDays(daysRemaining);
-      setTimeLeft(`${daysRemaining} ${daysRemaining === 1 ? 'يوم' : 'أيام'}`);
-    };
-    
-    // Initial update
-    updateTimer();
-    
-    // Schedule updates
-    const timer = setInterval(updateTimer, 1000 * 60 * 60); // Update every hour
-    
-    return () => clearInterval(timer);
-  }, []);
-  
-  if (!isVisible) return null;
-  
+
+  if (!isSaleActive() || !isVisible) return null;
+
   return (
-    <motion.div 
-      className="bg-gradient-to-r from-red-700 via-red-600 to-red-700 text-white py-2 sm:py-2.5 px-3 sm:px-6 text-center relative overflow-hidden shadow-md"
+    <motion.div
+      className="bg-gradient-to-r from-green1/40 to-green2/30 border-b border-green3/40 py-2 sm:py-2.5 px-4 sm:px-6 relative overflow-hidden"
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
     >
-      {/* Background decorative elements */}
-      <div className="absolute inset-0 overflow-hidden opacity-10">
-        <motion.div 
-          className="absolute -left-8 -top-8 w-16 h-16 bg-white rounded-full"
-          animate={{ 
-            scale: [1, 1.1, 1],
-            opacity: [0.5, 0.8, 0.5],
-          }}
-          transition={{ duration: 3, repeat: Infinity }}
-        />
-        <motion.div 
-          className="absolute right-1/4 -bottom-8 w-16 h-16 bg-white rounded-full"
-          animate={{ 
-            scale: [1, 1.2, 1],
-            opacity: [0.5, 0.7, 0.5],
-          }}
-          transition={{ duration: 2.5, repeat: Infinity, delay: 0.5 }}
-        />
-      </div>
-      
-      <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 relative z-10">
-        <motion.div
-          animate={{ 
-            rotate: [0, -5, 5, 0],
-            scale: [1, 1.1, 1]
-          }}
-          transition={{ 
-            duration: 2,
-            repeat: Infinity,
-            repeatType: "loop"
-          }}
-          className="inline-flex items-center bg-white text-red-600 font-bold rounded-full px-2 py-0.5 text-xs sm:text-sm"
-        >
-          <FaGift className="mx-1 text-xs sm:text-sm" />
-          <span>خصم خاص</span>
-        </motion.div>
-        
-        <span className="font-bold text-sm sm:text-base inline-flex items-center">
-          <span className="bg-red-500 bg-opacity-40 rounded-lg px-2 py-0.5 mx-1">15%</span> 
+      <div className="flex items-center justify-center gap-2 sm:gap-3 relative z-10 max-w-7xl mx-auto flex-wrap">
+        {/* Discount badge */}
+        <div className="inline-flex items-center gap-1.5 bg-green4/15 border border-green4/40 px-3 py-1 rounded-full">
+          <span className="text-xs sm:text-sm font-bold text-green4">خصم 10%</span>
+        </div>
+
+        {/* Main message */}
+        <span className="text-xs sm:text-sm text-gray-700 font-medium">
           على جميع المنتجات
         </span>
-        
-        {/* Countdown timer */}
-        <div className="flex items-center gap-1 text-xs sm:text-sm bg-red-800 bg-opacity-30 rounded-full px-2 py-1">
-          <FaCalendarAlt className="text-yellow-200 text-xs" />
-          <span className="whitespace-nowrap">ينتهي في 1/6/2025</span>
-          <motion.div 
-            className="flex items-center gap-1 ml-1 bg-red-800 rounded-full px-2 py-0.5"
-            animate={{ scale: [1, 1.05, 1] }}
-            transition={{ duration: 2, repeat: Infinity }}
-          >
-            <FaClock className="text-yellow-200 text-xs animate-pulse" />
-            <motion.span
-              className="font-mono font-bold text-yellow-200"
-              key={days} // Reset animation when days change
-              initial={{ opacity: 0.5, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.3 }}
-            >
-              {timeLeft}
-            </motion.span>
-          </motion.div>
-        </div>
       </div>
-      
-      <motion.button 
+
+      {/* Close button */}
+      <motion.button
         onClick={() => setIsVisible(false)}
-        className="absolute right-2 top-1/2 transform -translate-y-1/2 p-1 bg-red-800 bg-opacity-40 rounded-full hover:bg-red-800 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-300"
+        className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1.5 text-gray-400 hover:text-gray-600 hover:bg-white/50 rounded-full transition-colors duration-200 focus:outline-none"
         aria-label="إغلاق"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
