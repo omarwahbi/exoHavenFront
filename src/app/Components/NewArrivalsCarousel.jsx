@@ -2,6 +2,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { FaArrowLeft, FaEye, FaTag } from "react-icons/fa";
 import Spinner from "./Spinner";
@@ -18,6 +19,7 @@ import 'swiper/css/effect-coverflow';
 import { Autoplay, EffectCoverflow } from 'swiper/modules';
 
 export default function NewArrivalsCarousel() {
+  const router = useRouter();
   // Fetch new arrivals using React Query
   const { 
     data: images = [],
@@ -121,64 +123,65 @@ export default function NewArrivalsCarousel() {
             >
               {images.map((img) => (
                 <SwiperSlide key={img.id} className="w-[260px] md:w-[240px] h-auto">
-                  <div className="overflow-hidden rounded-lg bg-white shadow-md h-full transform transition-all duration-300 border border-gray-100">
-                    <Link
-                      className="group block"
-                      href={`/item/${img.id}`}
-                    >
-                      <div className="relative aspect-[4/3] overflow-hidden">
-                        <Image
-                          src={img.attributes.item_thumbnail.data.attributes.url}
-                          fill
-                          sizes="(max-width: 640px) 80vw, 240px"
-                          alt={img.attributes.name}
-                          className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-700 ease-out"
-                          priority
-                        />
+                  <div
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      router.push(`/item/${img.id}`);
+                    }}
+                    className="overflow-hidden rounded-lg bg-white shadow-md h-full transform transition-all duration-300 border border-gray-100 cursor-pointer group"
+                  >
+                    <div className="relative aspect-[4/3] overflow-hidden">
+                      <Image
+                        src={img.attributes.item_thumbnail.data.attributes.url}
+                        fill
+                        sizes="(max-width: 640px) 80vw, 240px"
+                        alt={img.attributes.name}
+                        className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-700 ease-out"
+                        priority
+                      />
 
-                        <div className="absolute top-1 left-1 bg-green4 text-white text-[10px] font-medium px-1.5 py-0.5 rounded-sm z-10">
-                          جديد
-                        </div>
-
-                        {/* Sale badge - Only shown if sale is active */}
-                        {isSaleActive() && !img.attributes.out_of_stock && (
-                          <div className="absolute top-1 right-1 bg-amber-500 text-white text-[10px] font-medium px-1.5 py-0.5 rounded-full z-10 flex items-center gap-0.5">
-                            <FaTag className="text-[8px]" />
-                            <span>-10%</span>
-                          </div>
-                        )}
-
-                        <div className="absolute inset-0 bg-gradient-to-t from-green5/60 via-green5/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none">
-                          <div className="bg-white/80 p-1.5 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">
-                            <FaEye className="text-green4 text-sm" />
-                          </div>
-                        </div>
+                      <div className="absolute top-1 left-1 bg-green4 text-white text-[10px] font-medium px-1.5 py-0.5 rounded-sm z-10">
+                        جديد
                       </div>
 
-                      <div className="p-2">
-                        <h3 className="font-bold text-gray-800 text-xs line-clamp-1 group-hover:text-green4 transition-colors">
-                          {img.attributes.name}
-                        </h3>
-                        {img.attributes.state && (
-                          <div className="flex items-center justify-between mt-0.5">
-                            {isSaleActive() && !img.attributes.out_of_stock ? (
-                              <div>
-                                <span className="text-gray-500 line-through text-[10px] block">
-                                  {img.attributes.state.toLocaleString()} IQD
-                                </span>
-                                <span className="font-bold text-amber-600 text-xs">
-                                  {calculateSalePrice(img.attributes.state).toLocaleString()} IQD
-                                </span>
-                              </div>
-                            ) : (
-                              <span className="font-bold text-green4 text-xs">
+                      {/* Sale badge - Only shown if sale is active */}
+                      {isSaleActive() && !img.attributes.out_of_stock && (
+                        <div className="absolute top-1 right-1 bg-amber-500 text-white text-[10px] font-medium px-1.5 py-0.5 rounded-full z-10 flex items-center gap-0.5">
+                          <FaTag className="text-[8px]" />
+                          <span>-10%</span>
+                        </div>
+                      )}
+
+                      <div className="absolute inset-0 bg-gradient-to-t from-green5/60 via-green5/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none">
+                        <div className="bg-white/80 p-1.5 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">
+                          <FaEye className="text-green4 text-sm" />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="p-2">
+                      <h3 className="font-bold text-gray-800 text-xs line-clamp-1 group-hover:text-green4 transition-colors">
+                        {img.attributes.name}
+                      </h3>
+                      {img.attributes.state && (
+                        <div className="flex items-center justify-between mt-0.5">
+                          {isSaleActive() && !img.attributes.out_of_stock ? (
+                            <div>
+                              <span className="text-gray-500 line-through text-[10px] block">
                                 {img.attributes.state.toLocaleString()} IQD
                               </span>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    </Link>
+                              <span className="font-bold text-amber-600 text-xs">
+                                {calculateSalePrice(img.attributes.state).toLocaleString()} IQD
+                              </span>
+                            </div>
+                          ) : (
+                            <span className="font-bold text-green4 text-xs">
+                              {img.attributes.state.toLocaleString()} IQD
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </SwiperSlide>
               ))}
