@@ -121,11 +121,11 @@ export default function NewArrivalsCarousel() {
             >
               {images.map((img) => (
                 <SwiperSlide key={img.id} className="w-[260px] md:w-[240px] h-auto">
-                  <div className="overflow-hidden rounded-lg bg-white shadow-md h-full transform transition-all duration-300 border border-gray-100 flex flex-col">
-                    <Link
-                      className="group block h-full flex flex-col"
-                      href={`/item/${img.id}`}
-                    >
+                  <Link
+                    className="group block h-full"
+                    href={`/item/${img.id}`}
+                  >
+                    <div className="overflow-hidden rounded-lg bg-white shadow-md h-full transform transition-all duration-300 border border-gray-100 flex flex-col">
                       <div className="relative aspect-[4/3] overflow-hidden">
                         <Image
                           src={img.attributes.item_thumbnail.data.attributes.url}
@@ -178,8 +178,8 @@ export default function NewArrivalsCarousel() {
                           </div>
                         )}
                       </div>
-                    </Link>
-                  </div>
+                    </div>
+                  </Link>
                 </SwiperSlide>
               ))}
             </Swiper>
