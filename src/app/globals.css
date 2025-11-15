@@ -490,3 +490,17 @@ p {
   transform: scale(1);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
 }
+
+/* Fix z-index issue in coverflow effect so all slides are clickable */
+.new-arrivals-3d-carousel .swiper-wrapper {
+  pointer-events: none !important;
+}
+
+.new-arrivals-3d-carousel .swiper-slide {
+  pointer-events: auto !important;
+  z-index: 1;
+}
+
+.new-arrivals-3d-carousel .swiper-slide-active {
+  z-index: 2;
+}
