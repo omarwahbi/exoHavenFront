@@ -106,6 +106,16 @@ export default function NewArrivalsCarousel() {
               allowTouchMove={false}
               watchSlidesProgress={true}
               cssMode={false}
+              onClick={(swiper, event) => {
+                const clickedSlide = swiper.clickedSlide;
+                if (clickedSlide) {
+                  const itemId = clickedSlide.getAttribute('data-item-id');
+                  console.log('Swiper clicked, item:', itemId);
+                  if (itemId) {
+                    router.push(`/item/${itemId}`);
+                  }
+                }
+              }}
               breakpoints={{
                 640: {
                   slidesPerView: 2,
@@ -129,10 +139,7 @@ export default function NewArrivalsCarousel() {
                 <SwiperSlide
                   key={img.id}
                   className="w-[260px] md:w-[240px] h-auto cursor-pointer"
-                  onClick={() => {
-                    console.log('Slide clicked:', img.id);
-                    router.push(`/item/${img.id}`);
-                  }}
+                  data-item-id={img.id}
                 >
                   <div className="overflow-hidden rounded-lg bg-white shadow-md h-full transform transition-all duration-300 border border-gray-100 group"
                   >
