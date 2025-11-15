@@ -104,6 +104,8 @@ export default function NewArrivalsCarousel() {
               className="pb-2"
               simulateTouch={false}
               allowTouchMove={false}
+              watchSlidesProgress={true}
+              cssMode={false}
               breakpoints={{
                 640: {
                   slidesPerView: 2,
@@ -124,10 +126,15 @@ export default function NewArrivalsCarousel() {
               }}
             >
               {images.map((img) => (
-                <SwiperSlide key={img.id} className="w-[260px] md:w-[240px] h-auto">
-                  <div
-                    onClick={() => router.push(`/item/${img.id}`)}
-                    className="overflow-hidden rounded-lg bg-white shadow-md h-full transform transition-all duration-300 border border-gray-100 cursor-pointer group"
+                <SwiperSlide
+                  key={img.id}
+                  className="w-[260px] md:w-[240px] h-auto cursor-pointer"
+                  onClick={() => {
+                    console.log('Slide clicked:', img.id);
+                    router.push(`/item/${img.id}`);
+                  }}
+                >
+                  <div className="overflow-hidden rounded-lg bg-white shadow-md h-full transform transition-all duration-300 border border-gray-100 group"
                   >
                     <div className="relative aspect-[4/3] overflow-hidden">
                       <Image
