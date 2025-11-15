@@ -102,6 +102,10 @@ export default function NewArrivalsCarousel() {
               pagination={false}
               modules={[EffectCoverflow, Autoplay]}
               className="pb-2"
+              preventClicks={false}
+              preventClicksPropagation={false}
+              slideToClickedSlide={false}
+              allowTouchMove={true}
               breakpoints={{
                 640: {
                   slidesPerView: 2,
@@ -124,10 +128,7 @@ export default function NewArrivalsCarousel() {
               {images.map((img) => (
                 <SwiperSlide key={img.id} className="w-[260px] md:w-[240px] h-auto">
                   <div
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      router.push(`/item/${img.id}`);
-                    }}
+                    onClick={() => router.push(`/item/${img.id}`)}
                     className="overflow-hidden rounded-lg bg-white shadow-md h-full transform transition-all duration-300 border border-gray-100 cursor-pointer group"
                   >
                     <div className="relative aspect-[4/3] overflow-hidden">
