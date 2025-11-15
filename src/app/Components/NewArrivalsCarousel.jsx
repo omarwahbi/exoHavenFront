@@ -100,6 +100,10 @@ export default function NewArrivalsCarousel() {
               pagination={false}
               modules={[EffectCoverflow, Autoplay]}
               className="pb-2"
+              preventClicks={false}
+              preventClicksPropagation={false}
+              touchMoveStopPropagation={false}
+              passiveListeners={true}
               breakpoints={{
                 640: {
                   slidesPerView: 2,
