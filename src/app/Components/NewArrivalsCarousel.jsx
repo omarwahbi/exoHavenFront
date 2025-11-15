@@ -82,7 +82,7 @@ export default function NewArrivalsCarousel() {
           >
             <Swiper
               effect={'coverflow'}
-              grabCursor={true}
+              grabCursor={false}
               centeredSlides={true}
               slidesPerView={2}
               spaceBetween={10}
@@ -102,10 +102,8 @@ export default function NewArrivalsCarousel() {
               pagination={false}
               modules={[EffectCoverflow, Autoplay]}
               className="pb-2"
-              preventClicks={false}
-              preventClicksPropagation={false}
-              slideToClickedSlide={false}
-              allowTouchMove={true}
+              simulateTouch={false}
+              allowTouchMove={false}
               breakpoints={{
                 640: {
                   slidesPerView: 2,
