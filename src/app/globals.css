@@ -47,28 +47,50 @@ body {
 
 /* Modern background patterns */
 .bg-pattern-grid {
-  background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%2381C784' fill-opacity='0.05' fill-rule='evenodd'%3E%3Cpath d='M0 0h40v40H0V0zm40 40h40v40H40V40zm-40 0h2l-2 2V40zm0-4h4l-4 4v-4zm0-4h6l-6 6v-6z'/%3E%3C/g%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2381C784' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
 }
 
 .bg-pattern-dots {
-  background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%234CAF50' fill-opacity='0.07' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='3'/%3E%3Ccircle cx='13' cy='13' r='3'/%3E%3C/g%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%234CAF50' fill-opacity='0.05' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='2'/%3E%3Ccircle cx='15' cy='3' r='2'/%3E%3Ccircle cx='9' cy='9' r='2'/%3E%3Ccircle cx='21' cy='9' r='2'/%3E%3Ccircle cx='3' cy='15' r='2'/%3E%3Ccircle cx='15' cy='15' r='2'/%3E%3Ccircle cx='9' cy='21' r='2'/%3E%3Ccircle cx='21' cy='21' r='2'/%3E%3C/g%3E%3C/svg%3E");
 }
 
-/* Glass morphism */
+.bg-pattern-lines {
+  background-image: linear-gradient(to right, rgba(129, 199, 132, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(129, 199, 132, 0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Modern Glass morphism */
 .glass {
-  background: rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
 }
 
 .glass-dark {
-  background: rgba(20, 20, 20, 0.25);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+  background: rgba(30, 30, 30, 0.6);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+.glass-green {
+  background: rgba(232, 245, 233, 0.8);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  border: 1px solid rgba(129, 199, 132, 0.2);
+  box-shadow: 0 8px 24px 0 rgba(76, 175, 80, 0.1);
+}
+
+/* Frosted glass effect for cards */
+.frosted {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px) saturate(200%);
+  -webkit-backdrop-filter: blur(20px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
 /* Fix for select options text color */
@@ -467,4 +489,18 @@ p {
 .new-arrivals-carousel .swiper-slide-active {
   transform: scale(1);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+/* Fix z-index issue in coverflow effect so all slides are clickable */
+.new-arrivals-3d-carousel .swiper-wrapper {
+  pointer-events: none !important;
+}
+
+.new-arrivals-3d-carousel .swiper-slide {
+  pointer-events: auto !important;
+  z-index: 1;
+}
+
+.new-arrivals-3d-carousel .swiper-slide-active {
+  z-index: 2;
 }

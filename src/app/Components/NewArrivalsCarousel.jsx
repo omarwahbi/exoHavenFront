@@ -100,6 +100,10 @@ export default function NewArrivalsCarousel() {
               pagination={false}
               modules={[EffectCoverflow, Autoplay]}
               className="pb-2"
+              preventClicks={false}
+              preventClicksPropagation={false}
+              touchMoveStopPropagation={false}
+              passiveListeners={true}
               breakpoints={{
                 640: {
                   slidesPerView: 2,
@@ -142,7 +146,7 @@ export default function NewArrivalsCarousel() {
                         
                         {/* Sale badge - Only shown if sale is active */}
                         {isSaleActive() && !img.attributes.out_of_stock && (
-                          <div className="absolute top-1 right-1 bg-red-600 text-white text-[10px] font-medium px-1.5 py-0.5 rounded-full z-10 flex items-center gap-0.5 animate-pulse">
+                          <div className="absolute top-1 right-1 bg-amber-500 text-white text-[10px] font-medium px-1.5 py-0.5 rounded-full z-10 flex items-center gap-0.5">
                             <FaTag className="text-[8px]" />
                             <span>-10%</span>
                           </div>
@@ -166,7 +170,7 @@ export default function NewArrivalsCarousel() {
                                 <span className="text-gray-500 line-through text-[10px] block">
                                   {img.attributes.state.toLocaleString()} IQD
                                 </span>
-                                <span className="font-bold text-red-600 text-xs">
+                                <span className="font-bold text-amber-600 text-xs">
                                   {calculateSalePrice(img.attributes.state).toLocaleString()} IQD
                                 </span>
                               </div>

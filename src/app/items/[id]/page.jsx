@@ -250,7 +250,7 @@ const Items = () => {
                           
                           {/* Sale badge */}
                           {isSaleActive() && !item.attributes.out_of_stock && (
-                            <div className="absolute top-0 left-0 bg-red-600 text-white text-xs font-bold px-2 py-1 m-2 rounded-full animate-pulse flex items-center gap-1">
+                            <div className="absolute top-0 left-0 bg-amber-500 text-white text-xs font-semibold px-2 py-1 m-2 rounded-lg flex items-center gap-1">
                               <FaTag className="text-[10px]" />
                               <span>-10%</span>
                             </div>
@@ -259,7 +259,7 @@ const Items = () => {
                         
                         <div className="p-3 flex-grow flex flex-col">
                           <Link href={`/item/${item.id}`}>
-                            <h3 className="font-medium text-gray-800 mb-1 line-clamp-1 hover:text-green4 transition-colors">
+                            <h3 className="font-medium text-gray-800 mb-2 line-clamp-2 hover:text-green4 transition-colors min-h-[2.5rem]">
                               {item.attributes.name}
                             </h3>
                           </Link>
@@ -273,7 +273,7 @@ const Items = () => {
                                   <span className="text-gray-500 line-through text-xs block">
                                     {Number(item.attributes.state).toLocaleString()} د.ع
                                   </span>
-                                  <span className="text-red-600">
+                                  <span className="text-amber-600">
                                     {calculateSalePrice(item.attributes.state).toLocaleString()} د.ع
                                   </span>
                                 </div>

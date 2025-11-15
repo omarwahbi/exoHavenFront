@@ -54,29 +54,30 @@ const Navbar = () => {
   };
 
   const navbarClasses = scrolled
-    ? "bg-white shadow-lg transition-all duration-300 sticky top-0 z-50"
-    : "bg-white transition-all duration-300 z-50";
+    ? "bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-100 transition-all duration-400 sticky top-0 z-50"
+    : "bg-white border-b border-transparent transition-all duration-400 z-50";
 
   const NavLink = ({ href, children }) => {
-    const isActive = pathname === href || 
+    const isActive = pathname === href ||
                     (href !== '/' && pathname.startsWith(href));
-    
+
     return (
       <Link href={href} onClick={handleLinkClick}>
         <motion.div
-          className={`px-3 py-2 rounded-md text-sm font-bold relative group
-                     ${isActive 
-                       ? 'text-green4' 
-                       : 'text-green5 hover:text-green4'}`}
-          whileHover={{ scale: 1.05 }}
-          transition={{ type: "spring", stiffness: 400, damping: 10 }}
+          className={`px-4 py-2.5 rounded-xl text-sm font-bold relative group
+                     ${isActive
+                       ? 'text-green4 bg-green1/50'
+                       : 'text-gray-700 hover:text-green4 hover:bg-green1/30'}`}
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.98 }}
+          transition={{ type: "spring", stiffness: 400, damping: 17 }}
         >
           {children}
-          <span 
-            className={`absolute inset-x-0 bottom-0 h-0.5 bg-green4 transform 
-                      ${isActive 
-                        ? 'scale-x-100' 
-                        : 'scale-x-0 origin-left transition-transform group-hover:scale-x-100'} 
+          <span
+            className={`absolute inset-x-2 bottom-1 h-0.5 bg-gradient-to-r from-green4 to-green3 rounded-full transform
+                      ${isActive
+                        ? 'scale-x-100'
+                        : 'scale-x-0 origin-left transition-transform group-hover:scale-x-100'}
                       duration-300`}
           ></span>
         </motion.div>
@@ -86,8 +87,8 @@ const Navbar = () => {
 
   return (
     <nav className={navbarClasses} dir="rtl">
-      <div className="w-11/12 mx-auto">
-        <div className="flex items-center justify-between h-16">
+      <div className="w-11/12 max-w-screen-xl mx-auto">
+        <div className="flex items-center justify-between h-20">
           <div className="flex items-center">
             <motion.div whileHover={{ scale: 1.05 }}>
               <Link href="/">
@@ -112,40 +113,46 @@ const Navbar = () => {
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             {/* Cart Icon - Visible on both mobile and desktop */}
             <div className="relative">
               <Link href="/cart">
                 <motion.div
-                  className={`text-white p-2 md:p-2.5 rounded-full transition-colors duration-300 flex items-center
-                            ${pathname === '/cart' 
-                              ? 'bg-green5' 
-                              : 'bg-green4 hover:bg-green5'}`}
-                  whileHover={{ scale: 1.1 }}
+                  className={`text-white p-2.5 md:p-3 rounded-xl transition-all duration-400 flex items-center shadow-sm
+                            ${pathname === '/cart'
+                              ? 'bg-green5 shadow-green'
+                              : 'bg-green4 hover:bg-green5 hover:shadow-green-lg'}`}
+                  whileHover={{ scale: 1.08, y: -2 }}
                   whileTap={{ scale: 0.95 }}
                   initial={{ scale: 1 }}
-                  animate={cartItemCount > 0 ? { 
-                    scale: [1, 1.2, 1],
-                    transition: { duration: 0.3 }
+                  animate={cartItemCount > 0 ? {
+                    scale: [1, 1.15, 1],
+                    transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] }
                   } : {}}
                 >
                   <ShoppingCartIcon fontSize={cartItemCount > 0 ? "medium" : "small"} />
                   {cartItemCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                    <motion.span
+                      className="absolute -top-1.5 -right-1.5 bg-gradient-to-br from-red-500 to-red-600 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center shadow-md ring-2 ring-white"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ type: "spring", stiffness: 500, damping: 15 }}
+                    >
                       {cartItemCount > 99 ? '99+' : cartItemCount}
-                    </span>
+                    </motion.span>
                   )}
                 </motion.div>
               </Link>
             </div>
-            
+
             {/* Mobile menu button */}
             <motion.button
               onClick={toggleNavbar}
               type="button"
-              className="md:hidden bg-green4 inline-flex items-center justify-center p-2 rounded-md text-white hover:text-white hover:bg-green5 focus:outline-none"
+              className="md:hidden bg-green4 inline-flex items-center justify-center p-2.5 rounded-xl text-white hover:text-white hover:bg-green5 focus:outline-none shadow-sm hover:shadow-md transition-all duration-300"
               aria-controls="mobile-menu"
               aria-expanded={isOpen ? "true" : "false"}
+              whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
               <span className="sr-only">Open main menu</span>
@@ -190,15 +197,16 @@ const Navbar = () => {
       {/* Mobile menu with improved animation */}
       <AnimatePresence>
         {isOpen && (
-          <motion.div 
-            className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+          <motion.div
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
             onClick={toggleNavbar}
           >
-            <motion.div 
-              className="fixed inset-y-0 left-0 w-4/5 max-w-xs bg-white h-full shadow-xl overflow-y-auto"
+            <motion.div
+              className="fixed inset-y-0 left-0 w-4/5 max-w-xs bg-white h-full shadow-2xl overflow-y-auto"
               dir="rtl"
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
@@ -207,13 +215,13 @@ const Navbar = () => {
               onClick={(e) => e.stopPropagation()}
             >
               {/* Mobile menu header */}
-              <div className="p-4 border-b border-gray-200 flex justify-between items-center">
-                <div className="text-green5 font-bold text-lg">
+              <div className="p-5 border-b border-gray-100 flex justify-between items-center bg-gradient-to-br from-green1/30 to-white">
+                <div className="text-green5 font-bold text-xl">
                   القائمة
                 </div>
-                <button 
+                <button
                   onClick={toggleNavbar}
-                  className="p-1 rounded-full hover:bg-gray-100 focus:outline-none"
+                  className="p-2 rounded-xl hover:bg-green1/50 focus:outline-none transition-colors duration-200"
                 >
                   <svg
                     className="h-6 w-6 text-gray-500"
@@ -233,13 +241,14 @@ const Navbar = () => {
               </div>
               
               {/* Mobile menu links */}
-              <div className="p-4 space-y-3">
+              <div className="p-5 space-y-2">
                 <Link href="/" onClick={handleLinkClick}>
-                  <motion.div 
-                    className={`flex items-center p-3 rounded-lg transition-colors duration-200
-                                ${pathname === '/' 
-                                  ? 'bg-green1 text-green5' 
-                                  : 'text-green5 hover:bg-green1 hover:text-green5'}`}
+                  <motion.div
+                    className={`flex items-center p-4 rounded-xl transition-all duration-300
+                                ${pathname === '/'
+                                  ? 'bg-gradient-to-r from-green1 to-green2/50 text-green5 shadow-sm'
+                                  : 'text-gray-700 hover:bg-green1/40 hover:text-green5'}`}
+                    whileHover={{ x: 5 }}
                     whileTap={{ scale: 0.98 }}
                   >
                     <svg 
@@ -261,11 +270,12 @@ const Navbar = () => {
                 </Link>
                 
                 <Link href="/category" onClick={handleLinkClick}>
-                  <motion.div 
-                    className={`flex items-center p-3 rounded-lg transition-colors duration-200
-                                ${pathname.startsWith('/category') 
-                                  ? 'bg-green1 text-green5' 
-                                  : 'text-green5 hover:bg-green1 hover:text-green5'}`}
+                  <motion.div
+                    className={`flex items-center p-4 rounded-xl transition-all duration-300
+                                ${pathname.startsWith('/category')
+                                  ? 'bg-gradient-to-r from-green1 to-green2/50 text-green5 shadow-sm'
+                                  : 'text-gray-700 hover:bg-green1/40 hover:text-green5'}`}
+                    whileHover={{ x: 5 }}
                     whileTap={{ scale: 0.98 }}
                   >
                     <svg 
@@ -287,63 +297,66 @@ const Navbar = () => {
                 </Link>
                 
                 <Link href="/aboutUs" onClick={handleLinkClick}>
-                  <motion.div 
-                    className={`flex items-center p-3 rounded-lg transition-colors duration-200
-                                ${pathname === '/aboutUs' 
-                                  ? 'bg-green1 text-green5' 
-                                  : 'text-green5 hover:bg-green1 hover:text-green5'}`}
+                  <motion.div
+                    className={`flex items-center p-4 rounded-xl transition-all duration-300
+                                ${pathname === '/aboutUs'
+                                  ? 'bg-gradient-to-r from-green1 to-green2/50 text-green5 shadow-sm'
+                                  : 'text-gray-700 hover:bg-green1/40 hover:text-green5'}`}
+                    whileHover={{ x: 5 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    <svg 
-                      className="w-5 h-5 ml-3" 
-                      fill="none" 
-                      stroke="currentColor" 
-                      viewBox="0 0 24 24" 
+                    <svg
+                      className="w-5 h-5 ml-3"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
                       xmlns="http://www.w3.org/2000/svg"
                     >
-                      <path 
-                        strokeLinecap="round" 
-                        strokeLinejoin="round" 
-                        strokeWidth={2} 
-                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" 
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                       />
                     </svg>
                     <span className="font-medium">من نحن؟</span>
                   </motion.div>
                 </Link>
-                
+
                 <Link href="/contact" onClick={handleLinkClick}>
-                  <motion.div 
-                    className={`flex items-center p-3 rounded-lg transition-colors duration-200
-                                ${pathname === '/contact' 
-                                  ? 'bg-green1 text-green5' 
-                                  : 'text-green5 hover:bg-green1 hover:text-green5'}`}
+                  <motion.div
+                    className={`flex items-center p-4 rounded-xl transition-all duration-300
+                                ${pathname === '/contact'
+                                  ? 'bg-gradient-to-r from-green1 to-green2/50 text-green5 shadow-sm'
+                                  : 'text-gray-700 hover:bg-green1/40 hover:text-green5'}`}
+                    whileHover={{ x: 5 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    <svg 
-                      className="w-5 h-5 ml-3" 
-                      fill="none" 
-                      stroke="currentColor" 
-                      viewBox="0 0 24 24" 
+                    <svg
+                      className="w-5 h-5 ml-3"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
                       xmlns="http://www.w3.org/2000/svg"
                     >
-                      <path 
-                        strokeLinecap="round" 
-                        strokeLinejoin="round" 
-                        strokeWidth={2} 
-                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" 
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
                       />
                     </svg>
                     <span className="font-medium">اتصل بنا</span>
                   </motion.div>
                 </Link>
-                
+
                 <Link href="/cart" onClick={handleLinkClick}>
-                  <motion.div 
-                    className={`flex items-center p-3 rounded-lg transition-colors duration-200
-                                ${pathname === '/cart' 
-                                  ? 'bg-green1 text-green5' 
-                                  : 'text-green5 hover:bg-green1 hover:text-green5'}`}
+                  <motion.div
+                    className={`flex items-center p-4 rounded-xl transition-all duration-300
+                                ${pathname === '/cart'
+                                  ? 'bg-gradient-to-r from-green1 to-green2/50 text-green5 shadow-sm'
+                                  : 'text-gray-700 hover:bg-green1/40 hover:text-green5'}`}
+                    whileHover={{ x: 5 }}
                     whileTap={{ scale: 0.98 }}
                   >
                     <svg 
@@ -362,7 +375,7 @@ const Navbar = () => {
                     </svg>
                     <span className="font-medium">عربة التسوق</span>
                     {cartItemCount > 0 && (
-                      <span className="bg-red-500 text-white text-xs font-bold rounded-full h-5 min-w-[20px] flex items-center justify-center mr-2 px-1">
+                      <span className="bg-gradient-to-br from-red-500 to-red-600 text-white text-xs font-bold rounded-full h-6 min-w-[24px] flex items-center justify-center mr-2 px-2 shadow-sm">
                         {cartItemCount > 99 ? '99+' : cartItemCount}
                       </span>
                     )}
