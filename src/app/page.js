@@ -3,13 +3,6 @@ import Categories from "./Components/Categories";
 import FeaturedProducts from "./Components/FeaturedProducts";
 import CtaBanner from "./Components/CtaBanner";
 import HeroSection from "./Components/HeroSection";
-import Script from 'next/script';
-import {
-  generateOrganizationSchema,
-  generateWebSiteSchema,
-  generateLocalBusinessSchema,
-  generateFAQSchema,
-} from "@/utils/seo";
 
 // Enhanced homepage metadata for SEO
 export const metadata = {
@@ -52,36 +45,8 @@ export const metadata = {
 };
 
 export default function Home() {
-  // Generate structured data for the homepage
-  const organizationSchema = generateOrganizationSchema();
-  const websiteSchema = generateWebSiteSchema();
-  const localBusinessSchema = generateLocalBusinessSchema();
-  const faqSchema = generateFAQSchema();
-
   return (
     <>
-      {/* JSON-LD Structured Data for SEO */}
-      <Script
-        id="organization-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
-      />
-      <Script
-        id="website-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
-      />
-      <Script
-        id="localbusiness-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
-      />
-      <Script
-        id="faq-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-      />
-
       <div className="space-y-0 overflow-hidden">
         {/* Hero section with gradient background */}
         <section className="bg-gradient-to-br from-green1 via-accent2/20 to-green2/40">

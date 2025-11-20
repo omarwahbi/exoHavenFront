@@ -10,7 +10,6 @@ import AddToCartButton from "@/app/Components/AddToCartBtn";
 import Quantity from "@/app/Components/Quantity";
 import Image from "next/image";
 import Link from "next/link";
-import Script from 'next/script';
 import { motion, AnimatePresence } from "framer-motion";
 import Spinner from "@/app/Components/Spinner";
 import { useQuery } from "@tanstack/react-query";
@@ -19,7 +18,6 @@ import { QueryKeys } from "@/utils/queryKeys";
 import { useCart } from "@/app/context/CartContext";
 import { calculateSalePrice, isSaleActive } from "@/utils/saleUtils";
 import { FaTag } from "react-icons/fa";
-import { generateProductSchema, generateBreadcrumbSchema } from "@/utils/seo";
 
 export default function ItemClient({ params }) {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -52,14 +50,6 @@ export default function ItemClient({ params }) {
     queryFn: () => fetchRelatedProducts(categoryId, params.id),
     enabled: !!categoryId && !!params.id
   });
-
-  // Generate structured data for SEO
-  const productSchema = item ? generateProductSchema(item) : null;
-  const breadcrumbSchema = item ? generateBreadcrumbSchema([
-    { name: 'الرئيسية', url: 'https://exohaven-iq.com/' },
-    { name: 'المنتجات', url: 'https://exohaven-iq.com/category' },
-    { name: item.attributes.name, url: `https://exohaven-iq.com/item/${item.id}` }
-  ]) : null;
 
   // Handle image selection and rotation
   useEffect(() => {
@@ -116,24 +106,7 @@ export default function ItemClient({ params }) {
   }
 
   return (
-    <>
-      {/* JSON-LD Structured Data for SEO */}
-      {productSchema && (
-        <Script
-          id={`product-schema-${item?.id}`}
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
-        />
-      )}
-      {breadcrumbSchema && (
-        <Script
-          id={`breadcrumb-schema-${item?.id}`}
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
-        />
-      )}
-
-      <div className="max-w-7xl mx-auto mt-8 mb-14 px-4 md:px-6 lg:px-8">
+    <div className="max-w-7xl mx-auto mt-8 mb-14 px-4 md:px-6 lg:px-8">
         {/* Breadcrumb */}
         <nav className="mb-6 text-sm font-medium" dir="rtl">
           <ol className="flex items-center space-x-1 space-x-reverse">
@@ -447,6 +420,5 @@ export default function ItemClient({ params }) {
           </div>
         )}
       </div>
-    </>
   );
 }
