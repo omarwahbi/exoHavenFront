@@ -3,12 +3,12 @@ import Categories from "./Components/Categories";
 import FeaturedProducts from "./Components/FeaturedProducts";
 import CtaBanner from "./Components/CtaBanner";
 import HeroSection from "./Components/HeroSection";
+import Script from 'next/script';
 import {
   generateOrganizationSchema,
   generateWebSiteSchema,
   generateLocalBusinessSchema,
   generateFAQSchema,
-  renderJSONLD,
 } from "@/utils/seo";
 
 // Enhanced homepage metadata for SEO
@@ -57,24 +57,29 @@ export default function Home() {
   const websiteSchema = generateWebSiteSchema();
   const localBusinessSchema = generateLocalBusinessSchema();
   const faqSchema = generateFAQSchema();
+
   return (
     <>
       {/* JSON-LD Structured Data for SEO */}
-      <script
+      <Script
+        id="organization-schema"
         type="application/ld+json"
-        dangerouslySetInnerHTML={renderJSONLD(organizationSchema)}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
       />
-      <script
+      <Script
+        id="website-schema"
         type="application/ld+json"
-        dangerouslySetInnerHTML={renderJSONLD(websiteSchema)}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
       />
-      <script
+      <Script
+        id="localbusiness-schema"
         type="application/ld+json"
-        dangerouslySetInnerHTML={renderJSONLD(localBusinessSchema)}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
       />
-      <script
+      <Script
+        id="faq-schema"
         type="application/ld+json"
-        dangerouslySetInnerHTML={renderJSONLD(faqSchema)}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
 
       <div className="space-y-0 overflow-hidden">

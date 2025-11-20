@@ -10,6 +10,7 @@ import AddToCartButton from "@/app/Components/AddToCartBtn";
 import Quantity from "@/app/Components/Quantity";
 import Image from "next/image";
 import Link from "next/link";
+import Script from 'next/script';
 import { motion, AnimatePresence } from "framer-motion";
 import Spinner from "@/app/Components/Spinner";
 import { useQuery } from "@tanstack/react-query";
@@ -18,7 +19,7 @@ import { QueryKeys } from "@/utils/queryKeys";
 import { useCart } from "@/app/context/CartContext";
 import { calculateSalePrice, isSaleActive } from "@/utils/saleUtils";
 import { FaTag } from "react-icons/fa";
-import { generateProductSchema, generateBreadcrumbSchema, renderJSONLD } from "@/utils/seo";
+import { generateProductSchema, generateBreadcrumbSchema } from "@/utils/seo";
 
 export default function ItemClient({ params }) {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -118,15 +119,17 @@ export default function ItemClient({ params }) {
     <>
       {/* JSON-LD Structured Data for SEO */}
       {productSchema && (
-        <script
+        <Script
+          id={`product-schema-${item?.id}`}
           type="application/ld+json"
-          dangerouslySetInnerHTML={renderJSONLD(productSchema)}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
         />
       )}
       {breadcrumbSchema && (
-        <script
+        <Script
+          id={`breadcrumb-schema-${item?.id}`}
           type="application/ld+json"
-          dangerouslySetInnerHTML={renderJSONLD(breadcrumbSchema)}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
         />
       )}
 
