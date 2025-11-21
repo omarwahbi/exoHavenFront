@@ -113,15 +113,14 @@ export function generateProductSchema(item) {
   const {
     name,
     description,
-    price,
-    old_price,
-    sale_percentage,
+    state,
     out_of_stock,
     item_thumbnail,
     category,
-    createdAt,
-    updatedAt,
   } = item.attributes;
+
+  // Ensure we have a valid price
+  if (!state || typeof state !== 'number') return null;
 
   // Get image URL
   let imageUrl = `${baseUrl}/icons/icon-512x512.png`; // Default image
@@ -132,10 +131,9 @@ export function generateProductSchema(item) {
       : `${imageKitUrl}${thumbnailUrl}`;
   }
 
-  // Calculate actual price (with sale if applicable)
-  const actualPrice = sale_percentage && old_price
-    ? old_price - (old_price * sale_percentage) / 100
-    : price;
+  // Calculate actual price (10% discount for sale)
+  const regularPrice = state;
+  const salePrice = regularPrice * 0.9;
 
   return {
     '@context': 'https://schema.org',
@@ -154,7 +152,7 @@ export function generateProductSchema(item) {
       '@type': 'Offer',
       url: `${baseUrl}/item/${item.id}`,
       priceCurrency: 'IQD',
-      price: actualPrice || price || 0,
+      price: salePrice,
       priceValidUntil: new Date(
         new Date().setFullYear(new Date().getFullYear() + 1)
       ).toISOString(),
@@ -170,7 +168,7 @@ export function generateProductSchema(item) {
         '@type': 'OfferShippingDetails',
         shippingRate: {
           '@type': 'MonetaryAmount',
-          value: actualPrice >= 50000 ? 0 : 5000,
+          value: salePrice >= 50000 ? 0 : 5000,
           currency: 'IQD',
         },
         shippingDestination: {

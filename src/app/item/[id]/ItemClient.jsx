@@ -88,24 +88,11 @@ export default function ItemClient({ params }) {
     );
   }
 
-  if (error) {
+  if (error || !item) {
     return (
       <div className="flex flex-col justify-center items-center min-h-[50vh] px-4 text-center">
         <div className="text-red-500 text-xl font-medium mb-4">
-          Unable to load product information. Please try again later.
-        </div>
-        <Link href="/category" className="bg-green4 text-white px-6 py-2 rounded-md hover:bg-green3 transition-colors">
-          العودة إلى المنتجات
-        </Link>
-      </div>
-    );
-  }
-
-  if (!item) {
-    return (
-      <div className="flex flex-col justify-center items-center min-h-[50vh] px-4 text-center">
-        <div className="text-yellow-500 text-xl font-medium mb-4">
-          المنتج غير موجود
+          {error ? 'Unable to load product information. Please try again later.' : 'المنتج غير موجود'}
         </div>
         <Link href="/category" className="bg-green4 text-white px-6 py-2 rounded-md hover:bg-green3 transition-colors">
           العودة إلى المنتجات

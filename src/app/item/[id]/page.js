@@ -22,15 +22,19 @@ async function getItem(id) {
 
 // Generate dynamic metadata for each product page
 export async function generateMetadata({ params }) {
+  console.log('[Metadata] Generating metadata for item ID:', params.id);
+
   const item = await getItem(params.id);
 
   if (!item) {
+    console.log('[Metadata] Item not found');
     return {
       title: 'منتج غير موجود | ExoHaven Iraq',
       description: 'المنتج الذي تبحث عنه غير متوفر',
     };
   }
 
+  console.log('[Metadata] Item found:', item.id);
   const { name, description, state, out_of_stock, item_thumbnail, category } = item.attributes;
 
   // Get image URL
@@ -52,6 +56,8 @@ export async function generateMetadata({ params }) {
     ? `${description.substring(0, 150)}... اشتري الآن من ExoHaven مع توصيل مجاني فوق 50,000 دينار. خصم 10% على الطلبات عبر الموقع.`
     : `${name} - متوفر الآن في ExoHaven Iraq. توصيل مجاني للطلبات فوق 50,000 دينار، خصم 10% على الموقع، الدفع عند الاستلام.`;
 
+  console.log('[Metadata] Generated title:', productTitle);
+
   return {
     title: productTitle,
     description: productDescription,
@@ -68,7 +74,7 @@ export async function generateMetadata({ params }) {
     openGraph: {
       title: productTitle,
       description: productDescription,
-      type: 'product',
+      type: 'website', // Changed from 'product' to 'website' - Next.js doesn't support 'product' type
       locale: 'ar_IQ',
       url: `${siteUrl}/item/${params.id}`,
       images: [
