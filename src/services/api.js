@@ -149,20 +149,25 @@ export const fetchCategoryItems = async (categoryId, page = 1, pageSize = 12) =>
       'filters[category][id][$eq]': categoryId,
       'populate': 'item_thumbnail',
       'pagination[page]': page,
-      'pagination[pageSize]': pageSize
+      'pagination[pageSize]': pageSize,
+      'sort[0]': 'new_arrival:desc',
+      'sort[1]': 'out_of_stock:asc',
+      'sort[2]': 'createdAt:desc'
     }
   });
   return data.data || [];
 };
 
-export const fetchSubCategoryItems = async (subCategoryId, page = 1, pageSize = 12, sortBy = 'createdAt:desc') => {
+export const fetchSubCategoryItems = async (subCategoryId, page = 1, pageSize = 12, sortBy = null) => {
   const { data } = await api.get('/api/items', {
     params: {
       'filters[sub_category][id][$eq]': subCategoryId,
       'populate': '*',
       'pagination[page]': page,
       'pagination[pageSize]': pageSize,
-      'sort': sortBy
+      'sort[0]': 'new_arrival:desc',
+      'sort[1]': 'out_of_stock:asc',
+      'sort[2]': sortBy || 'createdAt:desc'
     }
   });
   return data;
@@ -184,7 +189,9 @@ export const fetchFeaturedProducts = async (limit = 4, sort = null) => {
     params: {
       'populate': '*',
       'pagination[limit]': limit,
-      ...(sort && { 'sort': sort })
+      'sort[0]': 'new_arrival:desc',
+      'sort[1]': 'out_of_stock:asc',
+      'sort[2]': sort || 'createdAt:desc'
     }
   });
   return data.data;
@@ -207,7 +214,10 @@ export const fetchRelatedProducts = async (categoryId, currentItemId, limit = 4)
       'filters[category][id][$eq]': categoryId,
       'filters[id][$ne]': currentItemId,
       'populate': 'item_thumbnail',
-      'pagination[limit]': limit
+      'pagination[limit]': limit,
+      'sort[0]': 'new_arrival:desc',
+      'sort[1]': 'out_of_stock:asc',
+      'sort[2]': 'createdAt:desc'
     }
   });
   return data.data;

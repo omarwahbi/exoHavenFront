@@ -51,7 +51,9 @@ const fetchCategoryItems = async ({ pageParam = 1, categoryId, searchQuery }) =>
       sub_category: {
         fields: ['name']
       }
-    }
+    },
+    // Sort: new items first, out of stock at bottom, then by creation date
+    sort: ['new_arrival:desc', 'out_of_stock:asc', 'createdAt:desc']
   };
 
   if (categoryId) {
