@@ -31,6 +31,7 @@ const Cart = () => {
   const [deliveryLocation, setDeliveryLocation] = useState('baghdad'); // 'baghdad' or 'other'
   const [userAddress, setUserAddress] = useState(''); // User's custom address
   const [addressError, setAddressError] = useState(false); // Track if address is required but empty
+  const [orderNote, setOrderNote] = useState(''); // Optional note from user
   
   // Constants
   const BAGHDAD_DELIVERY_FEE = 5000;
@@ -148,7 +149,10 @@ const Cart = () => {
     // Include address in the message
     const addressLine = userAddress ? `\nعنوان التوصيل: ${userAddress}` : '';
 
-    return `${itemDetails}\n\nإجمالي السلة: ${subtotal.toLocaleString()} IQD\nرسوم التوصيل: ${deliveryText}\nالمجموع الكلي: ${grandTotal.toLocaleString()} IQD${addressLine}`;
+    // Include note if provided
+    const noteLine = orderNote.trim() ? `\n\nملاحظة: ${orderNote.trim()}` : '';
+
+    return `${itemDetails}\n\nإجمالي السلة: ${subtotal.toLocaleString()} IQD\nرسوم التوصيل: ${deliveryText}\nالمجموع الكلي: ${grandTotal.toLocaleString()} IQD${addressLine}${noteLine}`;
   };
 
   const itemsToMessage = getItemNamesWithQuantities(cart);
@@ -595,6 +599,22 @@ const Cart = () => {
                           ) : (
                             <p className="text-xs text-gray-500 mt-1.5">مثال: المحافظة-المدينة-الحي أو الشارع</p>
                           )}
+                        </div>
+
+                        {/* Order note field */}
+                        <div className="mt-3">
+                          <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                            ملاحظة إضافية (اختياري)
+                          </label>
+                          <textarea
+                            value={orderNote}
+                            onChange={(e) => setOrderNote(e.target.value)}
+                            placeholder="أضف أي ملاحظة إضافية"
+                            className="w-full px-3 py-2.5 text-sm border-2 border-gray-300 rounded-lg focus:outline-none focus:border-green4 focus:ring-2 focus:ring-green4/30 transition-colors bg-white text-gray-900 resize-none"
+                            dir="rtl"
+                            rows="3"
+                          />
+                          <p className="text-xs text-gray-500 mt-1.5">مثال: أفضل وقت للتوصيل، تعليمات خاصة، إلخ.</p>
                         </div>
                       </div>
                       
