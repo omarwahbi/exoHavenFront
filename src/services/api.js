@@ -8,77 +8,6 @@ const api = axios.create({
   },
 });
 
-// Track cancellation tokens to allow cancelling in-flight requests
-const pendingRequests = new Map();
-
-// Add request ID to enable deduplication of in-flight requests
-api.interceptors.request.use(request => {
-  // Create a unique request ID based on the URL and params
-  const url = request.url;
-  const params = request.params ? JSON.stringify(request.params) : '';
-  request.id = `${url}|${params}`;
-  
-  // Create a cancellation token
-  const source = axios.CancelToken.source();
-  request.cancelToken = source.token;
-  
-  // Store the cancel function so we can cancel it if needed
-  pendingRequests.set(request.id, source);
-  
-  return request;
-});
-
-// Request interceptor for deduplication
-api.interceptors.request.use(
-  (config) => {
-    const requestId = config.id;
-    
-    // Check if we already have an ongoing request with the same ID
-    if (pendingRequests.has(requestId)) {
-      // Get the current cancelation source
-      const currentSource = pendingRequests.get(requestId);
-      
-      // If this is a duplicate, but we want to make a fresh request,
-      // cancel the previous one and continue with the new one
-      if (config.fresh === true) {
-        currentSource.cancel('Canceled due to duplicate request');
-        pendingRequests.delete(requestId);
-      } else {
-        // Use the existing promise to avoid duplicate request
-        return {
-          ...config,
-          adapter: () => currentSource.__promise,
-        };
-      }
-    }
-
-    // Store the original adapter from the config
-    const originalAdapter = config.adapter;
-    
-    // Only modify the adapter if we have a valid one
-    if (typeof originalAdapter === 'function') {
-      config.adapter = (adapterConfig) => {
-        const promise = originalAdapter(adapterConfig);
-        
-        // Store the promise with the source so we can reuse it
-        if (pendingRequests.has(requestId)) {
-          pendingRequests.get(requestId).__promise = promise;
-        }
-
-        // Clean up after the request is completed
-        promise.finally(() => {
-          pendingRequests.delete(requestId);
-        });
-
-        return promise;
-      };
-    }
-
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
-
 // Response interceptor for error handling
 api.interceptors.response.use(
   (response) => response,
@@ -93,14 +22,6 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
-// Helper function to cancel all pending requests (useful when navigating)
-export const cancelAllRequests = () => {
-  pendingRequests.forEach((source) => {
-    source.cancel('Request cancelled due to navigation');
-  });
-  pendingRequests.clear();
-};
 
 // Categories
 export const fetchCategories = async () => {

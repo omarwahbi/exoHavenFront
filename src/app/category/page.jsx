@@ -15,7 +15,6 @@ import { useCart } from "../context/CartContext";
 import { fetchCategories } from "@/services/api";
 import api from "@/services/api";
 import { QueryKeys } from "@/utils/queryKeys";
-import { cancelAllRequests } from "@/services/api";
 import { isSaleActive, calculateSalePrice } from "@/utils/saleUtils";
 import SaleBanner from "../Components/SaleBanner";
 
@@ -282,14 +281,6 @@ const Category = ({ params }) => {
       dispatch({ type: "DECREASE_QUANTITY", payload: { id: itemId } });
     }
   };
-
-  // Cancel all pending requests when unmounting the component
-  useEffect(() => {
-    return () => {
-      // Cancel all pending API requests when leaving the page
-      cancelAllRequests();
-    };
-  }, []);
 
   if (isLoading) {
     return (
