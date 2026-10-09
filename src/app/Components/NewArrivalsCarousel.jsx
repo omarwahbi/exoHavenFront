@@ -1,9 +1,9 @@
 "use client";
-import React from "react";
+import React, { useMemo, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { FaArrowLeft, FaEye, FaTag } from "react-icons/fa";
+import { FaArrowLeft, FaChevronLeft, FaChevronRight, FaEye, FaTag } from "react-icons/fa";
 import Spinner from "./Spinner";
 import { useQuery } from "@tanstack/react-query";
 import { fetchNewArrivals } from "@/services/api";
@@ -17,6 +17,10 @@ import 'swiper/css/effect-coverflow';
 // Import required modules
 import { Autoplay, EffectCoverflow } from 'swiper/modules';
 
+// Swiper's loop mode needs at least twice the visible slides (5 on wide screens),
+// otherwise it silently disables the loop and leaves empty space beside the first slide.
+const MIN_LOOP_SLIDES = 12;
+
 export default function NewArrivalsCarousel() {
   // Fetch new arrivals using React Query
   const { 
@@ -27,6 +31,17 @@ export default function NewArrivalsCarousel() {
     queryKey: [QueryKeys.newArrivals],
     queryFn: () => fetchNewArrivals(6)
   });
+
+  const swiperRef = useRef(null);
+
+  // Repeat the products until there are enough slides for the loop to work.
+  const slides = useMemo(() => {
+    if (!images.length) return [];
+    const copies = Math.ceil(MIN_LOOP_SLIDES / images.length);
+    return Array.from({ length: copies }, (_, copy) =>
+      images.map((img) => ({ img, key: `${img.id}-${copy}` }))
+    ).flat();
+  }, [images]);
 
   return (
     <motion.div
@@ -79,6 +94,9 @@ export default function NewArrivalsCarousel() {
             transition={{ duration: 0.5, delay: 0.1 }}
           >
             <Swiper
+              onSwiper={(swiper) => {
+                swiperRef.current = swiper;
+              }}
               effect={'coverflow'}
               grabCursor={true}
               centeredSlides={true}
@@ -123,8 +141,8 @@ export default function NewArrivalsCarousel() {
                 },
               }}
             >
-              {images.map((img) => (
-                <SwiperSlide key={img.id} className="w-[260px] md:w-[240px] h-auto">
+              {slides.map(({ img, key }) => (
+                <SwiperSlide key={key} className="w-[260px] md:w-[240px] h-auto">
                   <div className="overflow-hidden rounded-lg bg-white shadow-md h-full transform transition-all duration-300 border border-gray-100">
                     <Link 
                       className="group block"
@@ -187,6 +205,24 @@ export default function NewArrivalsCarousel() {
                 </SwiperSlide>
               ))}
             </Swiper>
+
+            {/* The page is RTL: the right arrow goes back, the left arrow goes forward */}
+            <button
+              type="button"
+              aria-label="المنتج السابق"
+              onClick={() => swiperRef.current?.slidePrev()}
+              className="absolute right-0 md:-right-2 top-1/2 -translate-y-1/2 z-10 flex h-9 w-9 md:h-10 md:w-10 items-center justify-center rounded-full bg-white/90 text-green4 shadow-md border border-gray-100 hover:bg-green4 hover:text-white transition-colors duration-300"
+            >
+              <FaChevronRight className="text-sm" />
+            </button>
+            <button
+              type="button"
+              aria-label="المنتج التالي"
+              onClick={() => swiperRef.current?.slideNext()}
+              className="absolute left-0 md:-left-2 top-1/2 -translate-y-1/2 z-10 flex h-9 w-9 md:h-10 md:w-10 items-center justify-center rounded-full bg-white/90 text-green4 shadow-md border border-gray-100 hover:bg-green4 hover:text-white transition-colors duration-300"
+            >
+              <FaChevronLeft className="text-sm" />
+            </button>
           </motion.div>
         </div>
       ) : (
