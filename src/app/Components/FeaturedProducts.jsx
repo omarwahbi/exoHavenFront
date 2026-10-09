@@ -9,6 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchFeaturedProducts } from "@/services/api";
 import { QueryKeys } from "@/utils/queryKeys";
 import { calculateSalePrice, isSaleActive } from "@/utils/saleUtils";
+import { itemImageUrl } from "@/utils/media";
 
 const FeaturedProducts = () => {
   // Fetch featured products using React Query
@@ -98,7 +99,7 @@ const FeaturedProducts = () => {
                   <div className="relative">
                     <div className="aspect-square overflow-hidden bg-gradient-to-br from-gray-50 to-white">
                       <Image
-                        src={product.attributes.item_thumbnail.data.attributes.url}
+                        src={itemImageUrl(product.attributes)}
                         alt={product.attributes.name}
                         width={400}
                         height={400}

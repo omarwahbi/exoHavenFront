@@ -16,6 +16,7 @@ import 'swiper/css';
 import 'swiper/css/effect-coverflow';
 // Import required modules
 import { Autoplay, EffectCoverflow } from 'swiper/modules';
+import { itemImageUrl } from "@/utils/media";
 
 const NEW_ARRIVALS_LIMIT = 12;
 
@@ -166,7 +167,7 @@ export default function NewArrivalsCarousel() {
                     >
                       <div className="relative aspect-[4/3] overflow-hidden">
                         <Image
-                          src={img.attributes.item_thumbnail.data.attributes.url}
+                          src={itemImageUrl(img.attributes)}
                           fill
                           sizes="(max-width: 640px) 80vw, 240px"
                           alt={img.attributes.name}

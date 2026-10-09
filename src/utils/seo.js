@@ -1,5 +1,7 @@
 // SEO Utility Functions - JSON-LD Structured Data Generators
 
+import { mediaUrl } from './media';
+
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://exohaven-iq.com';
 const imageKitUrl = 'https://ik.imagekit.io/5a72nvbtu';
 
@@ -115,7 +117,6 @@ export function generateProductSchema(item) {
     description,
     state,
     out_of_stock,
-    item_thumbnail,
     category,
   } = item.attributes;
 
@@ -124,8 +125,8 @@ export function generateProductSchema(item) {
 
   // Get image URL
   let imageUrl = `${baseUrl}/icons/icon-512x512.png`; // Default image
-  if (item_thumbnail?.data?.attributes?.url) {
-    const thumbnailUrl = item_thumbnail.data.attributes.url;
+  const thumbnailUrl = mediaUrl(item.attributes.item_thumbnail) || mediaUrl(item.attributes.item_images);
+  if (thumbnailUrl) {
     imageUrl = thumbnailUrl.startsWith('http')
       ? thumbnailUrl
       : `${imageKitUrl}${thumbnailUrl}`;

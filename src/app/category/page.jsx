@@ -12,6 +12,7 @@ import api from "@/services/api";
 import { QueryKeys } from "@/utils/queryKeys";
 import { isSaleActive, calculateSalePrice } from "@/utils/saleUtils";
 import SaleBanner from "../Components/SaleBanner";
+import { itemImageUrl } from "@/utils/media";
 
 const fetchCategoryItems = async ({ pageParam = 1, categoryId, searchQuery, signal }) => {
   const params = {
@@ -25,6 +26,10 @@ const fetchCategoryItems = async ({ pageParam = 1, categoryId, searchQuery, sign
     populate: {
       item_thumbnail: {
         fields: ['name', 'url', 'width', 'height', 'formats']
+      },
+      // Fallback image for items saved without a thumbnail
+      item_images: {
+        fields: ['url']
       },
       category: {
         fields: ['name']
@@ -588,7 +593,7 @@ const Category = () => {
                       <div className="group bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 h-full flex flex-col">
                         <Link href={`/item/${item.id}`} className="block relative pt-[100%]">
                           <Image
-                            src={item.attributes.item_thumbnail.data.attributes.url}
+                            src={itemImageUrl(item.attributes)}
                             alt={item.attributes.name}
                             fill
                             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
@@ -696,7 +701,7 @@ const Category = () => {
                       <div className="flex flex-row h-full">
                         <Link href={`/item/${item.id}`} className="relative w-1/3 sm:w-1/4">
                           <Image
-                            src={item.attributes.item_thumbnail.data.attributes.url}
+                            src={itemImageUrl(item.attributes)}
                             alt={item.attributes.name}
                             width={200}
                             height={200}

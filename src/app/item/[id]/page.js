@@ -2,6 +2,7 @@
 import ItemClient from './ItemClient';
 import axios from 'axios';
 import { API_URL as apiUrl } from '@/services/api';
+import { mediaUrl } from '@/utils/media';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://exohaven-iq.com';
 
@@ -36,12 +37,12 @@ export async function generateMetadata(props) {
   }
 
   console.log('[Metadata] Item found:', item.id);
-  const { name, description, state, out_of_stock, item_thumbnail, category } = item.attributes;
+  const { name, description, state, out_of_stock, category } = item.attributes;
 
   // Get image URL
   let imageUrl = `${siteUrl}/og-image.png`;
-  if (item_thumbnail?.data?.attributes?.url) {
-    const thumbnailUrl = item_thumbnail.data.attributes.url;
+  const thumbnailUrl = mediaUrl(item.attributes.item_thumbnail) || mediaUrl(item.attributes.item_images);
+  if (thumbnailUrl) {
     imageUrl = thumbnailUrl.startsWith('http')
       ? thumbnailUrl
       : `https://ik.imagekit.io/5a72nvbtu${thumbnailUrl}`;

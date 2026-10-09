@@ -10,6 +10,7 @@ import Spinner from "../Components/Spinner";
 import { fetchNewArrivals } from "@/services/api";
 import { QueryKeys } from "@/utils/queryKeys";
 import { isSaleActive, calculateSalePrice } from "@/utils/saleUtils";
+import { itemImageUrl } from "@/utils/media";
 
 export default function ItemsPage() {
   const searchParams = useSearchParams();
@@ -112,7 +113,7 @@ export default function ItemsPage() {
                   <div className="group bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 h-full flex flex-col">
                     <Link href={`/item/${item.id}`} className="block relative pt-[100%]">
                       <Image
-                        src={item.attributes.item_thumbnail.data.attributes.url}
+                        src={itemImageUrl(item.attributes)}
                         alt={item.attributes.name}
                         fill
                         sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"

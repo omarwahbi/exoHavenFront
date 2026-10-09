@@ -14,6 +14,7 @@ import { useCart } from "@/app/context/CartContext";
 import { calculateSalePrice, isSaleActive } from "@/utils/saleUtils";
 import { FaTag } from "react-icons/fa";
 import { generateProductSchema, generateBreadcrumbSchema, renderJSONLD } from "@/utils/seo";
+import { itemImageUrl, mediaUrl } from "@/utils/media";
 
 export default function ItemClient({ params }) {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -177,7 +178,7 @@ export default function ItemClient({ params }) {
                             className="absolute inset-0"
                           >
                             <Image
-                              src={selectedImage || (itemImgs && itemImgs[0]?.attributes.url)}
+                              src={selectedImage || mediaUrl(item?.attributes?.item_images) || itemImageUrl(item?.attributes)}
                               fill
                               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                               className="object-contain p-4"
@@ -377,7 +378,7 @@ export default function ItemClient({ params }) {
                   <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 h-full flex flex-col">
                     <div className="relative pt-[100%]">
                       <Image
-                        src={product.attributes.item_thumbnail.data.attributes.url}
+                        src={itemImageUrl(product.attributes)}
                         alt={product.attributes.name}
                         fill
                         sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 20vw"
