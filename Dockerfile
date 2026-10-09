@@ -22,7 +22,7 @@
 # # Start the Next.js application
 # CMD ["npm", "start"]
 # Stage 1: Build
-FROM node:18-alpine AS build
+FROM node:22-alpine AS build
 
 # Set working directory
 WORKDIR /opt/app
@@ -31,7 +31,7 @@ WORKDIR /opt/app
 COPY package.json package-lock.json ./
 
 # Install dependencies
-RUN npm install
+RUN npm ci
 
 # Copy all files
 COPY . .
@@ -44,7 +44,7 @@ ENV NODE_ENV=production
 RUN npm run build
 
 # Stage 2: Production
-FROM node:18-alpine AS production
+FROM node:22-alpine AS production
 
 # Set working directory
 WORKDIR /opt/app

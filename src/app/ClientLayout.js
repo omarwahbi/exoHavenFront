@@ -19,7 +19,7 @@ const ClientLayout = ({ children }) => {
         refetchOnReconnect: false,  // Don't refetch when reconnecting if data is fresh
         retry: 1,
         staleTime: 10 * 60 * 1000,  // 10 minutes (increased from 5 minutes)
-        cacheTime: 30 * 60 * 1000,  // Keep data in cache for 30 minutes
+        gcTime: 30 * 60 * 1000,      // Keep data in cache for 30 minutes
       },
     },
   }));

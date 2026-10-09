@@ -1,6 +1,5 @@
 import React from "react";
 import { FaFacebook, FaTwitter, FaInstagram, FaTiktok, FaEnvelope, FaPhone, FaWhatsapp, FaMapMarkerAlt } from "react-icons/fa";
-import { Metadata } from "next";
 
 export const metadata = {
   title: "تواصل معنا",

@@ -1,8 +1,8 @@
 // Server Component for dynamic metadata generation
 import ItemClient from './ItemClient';
 import axios from 'axios';
+import { API_URL as apiUrl } from '@/services/api';
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://admin.exohaven-iq.com';
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://exohaven-iq.com';
 
 // Fetch item data for metadata generation (server-side)
@@ -21,7 +21,8 @@ async function getItem(id) {
 }
 
 // Generate dynamic metadata for each product page
-export async function generateMetadata({ params }) {
+export async function generateMetadata(props) {
+  const params = await props.params;
   console.log('[Metadata] Generating metadata for item ID:', params.id);
 
   const item = await getItem(params.id);
@@ -106,6 +107,7 @@ export async function generateMetadata({ params }) {
 }
 
 // Main page component (server component)
-export default function ItemPage({ params }) {
+export default async function ItemPage(props) {
+  const params = await props.params;
   return <ItemClient params={params} />;
 }

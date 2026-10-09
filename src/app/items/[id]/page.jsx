@@ -55,6 +55,8 @@ const Items = () => {
     }
   }, [subcategoryData]);
 
+  const categoryId = subcategoryData?.data?.attributes?.category?.data?.id;
+
   const fetchItems = async ({ pageParam = 1 }) => {
     let sortQuery = "";
     
@@ -163,7 +165,7 @@ const Items = () => {
           <span className="mx-2 text-gray-400">/</span>
           {categoryName && (
             <>
-              <Link href="/categories" className="text-gray-500 hover:text-green4">
+              <Link href={categoryId ? `/subCategory/${categoryId}` : "/category"} className="text-gray-500 hover:text-green4">
                 {categoryName}
               </Link>
               <span className="mx-2 text-gray-400">/</span>

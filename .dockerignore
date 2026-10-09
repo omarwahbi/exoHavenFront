@@ -5,3 +5,9 @@ build/
 node_modules/
 data/
 backup/
+.next/
+.env
+.env*.local
+public/sw.js
+public/sw.js.map
+public/swe-worker-*.js

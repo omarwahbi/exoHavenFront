@@ -1,11 +1,6 @@
 "use client";
 import React, { useState, useEffect, useMemo } from "react";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import SupportAgentIcon from "@mui/icons-material/SupportAgent";
-import Inventory2Icon from "@mui/icons-material/Inventory2";
-import LocalShippingIcon from '@mui/icons-material/LocalShipping';
-import ShieldIcon from '@mui/icons-material/Shield';
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import { MdCheckCircle, MdSupportAgent, MdLocalShipping, MdShield, MdShoppingCart } from "react-icons/md";
 import AddToCartButton from "@/app/Components/AddToCartBtn";
 import Quantity from "@/app/Components/Quantity";
 import Image from "next/image";
@@ -304,16 +299,16 @@ export default function ItemClient({ params }) {
                 {/* Features */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                   <div className="flex items-center">
-                    <CheckCircleIcon className="ml-2 text-green-500" />
+                    <MdCheckCircle size={24} className="shrink-0 ml-2 text-green-500" />
                     <span className="text-gray-700">منتج ذو جودة عالية</span>
                   </div>
 
                   <div className="flex items-center">
-                    <LocalShippingIcon className="ml-2 text-blue-500" />
+                    <MdLocalShipping size={24} className="shrink-0 ml-2 text-blue-500" />
                     <span className="text-gray-700">توصيل سريع وآمن</span>
                   </div>
                   <div className="flex items-center">
-                    <SupportAgentIcon className="ml-2 text-red-500" />
+                    <MdSupportAgent size={24} className="shrink-0 ml-2 text-red-500" />
                     <span className="text-gray-700">خدمة عملاء متميزة</span>
                   </div>
                 </div>
@@ -348,7 +343,7 @@ export default function ItemClient({ params }) {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.3 }}
                           >
-                            <ShoppingCartIcon fontSize="small" />
+                            <MdShoppingCart size={20} className="shrink-0" />
                             <span>عرض السلة</span>
                           </motion.div>
                         </Link>
@@ -359,7 +354,7 @@ export default function ItemClient({ params }) {
                   {/* Extra Info */}
                   <div className="bg-gray-50 rounded-lg p-4 mt-2">
                     <div className="flex items-start">
-                      <ShieldIcon className="text-gray-500 ml-3 mt-1" fontSize="small" />
+                      <MdShield className="shrink-0 text-gray-500 ml-3 mt-1" size={20} />
                       <div className="text-sm text-gray-700">
                         <p className="font-medium mb-1">معلومات إضافية</p>
                         <p>الدفع عند الاستلام متاح في بغداد والمحافظات</p>

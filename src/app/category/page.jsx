@@ -2,12 +2,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState, useEffect, useMemo } from "react";
-import {
-  useInfiniteQuery,
-  QueryClient,
-  QueryClientProvider,
-  useQuery,
-} from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import Spinner from "../Components/Spinner";
 import { motion } from "framer-motion";
 import { FaSearch, FaFilter, FaShoppingCart, FaEye, FaPlus, FaMinus, FaCheck, FaTag } from "react-icons/fa";
@@ -15,24 +10,10 @@ import { useCart } from "../context/CartContext";
 import { fetchCategories } from "@/services/api";
 import api from "@/services/api";
 import { QueryKeys } from "@/utils/queryKeys";
-import { cancelAllRequests } from "@/services/api";
 import { isSaleActive, calculateSalePrice } from "@/utils/saleUtils";
 import SaleBanner from "../Components/SaleBanner";
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      // Prevent unnecessary refetches when navigating back
-      staleTime: 1000 * 60 * 10, // 10 minutes
-      cacheTime: 1000 * 60 * 30, // 30 minutes
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
-      refetchOnReconnect: false,
-    },
-  },
-});
-
-const fetchCategoryItems = async ({ pageParam = 1, categoryId, searchQuery }) => {
+const fetchCategoryItems = async ({ pageParam = 1, categoryId, searchQuery, signal }) => {
   const params = {
     pagination: {
       page: pageParam,
@@ -71,7 +52,7 @@ const fetchCategoryItems = async ({ pageParam = 1, categoryId, searchQuery }) =>
   }
 
   try {
-    const data = await api.get('/api/items', { params });
+    const data = await api.get('/api/items', { params, signal });
     return {
       items: data.data.data,
       nextPage: pageParam + 1,
@@ -79,21 +60,12 @@ const fetchCategoryItems = async ({ pageParam = 1, categoryId, searchQuery }) =>
       total: data.data.meta.pagination.total,
     };
   } catch (error) {
-    // Don't log cancelled requests as errors since they are expected during navigation
-    if (error.cancelled) {
-      return {
-        items: [],
-        nextPage: pageParam,
-        hasMore: false,
-        total: 0,
-      };
-    }
     console.error("Error fetching items:", error);
     throw error;
   }
 };
 
-const Category = ({ params }) => {
+const Category = () => {
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   const [searchInputValue, setSearchInputValue] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -125,9 +97,10 @@ const Category = ({ params }) => {
     refetch
   } = useInfiniteQuery({
     queryKey: queryKey,
-    queryFn: ({ pageParam = 1 }) =>
+    queryFn: ({ pageParam = 1, signal }) =>
       fetchCategoryItems({ 
         pageParam, 
+        signal,
         categoryId: selectedCategoryId,
         searchQuery
       }),
@@ -282,14 +255,6 @@ const Category = ({ params }) => {
       dispatch({ type: "DECREASE_QUANTITY", payload: { id: itemId } });
     }
   };
-
-  // Cancel all pending requests when unmounting the component
-  useEffect(() => {
-    return () => {
-      // Cancel all pending API requests when leaving the page
-      cancelAllRequests();
-    };
-  }, []);
 
   if (isLoading) {
     return (
@@ -861,10 +826,6 @@ const Category = ({ params }) => {
   );
 };
 
-export default function CategoryPage({ params }) {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <Category params={params} />
-    </QueryClientProvider>
-  );
+export default function CategoryPage() {
+  return <Category />;
 }

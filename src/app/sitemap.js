@@ -1,8 +1,8 @@
 // sitemap.js - Dynamic sitemap generation for SEO
 import axios from 'axios';
+import { API_URL as apiUrl } from '@/services/api';
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://exohaven-iq.com';
-const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://admin.exohaven-iq.com';
 
 async function fetchAllCategories() {
   try {
@@ -80,9 +80,9 @@ export default async function sitemap() {
     fetchAllItems(),
   ]);
 
-  // Generate category pages (if you have individual category pages)
+  // Category pages: /subCategory/[id] lists a category's subcategories
   const categoryPages = categories.map((category) => ({
-    url: `${baseUrl}/category/${category.id}`,
+    url: `${baseUrl}/subCategory/${category.id}`,
     lastModified: category.attributes?.updatedAt
       ? new Date(category.attributes.updatedAt)
       : new Date(),
@@ -90,9 +90,9 @@ export default async function sitemap() {
     priority: 0.8,
   }));
 
-  // Generate subcategory pages
+  // Subcategory pages: /items/[id] lists a subcategory's products
   const subCategoryPages = subCategories.map((subCategory) => ({
-    url: `${baseUrl}/subCategory/${subCategory.id}`,
+    url: `${baseUrl}/items/${subCategory.id}`,
     lastModified: subCategory.attributes?.updatedAt
       ? new Date(subCategory.attributes.updatedAt)
       : new Date(),

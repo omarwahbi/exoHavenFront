@@ -13,7 +13,7 @@
 
 // export default nextConfig;
 
-import withPWA from "next-pwa";
+import withSerwistInit from "@serwist/next";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -27,16 +27,16 @@ const nextConfig = {
     ],
   },
   reactStrictMode: true, // Enable React strict mode for improved error handling
-  swcMinify: true, // Enable SWC minification for improved performance
   compiler: {
     removeConsole: process.env.NODE_ENV !== "development", // Remove console.log in production
   },
   output: 'standalone', // Enable standalone output for Docker deployment
 };
 
-export default withPWA({
-  dest: "public", // destination directory for the PWA files
+const withSerwist = withSerwistInit({
+  swSrc: "src/app/sw.js", // service worker source
+  swDest: "public/sw.js", // compiled service worker, registered at /sw.js
   disable: process.env.NODE_ENV === "development", // disable PWA in the development environment
-  register: true, // register the PWA service worker
-  skipWaiting: true, // skip waiting for service worker activation
-})(nextConfig);
+});
+
+export default withSerwist(nextConfig);

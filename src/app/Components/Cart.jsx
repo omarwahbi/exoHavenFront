@@ -5,15 +5,10 @@ import useCartActions from "../context/cartActions";
 import ContinueOnWhatsApp from "./ContinueOnWhatsapp";
 import Link from "next/link";
 import Image from "next/image";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
-import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
-import LocalShippingIcon from '@mui/icons-material/LocalShipping';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import { MdShoppingCart, MdKeyboardBackspace, MdShoppingBag, MdLocalShipping, MdDeleteOutline, MdLocationOn } from "react-icons/md";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaTrash, FaPlus, FaMinus } from "react-icons/fa";
 import Spinner from "./Spinner";
-import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { useQuery } from "@tanstack/react-query";
 import { fetchSuggestedItems } from "@/services/api";
 import { QueryKeys } from "@/utils/queryKeys";
@@ -301,13 +296,13 @@ const Cart = () => {
       <div className="mx-auto max-w-screen-xl px-4 md:px-6 lg:px-8">
         <div dir="rtl" className="flex flex-wrap items-center justify-between mb-8 gap-4">
           <div className="flex items-center">
-            <ShoppingCartIcon className="me-4 text-green4" fontSize="medium" />
+            <MdShoppingCart className="shrink-0 me-4 text-green4" size={24} />
             <h1 className="text-2xl font-semibold text-gray-800 sm:text-3xl">
               عربة التسوق
             </h1>
           </div>
           <Link href="/category" className="inline-flex items-center text-green4 hover:text-green3 transition-colors">
-            <KeyboardBackspaceIcon className="ml-1" fontSize="small" />
+            <MdKeyboardBackspace className="shrink-0 ml-1" size={20} />
             <span>العودة إلى المنتجات</span>
           </Link>
         </div>
@@ -320,7 +315,7 @@ const Cart = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              <ShoppingBagIcon className="mb-6 text-gray-300" style={{ fontSize: '5rem' }} />
+              <MdShoppingBag className="shrink-0 mb-6 text-gray-300" size="5rem" />
               <h2 className="text-xl md:text-2xl font-medium text-gray-600 mb-4">عربة التسوق فارغة!</h2>
               <p className="text-gray-500 mb-8 text-center">قم بإضافة بعض المنتجات لتظهر هنا</p>
               <Link href="/category">
@@ -329,7 +324,7 @@ const Cart = () => {
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  <ShoppingCartIcon className="ml-2" fontSize="small" />
+                  <MdShoppingCart className="shrink-0 ml-2" size={20} />
                   تصفح المنتجات
                 </motion.button>
               </Link>
@@ -359,7 +354,7 @@ const Cart = () => {
                   {/* Free delivery notice */}
                   <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
                     <div className="flex items-center" dir="rtl">
-                      <LocalShippingIcon className="text-green4 ml-2" />
+                      <MdLocalShipping size={24} className="shrink-0 text-green4 ml-2" />
                       <p className="text-sm text-gray-800">
                         {totalState >= FREE_DELIVERY_THRESHOLD ? (
                           <span className="font-medium">تهانينا! لقد حصلت على توصيل مجاني في جميع أنحاء العراق!</span>
@@ -476,12 +471,12 @@ const Cart = () => {
                               {deleteConfirm === item.id ? (
                                 <>
                                   <span className="mr-1 text-xs">تأكيد</span>
-                                  <DeleteOutlineIcon fontSize="small" />
+                                  <MdDeleteOutline size={20} className="shrink-0" />
                                 </>
                               ) : (
                                 <>
                                   <span className="mr-1 text-xs">حذف</span>
-                                  <DeleteOutlineIcon fontSize="small" />
+                                  <MdDeleteOutline size={20} className="shrink-0" />
                                 </>
                               )}
                             </motion.button>
@@ -541,7 +536,7 @@ const Cart = () => {
                       {/* Delivery location selector */}
                       <div className="bg-gray-50 p-3 rounded-lg">
                         <div className="flex items-center mb-2">
-                          <LocationOnIcon className="ml-1 text-green4" fontSize="small" />
+                          <MdLocationOn className="shrink-0 ml-1 text-green4" size={20} />
                           <p className="text-sm font-medium text-gray-700">موقع التوصيل</p>
                         </div>
                         <div className="flex items-center space-x-4 space-x-reverse mb-3">
@@ -620,7 +615,7 @@ const Cart = () => {
                       
                       <div className="flex items-center justify-between pt-2 text-green4">
                         <div className="flex items-center">
-                          <LocalShippingIcon className="ml-2" fontSize="small" />
+                          <MdLocalShipping className="shrink-0 ml-2" size={20} />
                           <p className="text-sm">
                             {totalState >= FREE_DELIVERY_THRESHOLD 
                               ? 'رسوم التوصيل' 
