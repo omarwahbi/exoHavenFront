@@ -18,6 +18,7 @@ const Items = () => {
   const observerRef = useRef(null);
   const [sortBy, setSortBy] = useState("newest");
   const [categoryName, setCategoryName] = useState("");
+  const [categoryId, setCategoryId] = useState(null);
   const [subcategoryName, setSubcategoryName] = useState("");
   const { cart, dispatch } = useCart();
 
@@ -52,6 +53,7 @@ const Items = () => {
     if (subcategoryData?.data) {
       setSubcategoryName(subcategoryData.data.attributes.name || "");
       setCategoryName(subcategoryData.data.attributes.category?.data?.attributes?.name || "");
+      setCategoryId(subcategoryData.data.attributes.category?.data?.id ?? null);
     }
   }, [subcategoryData]);
 
@@ -163,7 +165,7 @@ const Items = () => {
           <span className="mx-2 text-gray-400">/</span>
           {categoryName && (
             <>
-              <Link href="/categories" className="text-gray-500 hover:text-green4">
+              <Link href={categoryId ? `/subCategory/${categoryId}` : "/category"} className="text-gray-500 hover:text-green4">
                 {categoryName}
               </Link>
               <span className="mx-2 text-gray-400">/</span>
