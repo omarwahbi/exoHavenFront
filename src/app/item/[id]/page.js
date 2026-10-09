@@ -1,8 +1,8 @@
 // Server Component for dynamic metadata generation
 import ItemClient from './ItemClient';
 import axios from 'axios';
+import { API_URL as apiUrl } from '@/services/api';
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://admin.exohaven-iq.com';
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://exohaven-iq.com';
 
 // Fetch item data for metadata generation (server-side)

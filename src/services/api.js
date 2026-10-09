@@ -1,8 +1,10 @@
 import axios from 'axios';
 
+export const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://admin.exohaven-iq.com';
+
 // Create axios instance with default config and improved caching
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'https://admin.exohaven-iq.com',
+  baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
   },

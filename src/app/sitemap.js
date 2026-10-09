@@ -1,8 +1,8 @@
 // sitemap.js - Dynamic sitemap generation for SEO
 import axios from 'axios';
+import { API_URL as apiUrl } from '@/services/api';
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://exohaven-iq.com';
-const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://admin.exohaven-iq.com';
 
 async function fetchAllCategories() {
   try {

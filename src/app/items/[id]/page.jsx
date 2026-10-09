@@ -18,7 +18,6 @@ const Items = () => {
   const observerRef = useRef(null);
   const [sortBy, setSortBy] = useState("newest");
   const [categoryName, setCategoryName] = useState("");
-  const [categoryId, setCategoryId] = useState(null);
   const [subcategoryName, setSubcategoryName] = useState("");
   const { cart, dispatch } = useCart();
 
@@ -53,9 +52,10 @@ const Items = () => {
     if (subcategoryData?.data) {
       setSubcategoryName(subcategoryData.data.attributes.name || "");
       setCategoryName(subcategoryData.data.attributes.category?.data?.attributes?.name || "");
-      setCategoryId(subcategoryData.data.attributes.category?.data?.id ?? null);
     }
   }, [subcategoryData]);
+
+  const categoryId = subcategoryData?.data?.attributes?.category?.data?.id;
 
   const fetchItems = async ({ pageParam = 1 }) => {
     let sortQuery = "";
