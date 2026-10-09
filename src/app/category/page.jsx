@@ -2,12 +2,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState, useEffect, useMemo } from "react";
-import {
-  useInfiniteQuery,
-  QueryClient,
-  QueryClientProvider,
-  useQuery,
-} from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import Spinner from "../Components/Spinner";
 import { motion } from "framer-motion";
 import { FaSearch, FaFilter, FaShoppingCart, FaEye, FaPlus, FaMinus, FaCheck, FaTag } from "react-icons/fa";
@@ -17,19 +12,6 @@ import api from "@/services/api";
 import { QueryKeys } from "@/utils/queryKeys";
 import { isSaleActive, calculateSalePrice } from "@/utils/saleUtils";
 import SaleBanner from "../Components/SaleBanner";
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      // Prevent unnecessary refetches when navigating back
-      staleTime: 1000 * 60 * 10, // 10 minutes
-      cacheTime: 1000 * 60 * 30, // 30 minutes
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
-      refetchOnReconnect: false,
-    },
-  },
-});
 
 const fetchCategoryItems = async ({ pageParam = 1, categoryId, searchQuery }) => {
   const params = {
@@ -853,9 +835,5 @@ const Category = ({ params }) => {
 };
 
 export default function CategoryPage({ params }) {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <Category params={params} />
-    </QueryClientProvider>
-  );
+  return <Category params={params} />;
 }
