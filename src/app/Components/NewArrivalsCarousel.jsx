@@ -17,9 +17,15 @@ import 'swiper/css/effect-coverflow';
 // Import required modules
 import { Autoplay, EffectCoverflow } from 'swiper/modules';
 
-// Swiper's loop mode needs at least twice the visible slides (5 on wide screens),
-// otherwise it silently disables the loop and leaves empty space beside the first slide.
-const MIN_LOOP_SLIDES = 12;
+const NEW_ARRIVALS_LIMIT = 12;
+
+// Swiper's loop mode needs slidesPerView + ceil(slidesPerView / 2) slides (5 + 3 on wide
+// screens), otherwise it silently disables the loop and leaves empty space beside the
+// first slide.
+const MIN_LOOP_SLIDES = 8;
+
+// Only the slides visible on first paint load their images eagerly.
+const PRIORITY_SLIDES = 3;
 
 export default function NewArrivalsCarousel() {
   // Fetch new arrivals using React Query
@@ -28,20 +34,23 @@ export default function NewArrivalsCarousel() {
     isLoading,
     error 
   } = useQuery({
-    queryKey: [QueryKeys.newArrivals],
-    queryFn: () => fetchNewArrivals(12)
+    queryKey: [QueryKeys.newArrivals, NEW_ARRIVALS_LIMIT],
+    queryFn: () => fetchNewArrivals(NEW_ARRIVALS_LIMIT)
   });
 
   const swiperRef = useRef(null);
 
+  // A single product is shown on its own; looping it would fill the row with copies.
+  const canLoop = images.length > 1;
+
   // Repeat the products until there are enough slides for the loop to work.
   const slides = useMemo(() => {
     if (!images.length) return [];
-    const copies = Math.ceil(MIN_LOOP_SLIDES / images.length);
+    const copies = canLoop ? Math.ceil(MIN_LOOP_SLIDES / images.length) : 1;
     return Array.from({ length: copies }, (_, copy) =>
-      images.map((img) => ({ img, key: `${img.id}-${copy}` }))
+      images.map((img, index) => ({ img, copy, index, key: `${img.id}-${copy}` }))
     ).flat();
-  }, [images]);
+  }, [images, canLoop]);
 
   return (
     <motion.div
@@ -109,7 +118,7 @@ export default function NewArrivalsCarousel() {
                 modifier: 1.5,
                 slideShadows: true,
               }}
-              loop={true}
+              loop={canLoop}
               autoplay={{
                 delay: 3000,
                 disableOnInteraction: false,
@@ -141,12 +150,19 @@ export default function NewArrivalsCarousel() {
                 },
               }}
             >
-              {slides.map(({ img, key }) => (
-                <SwiperSlide key={key} className="w-[260px] md:w-[240px] h-auto">
+              {slides.map(({ img, copy, index, key }) => (
+                <SwiperSlide
+                  key={key}
+                  className="w-[260px] md:w-[240px] h-auto"
+                  // Repeated copies exist only for the loop; keep them out of the tab order
+                  // and away from screen readers.
+                  aria-hidden={copy > 0 || undefined}
+                >
                   <div className="overflow-hidden rounded-lg bg-white shadow-md h-full transform transition-all duration-300 border border-gray-100">
                     <Link 
                       className="group block"
                       href={`/item/${img.id}`}
+                      tabIndex={copy > 0 ? -1 : undefined}
                     >
                       <div className="relative aspect-[4/3] overflow-hidden">
                         <Image
@@ -155,7 +171,7 @@ export default function NewArrivalsCarousel() {
                           sizes="(max-width: 640px) 80vw, 240px"
                           alt={img.attributes.name}
                           className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-700 ease-out"
-                          priority
+                          priority={copy === 0 && index < PRIORITY_SLIDES}
                         />
                         
                         <div className="absolute top-1 left-1 bg-green4 text-white text-[10px] font-medium px-1.5 py-0.5 rounded-sm z-10">
@@ -204,25 +220,29 @@ export default function NewArrivalsCarousel() {
                   </div>
                 </SwiperSlide>
               ))}
+              {canLoop && (
+                <>
+                  {/* Swiper renders non-slide children inside its element, so hovering the arrows keeps autoplay paused.
+                      The page is RTL: the right arrow goes back, the left arrow goes forward. */}
+                  <button
+                    type="button"
+                    aria-label="المنتج السابق"
+                    onClick={() => swiperRef.current?.slidePrev()}
+                    className="absolute right-1 top-1/2 -translate-y-1/2 z-10 flex h-9 w-9 md:h-10 md:w-10 items-center justify-center rounded-full bg-white/90 text-green4 shadow-md border border-gray-100 hover:bg-green4 hover:text-white transition-colors duration-300"
+                  >
+                    <FaChevronRight className="text-sm" />
+                  </button>
+                  <button
+                    type="button"
+                    aria-label="المنتج التالي"
+                    onClick={() => swiperRef.current?.slideNext()}
+                    className="absolute left-1 top-1/2 -translate-y-1/2 z-10 flex h-9 w-9 md:h-10 md:w-10 items-center justify-center rounded-full bg-white/90 text-green4 shadow-md border border-gray-100 hover:bg-green4 hover:text-white transition-colors duration-300"
+                  >
+                    <FaChevronLeft className="text-sm" />
+                  </button>
+                </>
+              )}
             </Swiper>
-
-            {/* The page is RTL: the right arrow goes back, the left arrow goes forward */}
-            <button
-              type="button"
-              aria-label="المنتج السابق"
-              onClick={() => swiperRef.current?.slidePrev()}
-              className="absolute right-0 md:-right-2 top-1/2 -translate-y-1/2 z-10 flex h-9 w-9 md:h-10 md:w-10 items-center justify-center rounded-full bg-white/90 text-green4 shadow-md border border-gray-100 hover:bg-green4 hover:text-white transition-colors duration-300"
-            >
-              <FaChevronRight className="text-sm" />
-            </button>
-            <button
-              type="button"
-              aria-label="المنتج التالي"
-              onClick={() => swiperRef.current?.slideNext()}
-              className="absolute left-0 md:-left-2 top-1/2 -translate-y-1/2 z-10 flex h-9 w-9 md:h-10 md:w-10 items-center justify-center rounded-full bg-white/90 text-green4 shadow-md border border-gray-100 hover:bg-green4 hover:text-white transition-colors duration-300"
-            >
-              <FaChevronLeft className="text-sm" />
-            </button>
           </motion.div>
         </div>
       ) : (
