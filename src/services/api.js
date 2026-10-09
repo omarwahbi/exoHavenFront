@@ -64,7 +64,7 @@ export const fetchCategoryItems = async (categoryId, page = 1, pageSize = 12) =>
   const { data } = await api.get('/api/items', {
     params: {
       'filters[category][id][$eq]': categoryId,
-      'populate': 'item_thumbnail',
+      'populate': 'item_thumbnail,item_images',
       'pagination[page]': page,
       'pagination[pageSize]': pageSize,
       'sort[0]': 'new_arrival:desc',
@@ -94,7 +94,7 @@ export const fetchNewArrivals = async (limit = 6) => {
   const { data } = await api.get('/api/items', {
     params: {
       'filters[new_arrival][$eq]': true,
-      'populate': 'category,sub_category,item_thumbnail',
+      'populate': 'category,sub_category,item_thumbnail,item_images',
       'pagination[limit]': limit
     }
   });
@@ -130,7 +130,7 @@ export const fetchRelatedProducts = async (categoryId, currentItemId, limit = 4)
     params: {
       'filters[category][id][$eq]': categoryId,
       'filters[id][$ne]': currentItemId,
-      'populate': 'item_thumbnail',
+      'populate': 'item_thumbnail,item_images',
       'pagination[limit]': limit,
       'sort[0]': 'new_arrival:desc',
       'sort[1]': 'out_of_stock:asc',
@@ -152,7 +152,7 @@ export const fetchSubCategoryById = async (id) => {
 export const fetchSuggestedItems = async (limit = 4) => {
   const { data } = await api.get('/api/items', {
     params: {
-      populate: 'item_thumbnail',
+      populate: 'item_thumbnail,item_images',
       'pagination[limit]': limit,
       sort: 'updatedAt:desc',
       'filters[out_of_stock][$eq]': false

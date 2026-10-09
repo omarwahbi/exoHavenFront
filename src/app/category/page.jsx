@@ -27,6 +27,10 @@ const fetchCategoryItems = async ({ pageParam = 1, categoryId, searchQuery, sign
       item_thumbnail: {
         fields: ['name', 'url', 'width', 'height', 'formats']
       },
+      // Fallback image for items saved without a thumbnail
+      item_images: {
+        fields: ['url']
+      },
       category: {
         fields: ['name']
       },
