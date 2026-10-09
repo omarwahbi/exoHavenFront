@@ -21,7 +21,8 @@ async function getItem(id) {
 }
 
 // Generate dynamic metadata for each product page
-export async function generateMetadata({ params }) {
+export async function generateMetadata(props) {
+  const params = await props.params;
   console.log('[Metadata] Generating metadata for item ID:', params.id);
 
   const item = await getItem(params.id);
@@ -106,6 +107,7 @@ export async function generateMetadata({ params }) {
 }
 
 // Main page component (server component)
-export default function ItemPage({ params }) {
+export default async function ItemPage(props) {
+  const params = await props.params;
   return <ItemClient params={params} />;
 }

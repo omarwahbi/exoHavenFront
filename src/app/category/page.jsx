@@ -74,7 +74,7 @@ const fetchCategoryItems = async ({ pageParam = 1, categoryId, searchQuery }) =>
   }
 };
 
-const Category = ({ params }) => {
+const Category = () => {
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   const [searchInputValue, setSearchInputValue] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -834,6 +834,6 @@ const Category = ({ params }) => {
   );
 };
 
-export default function CategoryPage({ params }) {
-  return <Category params={params} />;
+export default function CategoryPage() {
+  return <Category />;
 }
