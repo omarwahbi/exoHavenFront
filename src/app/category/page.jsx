@@ -13,7 +13,7 @@ import { QueryKeys } from "@/utils/queryKeys";
 import { isSaleActive, calculateSalePrice } from "@/utils/saleUtils";
 import SaleBanner from "../Components/SaleBanner";
 
-const fetchCategoryItems = async ({ pageParam = 1, categoryId, searchQuery }) => {
+const fetchCategoryItems = async ({ pageParam = 1, categoryId, searchQuery, signal }) => {
   const params = {
     pagination: {
       page: pageParam,
@@ -52,7 +52,7 @@ const fetchCategoryItems = async ({ pageParam = 1, categoryId, searchQuery }) =>
   }
 
   try {
-    const data = await api.get('/api/items', { params });
+    const data = await api.get('/api/items', { params, signal });
     return {
       items: data.data.data,
       nextPage: pageParam + 1,
@@ -60,15 +60,6 @@ const fetchCategoryItems = async ({ pageParam = 1, categoryId, searchQuery }) =>
       total: data.data.meta.pagination.total,
     };
   } catch (error) {
-    // Don't log cancelled requests as errors since they are expected during navigation
-    if (error.cancelled) {
-      return {
-        items: [],
-        nextPage: pageParam,
-        hasMore: false,
-        total: 0,
-      };
-    }
     console.error("Error fetching items:", error);
     throw error;
   }
@@ -106,9 +97,10 @@ const Category = () => {
     refetch
   } = useInfiniteQuery({
     queryKey: queryKey,
-    queryFn: ({ pageParam = 1 }) =>
+    queryFn: ({ pageParam = 1, signal }) =>
       fetchCategoryItems({ 
         pageParam, 
+        signal,
         categoryId: selectedCategoryId,
         searchQuery
       }),

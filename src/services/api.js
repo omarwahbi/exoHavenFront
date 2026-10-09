@@ -12,12 +12,6 @@ const api = axios.create({
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Don't report cancellation errors
-    if (axios.isCancel(error)) {
-      console.log('Request cancelled:', error.message);
-      return Promise.reject({ cancelled: true });
-    }
-    
     console.error('API Error:', error);
     return Promise.reject(error);
   }
