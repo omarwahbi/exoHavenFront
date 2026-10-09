@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { fetchCategories } from "@/services/api";
 import { QueryKeys } from "@/utils/queryKeys";
+import { imageUrl } from "@/utils/media";
 
 const Categories = () => {
   // Fetch categories using React Query
@@ -122,7 +123,7 @@ const Categories = () => {
                 <div className="relative mb-4 sm:mb-5 overflow-hidden rounded-full border-4 border-green1 p-1 sm:p-1.5 group-hover:border-green3 transition-all duration-400 shadow-sm group-hover:shadow-green z-10 bg-white">
                   <div className="relative rounded-full overflow-hidden">
                     <Image
-                      src={category.attributes.category_thumbnail.data.attributes.url}
+                      src={imageUrl(category.attributes.category_thumbnail)}
                       alt={category.attributes.name}
                       width={120}
                       height={120}

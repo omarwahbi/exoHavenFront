@@ -13,6 +13,7 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchSuggestedItems } from "@/services/api";
 import { QueryKeys } from "@/utils/queryKeys";
 import { calculateSalePrice, isSaleActive } from "@/utils/saleUtils";
+import { itemImageUrl } from "@/utils/media";
 
 const Cart = () => {
   const { cart } = useCart();
@@ -234,7 +235,7 @@ const Cart = () => {
       <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 h-full flex flex-col">
         <div className="relative pt-[100%]">
           <Image
-            src={product.attributes.item_thumbnail.data.attributes.url}
+            src={itemImageUrl(product.attributes)}
             alt={product.attributes.name}
             fill
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 20vw"
@@ -386,7 +387,7 @@ const Cart = () => {
                               <Image
                                 className="h-20 w-20 object-cover transition-transform duration-300 hover:scale-110"
                                 src={
-                                  item.attributes.item_thumbnail.data.attributes.url
+                                  itemImageUrl(item.attributes)
                                 }
                                 alt={item.attributes.name}
                                 width={80}
