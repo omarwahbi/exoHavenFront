@@ -1,6 +1,5 @@
 import React from "react";
-import WhatsAppIcon from '@mui/icons-material/WhatsApp';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import { MdWhatsapp, MdArrowForward } from "react-icons/md";
 import { motion } from "framer-motion";
 
 const ContinueOnWhatsApp = ({ messageText, totalPrice = 0, onValidate }) => {
@@ -40,11 +39,11 @@ const ContinueOnWhatsApp = ({ messageText, totalPrice = 0, onValidate }) => {
       >
         <div className="flex items-center justify-between w-full">
           <div className="flex items-center gap-2">
-            <WhatsAppIcon className="text-white" fontSize="medium" />
+            <MdWhatsapp className="shrink-0 text-white" size={24} />
             <span className="text-base">إتمام الطلب عبر واتساب</span>
           </div>
           <div className="bg-white bg-opacity-20 p-1 rounded-full rotate-180">
-            <ArrowForwardIcon className="text-white" fontSize="small" />
+            <MdArrowForward className="shrink-0 text-white" size={20} />
           </div>
         </div>
       </motion.button>

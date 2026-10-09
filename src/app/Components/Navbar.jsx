@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import { MdShoppingCart } from "react-icons/md";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { useCart } from "../context/CartContext";
@@ -130,7 +130,7 @@ const Navbar = () => {
                     transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] }
                   } : {}}
                 >
-                  <ShoppingCartIcon fontSize={cartItemCount > 0 ? "medium" : "small"} />
+                  <MdShoppingCart className="shrink-0" size={cartItemCount > 0 ? 24 : 20} />
                   {cartItemCount > 0 && (
                     <motion.span
                       className="absolute -top-1.5 -right-1.5 bg-gradient-to-br from-red-500 to-red-600 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center shadow-md ring-2 ring-white"
