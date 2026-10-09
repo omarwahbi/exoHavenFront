@@ -29,7 +29,7 @@ export default function NewArrivalsCarousel() {
     error 
   } = useQuery({
     queryKey: [QueryKeys.newArrivals],
-    queryFn: () => fetchNewArrivals(6)
+    queryFn: () => fetchNewArrivals(12)
   });
 
   const swiperRef = useRef(null);
