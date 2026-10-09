@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create axios instance with default config and improved caching
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'https://admin.exohaven-iq.com',
   headers: {
     'Content-Type': 'application/json',
   },
