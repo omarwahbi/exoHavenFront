@@ -17,6 +17,8 @@ import { FaTag } from "react-icons/fa";
 import { generateProductSchema, generateBreadcrumbSchema, renderJSONLD } from "@/utils/seo";
 import { itemImageUrl, mediaUrl } from "@/utils/media";
 import { entryKey } from "@/utils/ids";
+import { availableVariants, basePrice, isOutOfStock, variantsOf } from "@/utils/product";
+import StockBadge from "@/app/Components/StockBadge";
 
 export default function ItemClient({ params }) {
   const sale = useSale();
@@ -37,6 +39,15 @@ export default function ItemClient({ params }) {
     queryFn: () => fetchItemById(params.id),
     enabled: !!params.id
   });
+
+  // For items with variants: the one the shopper picked (by label), defaulting to
+  // the first one in stock.
+  const [variantLabel, setVariantLabel] = useState(null);
+  const variants = variantsOf(item);
+  const variant =
+    variants.find((v) => v.label === variantLabel) ?? availableVariants(item)[0] ?? variants[0];
+  const outOfStock = item ? isOutOfStock(item, variant) : false;
+  const price = item ? basePrice(item, variant) : 0;
 
   // Derived data using useMemo to prevent recreation on each render
   const itemImgs = useMemo(() => item?.item_images || [], [item]);
@@ -193,7 +204,7 @@ export default function ItemClient({ params }) {
                         </AnimatePresence>
 
                         {/* Out of stock overlay */}
-                        {item.out_of_stock && (
+                        {outOfStock && (
                           <div className="absolute inset-0 flex items-center justify-center bg-green5/60 z-10">
                             <div className="bg-red-500 text-white py-2 px-6 rounded-full text-lg font-bold transform -rotate-12">
                               نفذت الكمية
@@ -240,7 +251,7 @@ export default function ItemClient({ params }) {
 
                 {/* Availability tag */}
                 <div className="mb-4">
-                  {item.out_of_stock ? (
+                  {outOfStock ? (
                     <span className="inline-block bg-red-100 text-red-800 text-sm font-medium px-3 py-1 rounded-full">
                       غير متوفر
                     </span>
@@ -258,7 +269,9 @@ export default function ItemClient({ params }) {
                   )}
 
                   {/* Sale tag */}
-                  {isSaleActive(sale) && !item.out_of_stock && (
+                  <StockBadge item={item} variant={variant} className="mr-2" />
+
+                  {isSaleActive(sale) && !outOfStock && (
                     <span className="inline-block bg-amber-100 text-amber-800 text-sm font-medium px-3 py-1 rounded-full mr-2">
                       <FaTag className="inline-block ml-1" size={12} />
                       خصم {sale.percent}%
@@ -268,26 +281,57 @@ export default function ItemClient({ params }) {
 
                 {/* Price */}
                 <div className="my-5">
-                  {isSaleActive(sale) && !item.out_of_stock ? (
+                  {isSaleActive(sale) && !outOfStock ? (
                     <>
                       <div className="flex flex-col">
                         <span className="text-lg line-through text-gray-500 mb-1">
-                          {Number(item.state).toLocaleString()}
+                          {price.toLocaleString()}
                           <span className="text-sm font-medium mr-1">د.ع</span>
                         </span>
                         <span className="text-3xl font-bold text-amber-600">
-                          {calculateSalePrice(item.state, sale).toLocaleString()}
+                          {calculateSalePrice(price, sale).toLocaleString()}
                           <span className="text-lg font-medium mr-1">د.ع</span>
                         </span>
                       </div>
                     </>
                   ) : (
                     <span className="text-3xl font-bold text-green5">
-                      {Number(item.state).toLocaleString()}
+                      {price.toLocaleString()}
                       <span className="text-lg font-medium mr-1">د.ع</span>
                     </span>
                   )}
                 </div>
+
+                {/* Variant picker */}
+                {variants.length > 0 && (
+                  <div className="my-5">
+                    <h3 className="text-sm font-medium text-gray-700 mb-2">اختر النوع</h3>
+                    <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="اختر النوع">
+                      {variants.map((v) => {
+                        const selected = v.label === variant?.label;
+                        return (
+                          <button
+                            key={v.label}
+                            type="button"
+                            role="radio"
+                            aria-checked={selected}
+                            onClick={() => setVariantLabel(v.label)}
+                            className={`relative min-w-[4.5rem] rounded-xl border-2 px-4 py-2 text-sm font-medium transition-colors ${
+                              selected
+                                ? "border-green4 bg-green1 text-green5"
+                                : "border-gray-200 bg-white text-gray-700 hover:border-green3"
+                            } ${v.out_of_stock ? "opacity-50 line-through" : ""}`}
+                          >
+                            {v.label}
+                            <span className="block text-xs font-normal text-gray-500 no-underline">
+                              {Number(v.price).toLocaleString()} د.ع
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
 
                 {/* Description */}
                 <div className="my-6">
@@ -323,12 +367,12 @@ export default function ItemClient({ params }) {
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:flex md:items-center gap-4">
                     {/* Add to Cart Button - Full width on mobile, partial on larger screens */}
                     <div className="w-full sm:col-span-2 md:flex-1 order-1">
-                      <AddToCartButton item={item} />
+                      <AddToCartButton item={item} variant={variant} />
                     </div>
 
                     {/* Quantity Control - Full width on mobile, auto on larger screens */}
                     <div className="w-full sm:col-span-1 md:w-auto order-2 flex justify-center sm:justify-start">
-                      <Quantity item={item} />
+                      <Quantity item={item} variant={variant} />
                     </div>
 
                     {/* Go to Cart Button - Only shown when cart has items */}
@@ -388,13 +432,13 @@ export default function ItemClient({ params }) {
                         className="object-cover group-hover:scale-105 transition-transform duration-500"
                         priority={index < 2}
                       />
-                      {product.out_of_stock && (
+                      {isOutOfStock(product) && (
                         <div className="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
                           نفذت الكمية
                         </div>
                       )}
                       {/* Sale tag - Display only if sale is active */}
-                      {isSaleActive(sale) && !product.out_of_stock && (
+                      {isSaleActive(sale) && !isOutOfStock(product) && (
                         <div className="absolute top-2 left-2 bg-amber-500 text-white text-xs font-semibold px-2 py-1 rounded-lg">
                           -{sale.percent}%
                         </div>
@@ -405,20 +449,20 @@ export default function ItemClient({ params }) {
                         {product.name}
                       </h3>
                       <div className="text-right mt-auto">
-                        {product.out_of_stock ? (
+                        {isOutOfStock(product) ? (
                           <span className="font-bold text-gray-400">غير متوفر</span>
                         ) : isSaleActive(sale) ? (
                           <div>
                             <span className="text-gray-500 line-through text-sm block">
-                              {Number(product.state).toLocaleString()} د.ع
+                              {basePrice(product).toLocaleString()} د.ع
                             </span>
                             <span className="font-bold text-amber-600">
-                              {calculateSalePrice(product.state, sale).toLocaleString()} د.ع
+                              {calculateSalePrice(basePrice(product), sale).toLocaleString()} د.ع
                             </span>
                           </div>
                         ) : (
                           <span className="font-bold text-green5">
-                            {Number(product.state).toLocaleString()} د.ع
+                            {basePrice(product).toLocaleString()} د.ع
                           </span>
                         )}
                       </div>

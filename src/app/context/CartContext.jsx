@@ -3,12 +3,13 @@
 import { createContext, useContext, useReducer, useEffect, useMemo, useState } from "react";
 import { flattenEntry } from "@/utils/strapi";
 import { entryKey } from "@/utils/ids";
+import { cartVariant, hasVariants, isOutOfStock } from "@/utils/product";
 
 const CartContext = createContext();
 
-// Cart lines are matched by documentId: Strapi 5 gives an entry a new numeric id
-// every time it is published.
-const sameItem = (a, b) => entryKey(a) === entryKey(b);
+// Cart lines are matched by documentId (Strapi 5 gives an entry a new numeric id
+// every time it is published) and, for items with variants, the variant's label.
+const sameItem = (a, b) => entryKey(a) === entryKey(b) && (a.variant?.label ?? null) === (b.variant?.label ?? null);
 
 export const cartReducer = (state, action) => {
   const { item } = action;
@@ -80,9 +81,15 @@ const CartProvider = ({ children }) => {
       cart,
       loaded,
       itemCount: cart.reduce((total, line) => total + line.quantity, 0),
-      quantityOf: (item) => cart.find((line) => sameItem(line, item))?.quantity ?? 0,
-      addItem: (item) => {
-        if (!item.out_of_stock) dispatch({ type: "ADD_ITEM", item });
+      // `variant` defaults to the one a cart line already carries.
+      quantityOf: (item, variant = item.variant) =>
+        cart.find((line) => sameItem(line, { ...item, variant }))?.quantity ?? 0,
+      addItem: (item, variant = item.variant) => {
+        if (hasVariants(item) && !variant) return; // the shopper must pick one
+        if (isOutOfStock(item, variant)) return;
+        // The line keeps the chosen variant, not the item's whole list.
+        const { variants, ...line } = item;
+        dispatch({ type: "ADD_ITEM", item: { ...line, variant: cartVariant(variant) } });
       },
       decreaseItem: (item) => dispatch({ type: "DECREASE_ITEM", item }),
       removeItem: (item) => dispatch({ type: "REMOVE_ITEM", item }),

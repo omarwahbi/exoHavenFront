@@ -1,28 +1,21 @@
 "use client";
 import Spinner from "@/app/Components/Spinner";
-import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import React, { useRef, useCallback, useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { FaEye, FaShoppingCart, FaPlus, FaMinus, FaTag } from "react-icons/fa";
-import { useCart } from "@/app/context/CartContext";
 import { fetchSubCategoryById, fetchSubCategoryItems } from "@/services/api";
 import { QueryKeys } from "@/utils/queryKeys";
-import { isSaleActive, calculateSalePrice } from "@/utils/saleUtils";
-import { useSale } from "@/app/context/SaleContext";
-import { itemImageUrl } from "@/utils/media";
 import { entryKey } from "@/utils/ids";
+import ProductGridCard from "@/app/Components/ProductGridCard";
 
 const Items = () => {
-  const sale = useSale();
   const { id } = useParams();
   const observerRef = useRef(null);
   const [sortBy, setSortBy] = useState("newest");
   const [categoryName, setCategoryName] = useState("");
   const [subcategoryName, setSubcategoryName] = useState("");
-  const { quantityOf, addItem, decreaseItem } = useCart();
 
   // Animation variants
   const containerVariants = {
@@ -189,124 +182,15 @@ const Items = () => {
             {isPageLoading ? (
               renderSkeletons()
             ) : (
-              items.map((item, index) => {
-                const quantityInCart = quantityOf(item);
-                
-                return (
-                  <motion.div 
-                    key={item.id} 
-                    variants={itemVariants}
-                    ref={index === items.length - 1 ? lastItemRef : null}
-                  >
-                    <div className="h-full">
-                      <div className="group bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 h-full flex flex-col">
-                        <Link href={`/products/${entryKey(item)}`} className="block relative pt-[100%]">
-                          <Image
-                            src={itemImageUrl(item)}
-                            alt={item.name}
-                            fill
-                            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                            className="object-cover group-hover:scale-105 transition-transform duration-500"
-                            priority
-                          />
-                          
-                          {/* Quick action buttons */}
-                          <div className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col gap-2">
-                            <button className="w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center text-green4 hover:bg-green4 hover:text-white transition-colors">
-                              <FaEye size={14} />
-                            </button>
-                          </div>
-                          
-                          {/* Out of stock badge */}
-                          {item.out_of_stock && (
-                            <div className="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold px-3 py-1 m-2 rounded">
-                              نفذت الكمية
-                            </div>
-                          )}
-                          
-                          {/* New arrival badge */}
-                          {item.new_arrival && !item.out_of_stock && (
-                            <div className="absolute top-0 right-0 bg-green4 text-white text-xs font-bold px-3 py-1 m-2 rounded">
-                              جديد
-                            </div>
-                          )}
-                          
-                          {/* Sale badge */}
-                          {isSaleActive(sale) && !item.out_of_stock && (
-                            <div className="absolute top-0 left-0 bg-amber-500 text-white text-xs font-semibold px-2 py-1 m-2 rounded-lg flex items-center gap-1">
-                              <FaTag className="text-[10px]" />
-                              <span>-{sale.percent}%</span>
-                            </div>
-                          )}
-                        </Link>
-                        
-                        <div className="p-3 flex-grow flex flex-col">
-                          <Link href={`/products/${entryKey(item)}`}>
-                            <h3 className="font-medium text-gray-800 mb-2 line-clamp-2 hover:text-green4 transition-colors min-h-[2.5rem]">
-                              {item.name}
-                            </h3>
-                          </Link>
-                          
-                          <div className="mt-auto pt-2 flex justify-between items-center">
-                            <span className={`font-bold ${item.out_of_stock ? 'text-gray-400' : ''}`}>
-                              {item.out_of_stock ? (
-                                "غير متوفر"
-                              ) : isSaleActive(sale) ? (
-                                <div>
-                                  <span className="text-gray-500 line-through text-xs block">
-                                    {Number(item.state).toLocaleString()} د.ع
-                                  </span>
-                                  <span className="text-amber-600">
-                                    {calculateSalePrice(item.state, sale).toLocaleString()} د.ع
-                                  </span>
-                                </div>
-                              ) : (
-                                `${Number(item.state).toLocaleString()} د.ع`
-                              )}
-                            </span>
-                            
-                            {/* Cart interaction button */}
-                            {item.out_of_stock ? (
-                              <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-400 cursor-not-allowed">
-                                <FaShoppingCart size={14} />
-                              </div>
-                            ) : quantityInCart > 0 ? (
-                              <div className="flex items-center">
-                                <motion.button 
-                                  onClick={() => decreaseItem(item)}
-                                  className="w-7 h-7 rounded-full bg-green1 flex items-center justify-center text-green4 hover:bg-green2 transition-colors"
-                                  whileTap={{ scale: 0.9 }}
-                                >
-                                  <FaMinus size={10} />
-                                </motion.button>
-                                
-                                <span className="mx-2 font-medium text-green4">{quantityInCart}</span>
-                                
-                                <motion.button 
-                                  onClick={() => addItem(item)}
-                                  className="w-7 h-7 rounded-full bg-green4 flex items-center justify-center text-white hover:bg-green3 transition-colors"
-                                  whileTap={{ scale: 0.9 }}
-                                >
-                                  <FaPlus size={10} />
-                                </motion.button>
-                              </div>
-                            ) : (
-                              <motion.button 
-                                onClick={() => addItem(item)}
-                                className="w-8 h-8 rounded-full bg-green1 flex items-center justify-center text-green4 hover:bg-green4 hover:text-white transition-colors"
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
-                              >
-                                <FaShoppingCart size={14} />
-                              </motion.button>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </motion.div>
-                );
-              })
+              items.map((item, index) => (
+                <motion.div
+                  key={item.id}
+                  variants={itemVariants}
+                  ref={index === items.length - 1 ? lastItemRef : null}
+                >
+                  <ProductGridCard item={item} index={index} />
+                </motion.div>
+              ))
             )}
           </motion.div>
         </>

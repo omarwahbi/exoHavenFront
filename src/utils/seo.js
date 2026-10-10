@@ -4,6 +4,7 @@ import { mediaUrl } from './media';
 import { entryKey } from './ids';
 import { deliveryFee, unitPrice } from './pricing';
 import { isSaleActive } from './saleUtils';
+import { availableVariants, hasPriceRange, isOutOfStock } from './product';
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://exohaven-iq.com';
 const imageKitUrl = 'https://ik.imagekit.io/5a72nvbtu';
@@ -115,12 +116,7 @@ export function generateWebSiteSchema() {
 export function generateProductSchema(item, sale) {
   if (!item) return null;
 
-  const {
-    name,
-    description,
-    out_of_stock,
-    category,
-  } = item;
+  const { name, description, category } = item;
 
   // Prices are stored as strings; skip items without a usable one.
   const salePrice = unitPrice(item, sale);
@@ -149,15 +145,22 @@ export function generateProductSchema(item, sale) {
     },
     category: category?.name || 'Pet Accessories',
     offers: {
-      '@type': 'Offer',
+      // With variants: the price range ("from ... to ...") across those in stock.
+      ...(hasPriceRange(item)
+        ? {
+            '@type': 'AggregateOffer',
+            lowPrice: salePrice,
+            highPrice: Math.max(...availableVariants(item).map((v) => unitPrice({ ...item, variant: v }, sale))),
+            offerCount: availableVariants(item).length,
+          }
+        : { '@type': 'Offer', price: salePrice }),
       url: `${baseUrl}/products/${entryKey(item)}`,
       priceCurrency: 'IQD',
-      price: salePrice,
       priceValidUntil: new Date(
         new Date().setFullYear(new Date().getFullYear() + 1)
       ).toISOString(),
       itemCondition: 'https://schema.org/NewCondition',
-      availability: out_of_stock
+      availability: isOutOfStock(item)
         ? 'https://schema.org/OutOfStock'
         : 'https://schema.org/InStock',
       seller: {

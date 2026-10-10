@@ -6,7 +6,7 @@ import Spinner from "../Components/Spinner";
 import { fetchCategories, fetchProductsPage } from "@/services/api";
 import { QueryKeys } from "@/utils/queryKeys";
 import ProductFilters from "./components/ProductFilters";
-import ProductGridCard from "./components/ProductGridCard";
+import ProductGridCard from "@/app/Components/ProductGridCard";
 import ProductListCard from "./components/ProductListCard";
 
 const Category = () => {

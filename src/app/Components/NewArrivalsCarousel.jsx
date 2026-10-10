@@ -19,6 +19,7 @@ import 'swiper/css/effect-coverflow';
 import { Autoplay, EffectCoverflow } from 'swiper/modules';
 import { itemImageUrl } from "@/utils/media";
 import { entryKey } from "@/utils/ids";
+import { basePrice, isOutOfStock } from "@/utils/product";
 
 const NEW_ARRIVALS_LIMIT = 12;
 
@@ -183,7 +184,7 @@ export default function NewArrivalsCarousel() {
                         </div>
                         
                         {/* Sale badge - Only shown if sale is active */}
-                        {isSaleActive(sale) && !img.out_of_stock && (
+                        {isSaleActive(sale) && !isOutOfStock(img) && (
                           <div className="absolute top-1 right-1 bg-amber-500 text-white text-[10px] font-medium px-1.5 py-0.5 rounded-full z-10 flex items-center gap-0.5">
                             <FaTag className="text-[8px]" />
                             <span>-{sale.percent}%</span>
@@ -201,20 +202,20 @@ export default function NewArrivalsCarousel() {
                         <h3 className="font-bold text-gray-800 text-xs line-clamp-1 group-hover:text-green4 transition-colors">
                           {img.name}
                         </h3>
-                        {img.state && (
+                        {basePrice(img) > 0 && (
                           <div className="flex items-center justify-between mt-0.5">
-                            {isSaleActive(sale) && !img.out_of_stock ? (
+                            {isSaleActive(sale) && !isOutOfStock(img) ? (
                               <div>
                                 <span className="text-gray-500 line-through text-[10px] block">
-                                  {img.state.toLocaleString()} IQD
+                                  {basePrice(img).toLocaleString()} IQD
                                 </span>
                                 <span className="font-bold text-amber-600 text-xs">
-                                  {calculateSalePrice(img.state, sale).toLocaleString()} IQD
+                                  {calculateSalePrice(basePrice(img), sale).toLocaleString()} IQD
                                 </span>
                               </div>
                             ) : (
                               <span className="font-bold text-green4 text-xs">
-                                {img.state.toLocaleString()} IQD
+                                {basePrice(img).toLocaleString()} IQD
                               </span>
                             )}
                           </div>

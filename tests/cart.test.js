@@ -27,3 +27,14 @@ test("remove, clear and load", () => {
   expect(cartReducer(cart, { type: "CLEAR_CART" })).toEqual([]);
   expect(cartReducer([], { type: "LOAD", lines: cart })).toBe(cart);
 });
+
+test("each variant of a product is its own cart line", () => {
+  const lamp50 = { ...lamp, variant: { label: "50W", price: 15000 } };
+  const lamp100 = { ...lamp, variant: { label: "100W", price: 22000 } };
+  let cart = cartReducer([], { type: "ADD_ITEM", item: lamp50 });
+  cart = cartReducer(cart, { type: "ADD_ITEM", item: lamp100 });
+  cart = cartReducer(cart, { type: "ADD_ITEM", item: lamp50 });
+  expect(cart.map((line) => [line.variant.label, line.quantity])).toEqual([["50W", 2], ["100W", 1]]);
+  cart = cartReducer(cart, { type: "REMOVE_ITEM", item: lamp100 });
+  expect(cart).toHaveLength(1);
+});

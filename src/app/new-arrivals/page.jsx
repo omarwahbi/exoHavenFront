@@ -12,6 +12,7 @@ import { isSaleActive, calculateSalePrice } from "@/utils/saleUtils";
 import { useSale } from "@/app/context/SaleContext";
 import { itemImageUrl } from "@/utils/media";
 import { entryKey } from "@/utils/ids";
+import { basePrice, isOutOfStock } from "@/utils/product";
 
 export default function NewArrivalsPage() {
   const sale = useSale();
@@ -121,7 +122,7 @@ export default function NewArrivalsPage() {
                       )}
                       
                       {/* Sale badge */}
-                      {isSaleActive(sale) && !item.out_of_stock && (
+                      {isSaleActive(sale) && !isOutOfStock(item) && (
                         <div className="absolute top-2 left-2 bg-green4/20 border border-green4/40 text-green4 text-xs font-semibold px-2.5 py-1 m-0 rounded-full flex items-center gap-1">
                           <FaTag className="text-[10px]" />
                           <span>-{sale.percent}%</span>
@@ -137,18 +138,18 @@ export default function NewArrivalsPage() {
                       </Link>
                       
                       <div className="mt-auto pt-2 flex justify-between items-center">
-                        {isSaleActive(sale) && !item.out_of_stock ? (
+                        {isSaleActive(sale) && !isOutOfStock(item) ? (
                           <div>
                             <span className="text-gray-500 line-through text-xs block">
-                              {Number(item.state).toLocaleString()} IQD
+                              {basePrice(item).toLocaleString()} IQD
                             </span>
                             <span className="font-bold text-red-600">
-                              {calculateSalePrice(item.state, sale).toLocaleString()} IQD
+                              {calculateSalePrice(basePrice(item), sale).toLocaleString()} IQD
                             </span>
                           </div>
                         ) : (
                           <span className="font-bold text-green4">
-                            {Number(item.state).toLocaleString()} IQD
+                            {basePrice(item).toLocaleString()} IQD
                           </span>
                         )}
                       </div>

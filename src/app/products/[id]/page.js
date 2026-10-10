@@ -5,6 +5,7 @@ import { API_URL as apiUrl } from '@/services/api';
 import { mediaUrl } from '@/utils/media';
 import { entryKey } from '@/utils/ids';
 import { unitPrice } from '@/utils/pricing';
+import { isOutOfStock } from '@/utils/product';
 import { getSale } from '@/services/sale';
 import { isSaleActive } from '@/utils/saleUtils';
 import { flattenResponse } from '@/utils/strapi';
@@ -38,7 +39,7 @@ export async function generateMetadata(props) {
     };
   }
 
-  const { name, description, out_of_stock, category } = item;
+  const { name, description, category } = item;
 
   // Get image URL
   let imageUrl = `${siteUrl}/og-image.png`;
@@ -98,7 +99,7 @@ export async function generateMetadata(props) {
     other: {
       'product:price:amount': salePrice.toString(),
       'product:price:currency': 'IQD',
-      'product:availability': out_of_stock ? 'out of stock' : 'in stock',
+      'product:availability': isOutOfStock(item) ? 'out of stock' : 'in stock',
       'product:condition': 'new',
     },
   };
