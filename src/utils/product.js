@@ -45,3 +45,6 @@ export const hasPriceRange = (item) => new Set(availableVariants(item).map((v) =
 // What the cart keeps of a variant: enough to show and price it.
 export const cartVariant = (variant) =>
   variant ? { label: variant.label, price: Number(variant.price), sku: variant.sku ?? null, low_stock: Boolean(variant.low_stock) } : undefined;
+
+// Identifies a cart line: the product (documentId) and, if any, its variant.
+export const lineKey = (line) => `${line?.documentId ?? line?.id}:${line?.variant?.label ?? ""}`;

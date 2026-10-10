@@ -8,6 +8,8 @@ import { QueryKeys } from "@/utils/queryKeys";
 import ProductFilters from "./components/ProductFilters";
 import ProductGridCard from "@/app/Components/ProductGridCard";
 import ProductListCard from "./components/ProductListCard";
+import Breadcrumbs from "@/app/Components/Breadcrumbs";
+import { isOutOfStock } from "@/utils/product";
 
 const Category = () => {
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
@@ -85,7 +87,7 @@ const Category = () => {
     
     // Apply out of stock filter if enabled
     if (hideOutOfStock) {
-      items = items.filter(item => !item.out_of_stock);
+      items = items.filter((item) => !isOutOfStock(item));
     }
     
     return items;
@@ -195,6 +197,7 @@ const Category = () => {
 
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <Breadcrumbs className="mb-4" items={[{ label: "المنتجات" }]} />
         <ProductFilters
           categories={categories}
           selectedCategoryId={selectedCategoryId}

@@ -12,7 +12,8 @@ import { isSaleActive, calculateSalePrice } from "@/utils/saleUtils";
 import { useSale } from "@/app/context/SaleContext";
 import { itemImageUrl } from "@/utils/media";
 import { entryKey } from "@/utils/ids";
-import { basePrice, isOutOfStock } from "@/utils/product";
+import { basePrice, isOutOfStock, hasPriceRange } from "@/utils/product";
+import Breadcrumbs from "@/app/Components/Breadcrumbs";
 
 export default function NewArrivalsPage() {
   const sale = useSale();
@@ -57,6 +58,7 @@ export default function NewArrivalsPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <Breadcrumbs className="mb-4" items={[{ label: "وصل حديثاً" }]} />
         {/* Page header with return link */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center">
@@ -144,12 +146,12 @@ export default function NewArrivalsPage() {
                               {basePrice(item).toLocaleString()} IQD
                             </span>
                             <span className="font-bold text-red-600">
-                              {calculateSalePrice(basePrice(item), sale).toLocaleString()} IQD
+                              {hasPriceRange(item) && "من "}{calculateSalePrice(basePrice(item), sale).toLocaleString()} IQD
                             </span>
                           </div>
                         ) : (
                           <span className="font-bold text-green4">
-                            {basePrice(item).toLocaleString()} IQD
+                            {hasPriceRange(item) && "من "}{basePrice(item).toLocaleString()} IQD
                           </span>
                         )}
                       </div>

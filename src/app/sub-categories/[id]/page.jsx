@@ -9,6 +9,7 @@ import { fetchSubCategoryById, fetchSubCategoryItems } from "@/services/api";
 import { QueryKeys } from "@/utils/queryKeys";
 import { entryKey } from "@/utils/ids";
 import ProductGridCard from "@/app/Components/ProductGridCard";
+import Breadcrumbs from "@/app/Components/Breadcrumbs";
 
 const Items = () => {
   const { id } = useParams();
@@ -130,33 +131,33 @@ const Items = () => {
 
   return (
     <div className="w-11/12 md:w-4/5 m-auto mt-8 mb-14">
-      {/* Breadcrumbs */}
-      {!isSubcategoryLoading && (
-        <nav className="flex mb-6 text-sm md:text-base">
-          <Link href="/" className="text-gray-500 hover:text-green4">
-            الرئيسية
-          </Link>
-          <span className="mx-2 text-gray-400">/</span>
-          {categoryName && (
-            <>
-              <Link href={categoryId ? `/categories/${categoryId}` : "/products"} className="text-gray-500 hover:text-green4">
-                {categoryName}
-              </Link>
-              <span className="mx-2 text-gray-400">/</span>
-            </>
-          )}
-          <span className="font-medium text-green5">{subcategoryName}</span>
-        </nav>
-      )}
+      <Breadcrumbs
+        className="mb-6"
+        items={[
+          { label: categoryName, href: categoryId ? `/categories/${categoryId}` : null },
+          { label: subcategoryName },
+        ]}
+      />
 
       {items.length === 0 && !isPageLoading ? (
         <div className="text-center text-gray-500 py-20 text-lg">عذراً لا يوجد مواد هنا</div>
       ) : (
         <>
           <div className="flex flex-col md:flex-row justify-between items-center mb-6">
-            <h1 className="text-2xl md:text-3xl font-bold text-green4 mb-4 md:mb-0">
-              {subcategoryName || "المنتجات المتاحة"}
-            </h1>
+            <div className="mb-4 md:mb-0 text-center md:text-right">
+              {/* Which category this sub-category belongs to. */}
+              {categoryName && (
+                <Link
+                  href={categoryId ? `/categories/${categoryId}` : "/products"}
+                  className="inline-block mb-1 text-sm font-medium text-green3 hover:text-green4"
+                >
+                  {categoryName}
+                </Link>
+              )}
+              <h1 className="text-2xl md:text-3xl font-bold text-green4">
+                {subcategoryName || "المنتجات المتاحة"}
+              </h1>
+            </div>
             
             {/* Sort dropdown */}
             <div className="relative">

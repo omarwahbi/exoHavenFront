@@ -5,7 +5,7 @@ import { useSale } from "@/app/context/SaleContext";
 import { calculateSalePrice, isSaleActive } from "@/utils/saleUtils";
 import { itemImageUrl } from "@/utils/media";
 import { entryKey } from "@/utils/ids";
-import { basePrice, isOutOfStock } from "@/utils/product";
+import { basePrice, isOutOfStock, hasPriceRange } from "@/utils/product";
 
 // A "you may also like" product under the cart.
 export default function SuggestedProductCard({ product, index }) {
@@ -54,11 +54,11 @@ export default function SuggestedProductCard({ product, index }) {
                   {basePrice(product).toLocaleString()} IQD
                 </span>
                 <span className="font-bold text-red-600">
-                  {calculateSalePrice(basePrice(product), sale).toLocaleString()} IQD
+                  {hasPriceRange(product) && "من "}{calculateSalePrice(basePrice(product), sale).toLocaleString()} IQD
                 </span>
               </div>
             ) : (
-              <span className="font-bold text-green4">{basePrice(product).toLocaleString()} IQD</span>
+              <span className="font-bold text-green4">{hasPriceRange(product) && "من "}{basePrice(product).toLocaleString()} IQD</span>
             )}
           </div>
         </div>

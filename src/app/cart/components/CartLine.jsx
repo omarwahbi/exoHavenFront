@@ -18,7 +18,6 @@ export default function CartLine({ item, variants, confirmingDelete, onDelete })
   const { addItem, decreaseItem } = useCart();
   return (
     <motion.div
-      key={entryKey(item)}
       variants={variants}
       className="rounded-xl border border-gray-100 bg-white p-4 shadow-sm md:p-6 hover:shadow-md transition-shadow duration-300"
     >

@@ -38,6 +38,13 @@ export const fetchCategories = async () => {
   return data.data;
 };
 
+export const fetchCategoryById = async (id) => {
+  const { data } = await api.get(`/api/categories/${id}`, {
+    params: { 'fields[0]': 'name', 'fields[1]': 'desc' }
+  });
+  return data.data;
+};
+
 // Subcategories
 export const fetchSubCategories = async (categoryId) => {
   const { data } = await api.get('/api/sub-categories', {

@@ -14,7 +14,8 @@ import { useCart } from "@/app/context/CartContext";
 import { calculateSalePrice, isSaleActive } from "@/utils/saleUtils";
 import { useSale } from "@/app/context/SaleContext";
 import { FaTag } from "react-icons/fa";
-import { generateProductSchema, generateBreadcrumbSchema, renderJSONLD } from "@/utils/seo";
+import { generateProductSchema, renderJSONLD } from "@/utils/seo";
+import Breadcrumbs from "@/app/Components/Breadcrumbs";
 import { itemImageUrl, mediaUrl } from "@/utils/media";
 import { entryKey } from "@/utils/ids";
 import { availableVariants, basePrice, isOutOfStock, variantsOf } from "@/utils/product";
@@ -64,11 +65,6 @@ export default function ItemClient({ params }) {
 
   // Generate structured data for SEO
   const productSchema = item ? generateProductSchema(item, sale) : null;
-  const breadcrumbSchema = item ? generateBreadcrumbSchema([
-    { name: 'الرئيسية', url: 'https://exohaven-iq.com/' },
-    { name: 'المنتجات', url: 'https://exohaven-iq.com/products' },
-    { name: item.name, url: `https://exohaven-iq.com/products/${entryKey(item)}` }
-  ]) : null;
 
   // Handle image selection and rotation
   useEffect(() => {
@@ -120,32 +116,16 @@ export default function ItemClient({ params }) {
           dangerouslySetInnerHTML={renderJSONLD(productSchema)}
         />
       )}
-      {breadcrumbSchema && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={renderJSONLD(breadcrumbSchema)}
-        />
-      )}
 
       <div className="max-w-7xl mx-auto mt-8 mb-14 px-4 md:px-6 lg:px-8">
-        {/* Breadcrumb */}
-        <nav className="mb-6 text-sm font-medium" dir="rtl">
-          <ol className="flex items-center space-x-1 space-x-reverse">
-            <li>
-              <Link href="/" className="text-gray-600 hover:text-green4">
-                الرئيسية
-              </Link>
-            </li>
-            <li className="mx-2">/</li>
-            <li>
-              <Link href="/products" className="text-gray-600 hover:text-green4">
-                المنتجات
-              </Link>
-            </li>
-            <li className="mx-2">/</li>
-            <li className="text-green5 font-bold">{item.name}</li>
-          </ol>
-        </nav>
+        <Breadcrumbs
+          className="mb-6"
+          items={[
+            { label: item.category?.name, href: item.category ? `/categories/${entryKey(item.category)}` : null },
+            { label: item.sub_category?.name, href: item.sub_category ? `/sub-categories/${entryKey(item.sub_category)}` : null },
+            { label: item.name },
+          ]}
+        />
 
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
           <div className="flex flex-col lg:flex-row">

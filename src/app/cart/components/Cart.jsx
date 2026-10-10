@@ -12,10 +12,11 @@ import { fetchSuggestedItems } from "@/services/api";
 import { QueryKeys } from "@/utils/queryKeys";
 import { FREE_DELIVERY_THRESHOLD, cartSubtotal, deliveryFee } from "@/utils/pricing";
 import { buildOrderMessage } from "@/utils/orderMessage";
-import { entryKey } from "@/utils/ids";
 import CartLine from "./CartLine";
 import OrderSummary from "./OrderSummary";
 import SuggestedProductCard from "./SuggestedProductCard";
+import Breadcrumbs from "@/app/Components/Breadcrumbs";
+import { isOutOfStock, lineKey } from "@/utils/product";
 
 const Cart = () => {
   const sale = useSale();
@@ -33,7 +34,8 @@ const Cart = () => {
     data: suggestedItems = []
   } = useQuery({
     queryKey: [QueryKeys.suggestedItems],
-    queryFn: () => fetchSuggestedItems(4),
+    // Products whose every variant is out of stock aren't suggested either.
+    queryFn: () => fetchSuggestedItems(8).then((items) => items.filter((item) => !isOutOfStock(item))),
     enabled: cart.length === 0 // Only fetch suggested items when cart is empty
   });
 
@@ -46,11 +48,11 @@ const Cart = () => {
   };
 
   const handleDelete = (item) => {
-    if (deleteConfirm === entryKey(item)) {
+    if (deleteConfirm === lineKey(item)) {
       removeItem(item);
       setDeleteConfirm(null);
     } else {
-      confirmDelete(entryKey(item));
+      confirmDelete(lineKey(item));
     }
   };
 
@@ -135,6 +137,7 @@ const Cart = () => {
   return (
     <section className="py-4 antialiased md:py-8">
       <div className="mx-auto max-w-screen-xl px-4 md:px-6 lg:px-8">
+        <Breadcrumbs className="mb-4" items={[{ label: "عربة التسوق" }]} />
         <div dir="rtl" className="flex flex-wrap items-center justify-between mb-8 gap-4">
           <div className="flex items-center">
             <MdShoppingCart className="shrink-0 me-4 text-green4" size={24} />
@@ -214,10 +217,10 @@ const Cart = () => {
                   <div className="space-y-4">
                     {cart.map((item) => (
                       <CartLine
-                        key={entryKey(item)}
+                        key={lineKey(item)}
                         item={item}
                         variants={itemVariants}
-                        confirmingDelete={deleteConfirm === entryKey(item)}
+                        confirmingDelete={deleteConfirm === lineKey(item)}
                         onDelete={handleDelete}
                       />
                     ))}
