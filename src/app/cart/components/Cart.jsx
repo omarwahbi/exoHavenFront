@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { MdShoppingCart, MdKeyboardBackspace, MdShoppingBag, MdLocalShipping } from "react-icons/md";
 import { motion, AnimatePresence } from "framer-motion";
@@ -19,10 +19,8 @@ import SuggestedProductCard from "./SuggestedProductCard";
 
 const Cart = () => {
   const sale = useSale();
-  const { cart, removeItem, clearCart } = useCart();
+  const { cart, loaded, removeItem, clearCart } = useCart();
 
-  const [isClient, setIsClient] = useState(false);
-  const [loading, setLoading] = useState(true);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [clearCartConfirm, setClearCartConfirm] = useState(false);
   const [deliveryLocation, setDeliveryLocation] = useState('baghdad'); // 'baghdad' or 'other'
@@ -102,17 +100,8 @@ const Cart = () => {
     note: orderNote,
   });
 
-  useEffect(() => {
-    setIsClient(true); // Mark the component as client-side
-    setLoading(false); // No longer need extra loading state since we use React Query
-  }, []);
-
-  if (!isClient) {
-    // Render nothing on server-side to avoid mismatch
-    return null;
-  }
-
-  if (loading) {
+  // Until the saved cart is read, show a spinner rather than "your cart is empty".
+  if (!loaded) {
     return (
       <div className="flex justify-center items-center min-h-[40vh]">
         <Spinner size="lg" />
