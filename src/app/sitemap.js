@@ -4,6 +4,10 @@ import { entryKey } from "@/utils/ids";
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://exohaven-iq.com';
 
+// Rebuild the sitemap at most hourly. Without this it is generated once at build
+// time, and products added afterwards never appear in it.
+export const revalidate = 3600;
+
 // Every published entry of a collection, page by page (Strapi caps a page at 100).
 async function fetchAll(collection) {
   const entries = [];
