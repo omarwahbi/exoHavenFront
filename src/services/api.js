@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-export const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://admin.exohaven-iq.com';
+import { API_URL } from '@/utils/apiUrl';
+
+export { API_URL };
 
 // Create axios instance with default config and improved caching
 const api = axios.create({
@@ -137,12 +139,6 @@ export const fetchRelatedProducts = async (categoryId, currentItemId, limit = 4)
       'sort[2]': 'createdAt:desc'
     }
   });
-  return data.data;
-};
-
-// Accepts a documentId or an old numeric id (the backend resolves both).
-export const fetchCategoryById = async (id) => {
-  const { data } = await api.get(`/api/categories/${id}`);
   return data.data;
 };
 

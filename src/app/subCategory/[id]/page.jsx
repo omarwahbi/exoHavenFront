@@ -1,29 +1,16 @@
 "use client";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
-import React, { useEffect } from "react";
+import { useParams } from "next/navigation";
+import React from "react";
 import Image from "next/image";
 import Spinner from "@/app/Components/Spinner";
 import { useQuery } from "@tanstack/react-query";
-import { fetchCategoryById, fetchSubCategories, fetchCategoryItems } from "@/services/api";
+import { fetchSubCategories, fetchCategoryItems } from "@/services/api";
 import { imageUrl, itemImageUrl } from "@/utils/media";
-import { entryKey, isLegacyId } from "@/utils/ids";
+import { entryKey } from "@/utils/ids";
 
 const SubCategories = () => {
   const { id } = useParams();
-  const router = useRouter();
-
-  // Old links use the category's numeric id: look up its documentId, use that for
-  // the queries below, and show the permanent URL instead.
-  const { data: legacyCategory, isLoading: isLegacyLoading } = useQuery({
-    queryKey: ['category', id],
-    queryFn: () => fetchCategoryById(id),
-    enabled: isLegacyId(id),
-  });
-  const categoryId = isLegacyId(id) ? legacyCategory?.documentId : id;
-  useEffect(() => {
-    if (isLegacyId(id) && categoryId) router.replace(`/subCategory/${categoryId}`);
-  }, [id, categoryId, router]);
 
   // Query for subcategories
   const { 
@@ -31,9 +18,9 @@ const SubCategories = () => {
     isLoading: isSubCategoriesLoading,
     error: subCategoriesError 
   } = useQuery({
-    queryKey: ['subcategories', categoryId],
-    queryFn: () => fetchSubCategories(categoryId),
-    enabled: !!categoryId
+    queryKey: ['subcategories', id],
+    queryFn: () => fetchSubCategories(id),
+    enabled: !!id
   });
 
   // Query for items (only runs if subcategories are loaded and empty)
@@ -42,13 +29,13 @@ const SubCategories = () => {
     isLoading: isItemsLoading,
     error: itemsError
   } = useQuery({
-    queryKey: ['category-items', categoryId],
-    queryFn: () => fetchCategoryItems(categoryId),
-    enabled: !!categoryId && !isSubCategoriesLoading && subCategories.length === 0
+    queryKey: ['category-items', id],
+    queryFn: () => fetchCategoryItems(id),
+    enabled: !!id && !isSubCategoriesLoading && subCategories.length === 0
   });
 
   // Derived loading state
-  const isLoading = isLegacyLoading || isSubCategoriesLoading || 
+  const isLoading = isSubCategoriesLoading || 
     (subCategories.length === 0 && isItemsLoading);
 
   if (isLoading) {
