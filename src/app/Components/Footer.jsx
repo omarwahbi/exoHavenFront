@@ -55,7 +55,7 @@ const Footer = () => {
             <ul className="space-y-3" dir="rtl">
               {[
                 { href: "/", label: "الرئيسية" },
-                { href: "/category", label: "كل المواد" },
+                { href: "/products", label: "كل المواد" },
                 { href: "/aboutUs", label: "من نحن؟" },
                 { href: "/contact", label: "اتصل بنا" }
               ].map((link) => (

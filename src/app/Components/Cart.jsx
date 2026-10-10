@@ -157,7 +157,7 @@ const Cart = () => {
 
   // Product card component for consistent design
   const ProductCard = ({ product, index }) => (
-    <Link href={`/item/${entryKey(product)}`} className="group">
+    <Link href={`/products/${entryKey(product)}`} className="group">
       <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 h-full flex flex-col">
         <div className="relative pt-[100%]">
           <Image
@@ -228,7 +228,7 @@ const Cart = () => {
               عربة التسوق
             </h1>
           </div>
-          <Link href="/category" className="inline-flex items-center text-green4 hover:text-green3 transition-colors">
+          <Link href="/products" className="inline-flex items-center text-green4 hover:text-green3 transition-colors">
             <MdKeyboardBackspace className="shrink-0 ml-1" size={20} />
             <span>العودة إلى المنتجات</span>
           </Link>
@@ -245,7 +245,7 @@ const Cart = () => {
               <MdShoppingBag className="shrink-0 mb-6 text-gray-300" size="5rem" />
               <h2 className="text-xl md:text-2xl font-medium text-gray-600 mb-4">عربة التسوق فارغة!</h2>
               <p className="text-gray-500 mb-8 text-center">قم بإضافة بعض المنتجات لتظهر هنا</p>
-              <Link href="/category">
+              <Link href="/products">
                 <motion.button 
                   className="px-6 py-3 bg-green4 text-white rounded-lg font-medium hover:bg-green3 transition-colors duration-300 flex items-center"
                   whileHover={{ scale: 1.03 }}
@@ -306,7 +306,7 @@ const Cart = () => {
                       >
                         <div className="space-y-4 md:flex md:items-center md:gap-6 md:space-y-0">
                           <Link
-                            href={`/item/${entryKey(item)}`}
+                            href={`/products/${entryKey(item)}`}
                             className="shrink-0 md:order-1"
                           >
                             <div className="overflow-hidden rounded-lg">
@@ -326,7 +326,7 @@ const Cart = () => {
                           <div className="w-full min-w-0 flex-1 md:order-2 md:max-w-md">
                             <div className="flex justify-between">
                               <Link
-                                href={`/item/${entryKey(item)}`}
+                                href={`/products/${entryKey(item)}`}
                                 className="text-lg font-bold text-gray-900 hover:text-green4"
                               >
                                 {item.name}

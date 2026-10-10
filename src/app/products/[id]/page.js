@@ -75,7 +75,7 @@ export async function generateMetadata(props) {
       description: productDescription,
       type: 'website', // Changed from 'product' to 'website' - Next.js doesn't support 'product' type
       locale: 'ar_IQ',
-      url: `${siteUrl}/item/${entryKey(item)}`,
+      url: `${siteUrl}/products/${entryKey(item)}`,
       images: [
         {
           url: imageUrl,
@@ -93,7 +93,7 @@ export async function generateMetadata(props) {
       images: [imageUrl],
     },
     alternates: {
-      canonical: `/item/${entryKey(item)}`,
+      canonical: `/products/${entryKey(item)}`,
     },
     other: {
       'product:price:amount': salePrice.toString(),

@@ -80,7 +80,7 @@ const FeaturedProducts = () => {
             <p className="text-sm text-gray-600 mt-2 text-center md:text-right md:mr-6">اكتشف أفضل المنتجات المختارة بعناية</p>
           </div>
           <Link
-            href="/category"
+            href="/products"
             className="group flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green4 to-green3 text-white font-bold rounded-2xl shadow-green hover:shadow-green-lg transition-all duration-400 hover:-translate-y-0.5"
           >
             <span>عرض المزيد</span>
@@ -97,7 +97,7 @@ const FeaturedProducts = () => {
               transition={{ duration: 0.5, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
               className="group"
             >
-              <Link href={`/item/${entryKey(product)}`}>
+              <Link href={`/products/${entryKey(product)}`}>
                 <div className="bg-white rounded-2xl shadow-card overflow-hidden transition-all duration-400 group-hover:shadow-card-hover group-hover:-translate-y-1 h-full flex flex-col border border-gray-100">
                   <div className="relative">
                     <div className="aspect-square overflow-hidden bg-gradient-to-br from-gray-50 to-white">

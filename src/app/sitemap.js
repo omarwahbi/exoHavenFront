@@ -51,7 +51,7 @@ export default async function sitemap() {
       priority: 0.8,
     },
     {
-      url: `${baseUrl}/category`,
+      url: `${baseUrl}/products`,
       lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 0.9,
@@ -65,9 +65,9 @@ export default async function sitemap() {
     fetchAll('items'),
   ]);
 
-  // Category pages: /subCategory/[id] lists a category's subcategories
+  // Category pages: /categories/[id] lists a category's subcategories
   const categoryPages = categories.map((category) => ({
-    url: `${baseUrl}/subCategory/${entryKey(category)}`,
+    url: `${baseUrl}/categories/${entryKey(category)}`,
     lastModified: category?.updatedAt
       ? new Date(category.updatedAt)
       : new Date(),
@@ -75,9 +75,9 @@ export default async function sitemap() {
     priority: 0.8,
   }));
 
-  // Subcategory pages: /items/[id] lists a subcategory's products
+  // Sub-category pages: /sub-categories/[id] lists a subcategory's products
   const subCategoryPages = subCategories.map((subCategory) => ({
-    url: `${baseUrl}/items/${entryKey(subCategory)}`,
+    url: `${baseUrl}/sub-categories/${entryKey(subCategory)}`,
     lastModified: subCategory?.updatedAt
       ? new Date(subCategory.updatedAt)
       : new Date(),
@@ -87,7 +87,7 @@ export default async function sitemap() {
 
   // Generate item detail pages
   const itemPages = items.map((item) => ({
-    url: `${baseUrl}/item/${entryKey(item)}`,
+    url: `${baseUrl}/products/${entryKey(item)}`,
     lastModified: item?.updatedAt
       ? new Date(item.updatedAt)
       : new Date(),

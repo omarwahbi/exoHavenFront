@@ -1,18 +1,3 @@
-// /** @type {import('next').NextConfig} */
-// const nextConfig = {
-//   images: {
-//     remotePatterns: [
-//       {
-//         protocol: "https",
-//         hostname: "ik.imagekit.io",
-//         pathname: "/5a72nvbtu/**",
-//       },
-//     ],
-//   },
-// };
-
-// export default nextConfig;
-
 import withSerwistInit from "@serwist/next";
 
 /** @type {import('next').NextConfig} */
@@ -26,11 +11,18 @@ const nextConfig = {
       },
     ],
   },
-  reactStrictMode: true, // Enable React strict mode for improved error handling
+  reactStrictMode: true,
   compiler: {
-    removeConsole: process.env.NODE_ENV !== "development", // Remove console.log in production
+    // Drop debug logging from production builds, keep errors.
+    removeConsole: process.env.NODE_ENV !== "development" && { exclude: ["error"] },
   },
-  output: 'standalone', // Enable standalone output for Docker deployment
+  // Old page URLs. Renamed sections with an id are redirected in src/middleware.js.
+  async redirects() {
+    return [
+      { source: "/category", destination: "/products", permanent: true },
+      { source: "/items", destination: "/new-arrivals", permanent: true },
+    ];
+  },
 };
 
 const withSerwist = withSerwistInit({

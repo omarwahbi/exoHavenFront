@@ -138,7 +138,7 @@ export function generateProductSchema(item, sale) {
   return {
     '@context': 'https://schema.org',
     '@type': 'Product',
-    '@id': `${baseUrl}/item/${entryKey(item)}`,
+    '@id': `${baseUrl}/products/${entryKey(item)}`,
     name: name || 'Product',
     description: description || 'Exotic pet accessory available at ExoHaven Iraq',
     image: imageUrl,
@@ -150,7 +150,7 @@ export function generateProductSchema(item, sale) {
     category: category?.name || 'Pet Accessories',
     offers: {
       '@type': 'Offer',
-      url: `${baseUrl}/item/${entryKey(item)}`,
+      url: `${baseUrl}/products/${entryKey(item)}`,
       priceCurrency: 'IQD',
       price: salePrice,
       priceValidUntil: new Date(

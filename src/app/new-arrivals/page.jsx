@@ -1,6 +1,5 @@
 "use client";
 import React from "react";
-import { useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import Link from "next/link";
@@ -14,24 +13,15 @@ import { useSale } from "@/app/context/SaleContext";
 import { itemImageUrl } from "@/utils/media";
 import { entryKey } from "@/utils/ids";
 
-export default function ItemsPage() {
+export default function NewArrivalsPage() {
   const sale = useSale();
-  const searchParams = useSearchParams();
-  const filter = searchParams.get('filter');
-  
   const { 
     data: items = [],
     isLoading,
     error 
   } = useQuery({
-    queryKey: [QueryKeys.items, filter],
-    queryFn: () => {
-      if (filter === 'new_arrival') {
-        return fetchNewArrivals(20); // Fetch more items for dedicated page
-      } else {
-        return fetchNewArrivals(20); // Default to new arrivals for now
-      }
-    }
+    queryKey: [QueryKeys.items, 'new_arrival'],
+    queryFn: () => fetchNewArrivals(20),
   });
   
   const containerVariants = {
@@ -53,20 +43,12 @@ export default function ItemsPage() {
     }
   };
 
-  // Get page title based on filter
-  const getPageTitle = () => {
-    if (filter === 'new_arrival') {
-      return 'وصل حديثاً';
-    }
-    return 'جميع المنتجات';
-  };
-
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Category Header Banner */}
       <div className="bg-gradient-to-r from-green3 to-green4 text-white py-12 px-4 mb-6">
         <div className="max-w-7xl mx-auto">
-          <h1 className="text-3xl md:text-4xl font-bold text-center mb-4">{getPageTitle()}</h1>
+          <h1 className="text-3xl md:text-4xl font-bold text-center mb-4">وصل حديثاً</h1>
           <p className="text-lg text-center text-white/80 max-w-2xl mx-auto">
             اكتشف أحدث المنتجات التي وصلت لدينا
           </p>
@@ -78,7 +60,7 @@ export default function ItemsPage() {
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center">
             <div className="h-8 w-1.5 bg-green4 rounded-full mr-2 hidden md:block"></div>
-            <h2 className="text-xl font-bold text-green4">{getPageTitle()}</h2>
+            <h2 className="text-xl font-bold text-green4">وصل حديثاً</h2>
           </div>
           <Link href="/" className="text-green3 hover:text-green4 transition-all duration-300 flex items-center group">
             <span className="mr-1">العودة للرئيسية</span>
@@ -114,7 +96,7 @@ export default function ItemsPage() {
               <motion.div key={item.id} variants={itemVariants}>
                 <div className="h-full">
                   <div className="group bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 h-full flex flex-col">
-                    <Link href={`/item/${entryKey(item)}`} className="block relative pt-[100%]">
+                    <Link href={`/products/${entryKey(item)}`} className="block relative pt-[100%]">
                       <Image
                         src={itemImageUrl(item)}
                         alt={item.name}
@@ -148,7 +130,7 @@ export default function ItemsPage() {
                     </Link>
                     
                     <div className="p-3 flex-grow flex flex-col">
-                      <Link href={`/item/${entryKey(item)}`}>
+                      <Link href={`/products/${entryKey(item)}`}>
                         <h3 className="font-medium text-gray-800 mb-1 line-clamp-1 hover:text-green4 transition-colors">
                           {item.name}
                         </h3>

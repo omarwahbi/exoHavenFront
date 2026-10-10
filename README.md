@@ -38,16 +38,19 @@ The site is on Vercel, with automatic deploys turned off for `master`
 | URL | Shows | File |
 | --- | --- | --- |
 | `/` | Home: hero, categories, new arrivals, featured products | `src/app/page.js` |
-| `/category` | Every item, with search and a category filter | `src/app/category/page.jsx` |
-| `/subCategory/<category>` | The sub-categories of one category | `src/app/subCategory/[id]/page.jsx` |
-| `/items/<sub-category>` | The items in one sub-category | `src/app/items/[id]/page.jsx` |
-| `/items` | New arrivals | `src/app/items/page.jsx` |
-| `/item/<item>` | One product | `src/app/item/[id]/` |
+| `/products` | Every product, with search and a category filter | `src/app/products/page.jsx` |
+| `/products/<id>` | One product | `src/app/products/[id]/` |
+| `/categories/<id>` | One category: its sub-categories | `src/app/categories/[id]/page.jsx` |
+| `/sub-categories/<id>` | One sub-category: its products | `src/app/sub-categories/[id]/page.jsx` |
+| `/new-arrivals` | New arrivals | `src/app/new-arrivals/page.jsx` |
 | `/cart` | The cart and the WhatsApp order form | `src/app/cart/page.jsx` |
 | `/aboutUs`, `/contact` | Static pages | |
 
-The ids in these URLs are Strapi `documentId`s. Old links with numeric Strapi 4
-ids get a 308 redirect from `src/middleware.js`.
+The ids in these URLs are Strapi `documentId`s. Old URLs keep working with a 308
+redirect:
+- the earlier section names (`/item/…`, `/subCategory/…`, `/items/…`,
+  `/category`, `/items`), in `src/middleware.js` and `next.config.mjs`;
+- numeric Strapi 4 ids, in `src/middleware.js`.
 
 ## Conventions
 

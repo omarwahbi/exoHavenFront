@@ -51,7 +51,7 @@ const HeroSection = () => {
             whileTap={{ scale: 0.97 }}
             transition={{ type: "spring", stiffness: 400, damping: 17 }}
           >
-            <Link href="/category" className="inline-flex items-center gap-2 bg-white text-green4 font-bold py-3 sm:py-3.5 px-6 sm:px-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-400 hover:-translate-y-0.5 group">
+            <Link href="/products" className="inline-flex items-center gap-2 bg-white text-green4 font-bold py-3 sm:py-3.5 px-6 sm:px-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-400 hover:-translate-y-0.5 group">
               <span>تسوق الآن</span>
               <svg className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l-5 5 5 5" />
@@ -78,7 +78,7 @@ const HeroSection = () => {
                   {/* First product image */}
                   {products.length > 0 && products[0]?.item_thumbnail?.url ? (
                     <Link
-                      href={`/item/${entryKey(products[0])}`}
+                      href={`/products/${entryKey(products[0])}`}
                       className="relative h-full rounded-xl overflow-hidden border-2 border-white/40 bg-white shadow-sm group z-20 transition-all duration-400 hover:shadow-card-hover hover:scale-[1.02]"
                     >
                       <div className="relative w-full h-full">
@@ -107,7 +107,7 @@ const HeroSection = () => {
                   {/* Second product image */}
                   {products.length > 1 && products[1]?.item_thumbnail?.url ? (
                     <Link
-                      href={`/item/${entryKey(products[1])}`}
+                      href={`/products/${entryKey(products[1])}`}
                       className="relative h-full rounded-xl overflow-hidden border-2 border-white/40 bg-white shadow-sm group z-20 transition-all duration-400 hover:shadow-card-hover hover:scale-[1.02]"
                     >
                       <div className="relative w-full h-full">
@@ -137,7 +137,7 @@ const HeroSection = () => {
                 {/* Third product image - larger */}
                 {products.length > 2 && products[2]?.item_thumbnail?.url ? (
                   <Link
-                    href={`/item/${entryKey(products[2])}`}
+                    href={`/products/${entryKey(products[2])}`}
                     className="relative h-full rounded-xl overflow-hidden border-2 border-white/40 bg-white shadow-sm group z-20 transition-all duration-400 hover:shadow-card-hover hover:scale-[1.02]"
                   >
                     <div className="relative w-full h-full">

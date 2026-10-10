@@ -146,7 +146,7 @@ const Items = () => {
           <span className="mx-2 text-gray-400">/</span>
           {categoryName && (
             <>
-              <Link href={categoryId ? `/subCategory/${categoryId}` : "/category"} className="text-gray-500 hover:text-green4">
+              <Link href={categoryId ? `/categories/${categoryId}` : "/products"} className="text-gray-500 hover:text-green4">
                 {categoryName}
               </Link>
               <span className="mx-2 text-gray-400">/</span>
@@ -200,7 +200,7 @@ const Items = () => {
                   >
                     <div className="h-full">
                       <div className="group bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 h-full flex flex-col">
-                        <Link href={`/item/${entryKey(item)}`} className="block relative pt-[100%]">
+                        <Link href={`/products/${entryKey(item)}`} className="block relative pt-[100%]">
                           <Image
                             src={itemImageUrl(item)}
                             alt={item.name}
@@ -241,7 +241,7 @@ const Items = () => {
                         </Link>
                         
                         <div className="p-3 flex-grow flex flex-col">
-                          <Link href={`/item/${entryKey(item)}`}>
+                          <Link href={`/products/${entryKey(item)}`}>
                             <h3 className="font-medium text-gray-800 mb-2 line-clamp-2 hover:text-green4 transition-colors min-h-[2.5rem]">
                               {item.name}
                             </h3>

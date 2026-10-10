@@ -91,7 +91,7 @@ export default function NewArrivalsCarousel() {
               transition={{ duration: 0.5, delay: 0.3 }}
             >
               <Link 
-                href="/items?filter=new_arrival" 
+                href="/new-arrivals" 
                 className="text-xs md:text-sm font-medium text-green3 hover:text-green4 transition-colors duration-300 flex items-center group"
               >
                 عرض الكل
@@ -165,7 +165,7 @@ export default function NewArrivalsCarousel() {
                   <div className="overflow-hidden rounded-lg bg-white shadow-md h-full transform transition-all duration-300 border border-gray-100">
                     <Link 
                       className="group block"
-                      href={`/item/${entryKey(img)}`}
+                      href={`/products/${entryKey(img)}`}
                       tabIndex={copy > 0 ? -1 : undefined}
                     >
                       <div className="relative aspect-[4/3] overflow-hidden">

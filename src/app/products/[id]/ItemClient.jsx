@@ -55,8 +55,8 @@ export default function ItemClient({ params }) {
   const productSchema = item ? generateProductSchema(item, sale) : null;
   const breadcrumbSchema = item ? generateBreadcrumbSchema([
     { name: 'الرئيسية', url: 'https://exohaven-iq.com/' },
-    { name: 'المنتجات', url: 'https://exohaven-iq.com/category' },
-    { name: item.name, url: `https://exohaven-iq.com/item/${entryKey(item)}` }
+    { name: 'المنتجات', url: 'https://exohaven-iq.com/products' },
+    { name: item.name, url: `https://exohaven-iq.com/products/${entryKey(item)}` }
   ]) : null;
 
   // Handle image selection and rotation
@@ -93,7 +93,7 @@ export default function ItemClient({ params }) {
         <div className="text-red-500 text-xl font-medium mb-4">
           {error ? 'Unable to load product information. Please try again later.' : 'المنتج غير موجود'}
         </div>
-        <Link href="/category" className="bg-green4 text-white px-6 py-2 rounded-md hover:bg-green3 transition-colors">
+        <Link href="/products" className="bg-green4 text-white px-6 py-2 rounded-md hover:bg-green3 transition-colors">
           العودة إلى المنتجات
         </Link>
       </div>
@@ -127,7 +127,7 @@ export default function ItemClient({ params }) {
             </li>
             <li className="mx-2">/</li>
             <li>
-              <Link href="/category" className="text-gray-600 hover:text-green4">
+              <Link href="/products" className="text-gray-600 hover:text-green4">
                 المنتجات
               </Link>
             </li>
@@ -377,7 +377,7 @@ export default function ItemClient({ params }) {
             <h2 className="text-2xl font-bold mb-6 text-right text-gray-800">منتجات ذات صلة</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {relatedProducts.map((product, index) => (
-                <Link href={`/item/${entryKey(product)}`} key={product.id} className="group h-full">
+                <Link href={`/products/${entryKey(product)}`} key={product.id} className="group h-full">
                   <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 h-full flex flex-col">
                     <div className="relative pt-[100%]">
                       <Image
