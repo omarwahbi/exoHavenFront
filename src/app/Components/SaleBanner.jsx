@@ -9,7 +9,7 @@ const SaleBanner = () => {
   const sale = useSale();
   const [isVisible, setIsVisible] = useState(true);
 
-  if (!isSaleActive(sale) || !isVisible) return null;
+  if (!isSaleActive(sale) || !sale.show_banner || !isVisible) return null;
 
   return (
     <motion.div
@@ -36,7 +36,7 @@ const SaleBanner = () => {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
           <span className="text-xs sm:text-sm md:text-base font-medium text-center">
-            على جميع المنتجات عند الطلب من الموقع
+            {sale.banner_text}
           </span>
         </div>
       </div>
