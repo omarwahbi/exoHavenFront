@@ -80,7 +80,7 @@ const Category = () => {
   const [scrolled, setScrolled] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const [hideOutOfStock, setHideOutOfStock] = useState(false);
-  const { cart, dispatch } = useCart();
+  const { quantityOf, addItem, decreaseItem } = useCart();
 
   const { data: categories = [], isLoading: isCategoriesLoading } = useQuery({
     queryKey: [QueryKeys.categoriesList],
@@ -234,33 +234,6 @@ const Category = () => {
     if (hideOutOfStock) count++;
     return count;
   }, [selectedCategoryId, searchQuery, hideOutOfStock]);
-
-  // Helper function to get quantity of an item in cart
-  const getItemQuantityInCart = (itemId) => {
-    const cartItem = cart.find(item => item.id === itemId);
-    return cartItem ? cartItem.quantity : 0;
-  };
-  
-  // Cart action functions
-  const addToCart = (item) => {
-    if (item.out_of_stock) return;
-    dispatch({ type: "ADD_ITEM", payload: item });
-  };
-  
-  const removeFromCart = (itemId) => {
-    dispatch({ type: "REMOVE_ITEM", payload: { id: itemId } });
-  };
-  
-  const decreaseQuantity = (itemId) => {
-    const itemInCart = cart.find(item => item.id === itemId);
-    if (itemInCart && itemInCart.quantity === 1) {
-      // If quantity is 1, remove the item completely
-      dispatch({ type: "REMOVE_ITEM", payload: { id: itemId } });
-    } else {
-      // Otherwise just decrease the quantity
-      dispatch({ type: "DECREASE_QUANTITY", payload: { id: itemId } });
-    }
-  };
 
   if (isLoading) {
     return (
@@ -585,7 +558,7 @@ const Category = () => {
             className={viewStyle === "grid" ? "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6" : "flex flex-col space-y-4"}
           >
             {filteredItems.map((item, index) => {
-              const quantityInCart = getItemQuantityInCart(item.id);
+              const quantityInCart = quantityOf(item);
               
               return (
                 <motion.div key={item.id} variants={itemVariants}>
@@ -665,7 +638,7 @@ const Category = () => {
                             ) : quantityInCart > 0 ? (
                               <div className="flex items-center">
                                 <motion.button 
-                                  onClick={() => decreaseQuantity(item.id)}
+                                  onClick={() => decreaseItem(item)}
                                   className="w-7 h-7 rounded-full bg-green1 flex items-center justify-center text-green4 hover:bg-green2 transition-colors"
                                   whileTap={{ scale: 0.9 }}
                                 >
@@ -675,7 +648,7 @@ const Category = () => {
                                 <span className="mx-2 font-medium text-green4">{quantityInCart}</span>
                                 
                                 <motion.button 
-                                  onClick={() => addToCart(item)}
+                                  onClick={() => addItem(item)}
                                   className="w-7 h-7 rounded-full bg-green4 flex items-center justify-center text-white hover:bg-green3 transition-colors"
                                   whileTap={{ scale: 0.9 }}
                                 >
@@ -684,7 +657,7 @@ const Category = () => {
                               </div>
                             ) : (
                               <motion.button 
-                                onClick={() => addToCart(item)}
+                                onClick={() => addItem(item)}
                                 className="w-8 h-8 rounded-full bg-green1 flex items-center justify-center text-green4 hover:bg-green4 hover:text-white transition-colors"
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
@@ -772,7 +745,7 @@ const Category = () => {
                               <div className="flex items-center gap-2">
                                 <div className="flex items-center border border-green2 rounded-full">
                                   <motion.button 
-                                    onClick={() => decreaseQuantity(item.id)}
+                                    onClick={() => decreaseItem(item)}
                                     className="w-7 h-7 rounded-full bg-white flex items-center justify-center text-green4 hover:bg-green1 transition-colors"
                                     whileTap={{ scale: 0.9 }}
                                   >
@@ -782,7 +755,7 @@ const Category = () => {
                                   <span className="mx-2 font-medium text-green4">{quantityInCart}</span>
                                   
                                   <motion.button 
-                                    onClick={() => addToCart(item)}
+                                    onClick={() => addItem(item)}
                                     className="w-7 h-7 rounded-full bg-green4 flex items-center justify-center text-white hover:bg-green3 transition-colors"
                                     whileTap={{ scale: 0.9 }}
                                   >
@@ -794,7 +767,7 @@ const Category = () => {
                               </div>
                             ) : (
                               <motion.button 
-                                onClick={() => addToCart(item)}
+                                onClick={() => addItem(item)}
                                 className="px-3 py-1.5 bg-green1 text-green4 rounded-lg text-sm hover:bg-green4 hover:text-white transition-colors flex items-center gap-1"
                                 whileHover={{ scale: 1.03 }}
                                 whileTap={{ scale: 0.97 }}

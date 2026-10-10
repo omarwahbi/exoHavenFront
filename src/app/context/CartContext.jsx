@@ -1,39 +1,36 @@
 "use client";
 
-import { createContext, useContext, useReducer, useEffect } from "react";
+import { createContext, useContext, useReducer, useEffect, useMemo } from "react";
 import { flattenEntry } from "@/utils/strapi";
+import { entryKey } from "@/utils/ids";
 
 const CartContext = createContext();
 
+// Cart lines are matched by documentId: Strapi 5 gives an entry a new numeric id
+// every time it is published.
+const sameItem = (a, b) => entryKey(a) === entryKey(b);
+
 const cartReducer = (state, action) => {
+  const { item } = action;
   switch (action.type) {
     case "ADD_ITEM":
-      const existingItemIndex = state.findIndex(
-        (item) => item.id === action.payload.id
-      );
-
-      if (existingItemIndex >= 0) {
-        // Item already exists in the cart, update the quantity
-        const updatedCart = state.map((item, index) =>
-          index === existingItemIndex
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
+      if (state.some((line) => sameItem(line, item))) {
+        return state.map((line) =>
+          sameItem(line, item) ? { ...line, quantity: line.quantity + 1 } : line
         );
-        return updatedCart;
-      } else {
-        // Item does not exist, add it with quantity 1
-        return [...state, { ...action.payload, quantity: 1 }];
       }
+      return [...state, { ...item, quantity: 1 }];
+
+    // Decreasing a line at quantity 1 removes it.
+    case "DECREASE_ITEM":
+      return state
+        .map((line) =>
+          sameItem(line, item) ? { ...line, quantity: line.quantity - 1 } : line
+        )
+        .filter((line) => line.quantity > 0);
 
     case "REMOVE_ITEM":
-      return state.filter((item) => item.id !== action.payload.id);
-
-    case "DECREASE_QUANTITY":
-      return state.map((item) =>
-        item.id === action.payload.id && item.quantity > 1
-          ? { ...item, quantity: item.quantity - 1 }
-          : item
-      );
+      return state.filter((line) => !sameItem(line, item));
 
     case "CLEAR_CART":
       return [];
@@ -43,27 +40,45 @@ const cartReducer = (state, action) => {
   }
 };
 
-const CartProvider = ({ children }) => {
-  const [cart, dispatch] = useReducer(cartReducer, [], () => {
-    if (typeof window !== "undefined") {
-      const storedCart = localStorage.getItem("cart");
-      // Carts saved before the switch to Strapi 5 hold products in the old v4 shape.
-      return storedCart ? flattenEntry(JSON.parse(storedCart)) : [];
-    }
+const loadCart = () => {
+  if (typeof window === "undefined") return [];
+  try {
+    const storedCart = localStorage.getItem("cart");
+    // Carts saved before the switch to Strapi 5 hold products in the old v4 shape.
+    const lines = storedCart ? flattenEntry(JSON.parse(storedCart)) : [];
+    return Array.isArray(lines) ? lines : [];
+  } catch {
     return [];
-  });
+  }
+};
+
+const CartProvider = ({ children }) => {
+  const [cart, dispatch] = useReducer(cartReducer, [], loadCart);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
+    try {
       localStorage.setItem("cart", JSON.stringify(cart));
+    } catch {
+      // Storage full or blocked: the cart still works for this visit.
     }
   }, [cart]);
 
-  return (
-    <CartContext.Provider value={{ cart, dispatch }}>
-      {children}
-    </CartContext.Provider>
+  const value = useMemo(
+    () => ({
+      cart,
+      itemCount: cart.reduce((total, line) => total + line.quantity, 0),
+      quantityOf: (item) => cart.find((line) => sameItem(line, item))?.quantity ?? 0,
+      addItem: (item) => {
+        if (!item.out_of_stock) dispatch({ type: "ADD_ITEM", item });
+      },
+      decreaseItem: (item) => dispatch({ type: "DECREASE_ITEM", item }),
+      removeItem: (item) => dispatch({ type: "REMOVE_ITEM", item }),
+      clearCart: () => dispatch({ type: "CLEAR_CART" }),
+    }),
+    [cart]
   );
+
+  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 };
 
 const useCart = () => useContext(CartContext);

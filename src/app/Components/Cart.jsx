@@ -1,7 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useCart } from "../context/CartContext";
-import useCartActions from "../context/cartActions";
 import ContinueOnWhatsApp from "./ContinueOnWhatsapp";
 import Link from "next/link";
 import Image from "next/image";
@@ -17,8 +16,7 @@ import { itemImageUrl } from "@/utils/media";
 import { entryKey } from "@/utils/ids";
 
 const Cart = () => {
-  const { cart } = useCart();
-  const { removeFromCart, decreaseQuantity, increaseQuantity, clearCart } = useCartActions();
+  const { cart, addItem, decreaseItem, removeItem, clearCart } = useCart();
 
   const [totalState, setTotalState] = useState(0);
   const [isClient, setIsClient] = useState(false);
@@ -44,30 +42,20 @@ const Cart = () => {
     enabled: cart.length === 0 // Only fetch suggested items when cart is empty
   });
 
-  // Function to handle decreasing quantity (removes item at quantity 1)
-  const handleDecrease = (itemId) => {
-    const itemInCart = cart.find(item => item.id === itemId);
-    if (itemInCart && itemInCart.quantity === 1) {
-      removeFromCart(itemId);
-    } else {
-      decreaseQuantity(itemId);
-    }
-  };
-
-  const confirmDelete = (itemId) => {
-    setDeleteConfirm(itemId);
+  const confirmDelete = (key) => {
+    setDeleteConfirm(key);
     // Auto-hide after 2 seconds
     setTimeout(() => {
       setDeleteConfirm(null);
     }, 2000);
   };
 
-  const handleDelete = (itemId) => {
-    if (deleteConfirm === itemId) {
-      removeFromCart(itemId);
+  const handleDelete = (item) => {
+    if (deleteConfirm === entryKey(item)) {
+      removeItem(item);
       setDeleteConfirm(null);
     } else {
-      confirmDelete(itemId);
+      confirmDelete(entryKey(item));
     }
   };
 
@@ -375,7 +363,7 @@ const Cart = () => {
                   <div className="space-y-4">
                     {cart.map((item) => (
                       <motion.div
-                        key={item.id}
+                        key={entryKey(item)}
                         variants={itemVariants}
                         className="rounded-xl border border-gray-100 bg-white p-4 shadow-sm md:p-6 hover:shadow-md transition-shadow duration-300"
                       >
@@ -420,7 +408,7 @@ const Cart = () => {
                               <div className="flex items-center bg-gray-100 rounded-full px-2 py-1">
                                 <motion.button
                                   type="button"
-                                  onClick={() => handleDecrease(item.id)}
+                                  onClick={() => decreaseItem(item)}
                                   className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white text-gray-500 shadow-sm hover:bg-gray-200 focus:outline-none"
                                   whileTap={{ scale: 0.9 }}
                                   aria-label="تقليل الكمية"
@@ -432,7 +420,7 @@ const Cart = () => {
                                 </span>
                                 <motion.button
                                   type="button"
-                                  onClick={() => increaseQuantity(item)}
+                                  onClick={() => addItem(item)}
                                   className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-green4 text-white shadow-sm hover:bg-green3 focus:outline-none"
                                   whileTap={{ scale: 0.9 }}
                                   aria-label="زيادة الكمية"
@@ -464,13 +452,13 @@ const Cart = () => {
                             
                             <motion.button
                               type="button"
-                              onClick={() => handleDelete(item.id)}
-                              className={`inline-flex items-center text-sm font-medium px-2 py-1 rounded-full self-end ${deleteConfirm === item.id ? 'bg-red-100 text-red-600' : 'text-gray-500 hover:text-red-600'}`}
+                              onClick={() => handleDelete(item)}
+                              className={`inline-flex items-center text-sm font-medium px-2 py-1 rounded-full self-end ${deleteConfirm === entryKey(item) ? 'bg-red-100 text-red-600' : 'text-gray-500 hover:text-red-600'}`}
                               whileHover={{ scale: 1.05 }}
                               whileTap={{ scale: 0.95 }}
                               aria-label="إزالة من السلة"
                             >
-                              {deleteConfirm === item.id ? (
+                              {deleteConfirm === entryKey(item) ? (
                                 <>
                                   <span className="mr-1 text-xs">تأكيد</span>
                                   <MdDeleteOutline size={20} className="shrink-0" />

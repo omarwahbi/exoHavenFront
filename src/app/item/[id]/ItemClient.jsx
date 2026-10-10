@@ -326,7 +326,7 @@ export default function ItemClient({ params }) {
 
                     {/* Quantity Control - Full width on mobile, auto on larger screens */}
                     <div className="w-full sm:col-span-1 md:w-auto order-2 flex justify-center sm:justify-start">
-                      <Quantity item={item} removeOnZero={true} />
+                      <Quantity item={item} />
                     </div>
 
                     {/* Go to Cart Button - Only shown when cart has items */}

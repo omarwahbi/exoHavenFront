@@ -11,10 +11,7 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
-  const { cart } = useCart();
-
-  // Calculate total items in cart
-  const cartItemCount = cart.reduce((total, item) => total + item.quantity, 0);
+  const { itemCount: cartItemCount } = useCart();
   
   useEffect(() => {
     const handleScroll = () => {
