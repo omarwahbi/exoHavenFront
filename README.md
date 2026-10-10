@@ -14,6 +14,7 @@ cp .env.example .env.local   # NEXT_PUBLIC_API_URL: the Strapi to read from
 npm ci
 npm run dev                  # http://localhost:3000
 npm run lint
+npm test                     # unit tests (Vitest, tests/*.test.js)
 npm run build                # what Vercel runs
 ```
 
@@ -28,8 +29,9 @@ The site is on Vercel, with automatic deploys turned off for `master`
 
 - Every pull request gets a preview deployment that reads from the **staging**
   backend.
-- GitHub Actions (`.github/workflows/ci.yml`) lints and builds every pull
-  request.
+- GitHub Actions (`.github/workflows/ci.yml`) lints, tests and builds every
+  pull request.
+- Dependabot opens weekly pull requests for minor and patch updates.
 - Merging to `master` does not deploy. To release, open the deployment in Vercel
   and choose **Promote to Production**.
 
@@ -71,13 +73,14 @@ redirect:
   `src/utils/pricing.js` for unit prices (sale included), cart subtotals and
   delivery fees, so the cart, the metadata and the JSON-LD agree.
 - **Sale.** The site-wide discount is set in the admin (the "Sale" single type:
-  on/off, percent, end date). The root layout fetches it with `getSale()`
+  on/off, percent, end date, and the top banner: shown or not, and its text). The root layout fetches it with `getSale()`
   (`src/services/sale.js`, cached for 5 minutes). Client components read it with
   `useSale()` and pass it to `isSaleActive` / `calculateSalePrice` /
   `unitPrice`. Never hard-code a discount.
 - **Cart.** Use `useCart()` from `src/app/context/CartContext.jsx`. It provides
-  `quantityOf`, `addItem`, `decreaseItem`, `removeItem`, `clearCart` and
-  `itemCount`. The cart is saved in localStorage.
+  `quantityOf`, `addItem`, `decreaseItem`, `removeItem`, `clearCart`,
+  `itemCount`, and `loaded`. `loaded` is false until the saved cart has been read
+  after the first render. The cart is saved in localStorage.
 - **Where components go.** Components that only one page uses go in that page's
   folder, in `components/` (for example `src/app/products/components/`). Shared
   ones go in `src/app/Components/`, such as `ItemPrice` for a product's price
@@ -91,6 +94,12 @@ redirect:
 - **Redirects** go in `src/middleware.js`, not in pages. The app-wide
   `loading.jsx` streams pages, so a `redirect()` inside a page returns 200
   instead of a redirect.
+
+## Tests
+
+`tests/` covers the logic the shop depends on: reading Strapi data, the sale,
+prices, delivery fees, the WhatsApp order text and the cart. Add a test when you
+change one of these or add a rule like them.
 
 ## Other pieces
 
