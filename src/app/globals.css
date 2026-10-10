@@ -27,12 +27,8 @@
   --body-background: var(--neutral1);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-rgb: 0, 0, 0;
-  }
-}
+/* The shop is light-only: no dark-mode overrides (they turned text white on light
+   backgrounds for visitors whose phone is in dark mode). */
 
 html {
   scroll-behavior: smooth;
@@ -501,4 +497,30 @@ p {
 
 .new-arrivals-3d-carousel .swiper-slide-active {
   z-index: 2;
+}
+
+/* Shared building blocks of the storefront design. */
+@layer components {
+  /* Page width with the side gutters used on every page. */
+  .container-page {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+  .badge {
+    @apply inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-bold leading-5 shadow-sm;
+  }
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-green4 px-5 py-2.5 text-sm font-bold text-white shadow-green transition-colors hover:bg-green5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green3 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:shadow-none;
+  }
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-green4 bg-white px-5 py-2.5 text-sm font-bold text-green5 transition-colors hover:bg-green1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green3;
+  }
+  .btn-chip {
+    @apply inline-flex items-center rounded-full bg-green1 px-3 py-1.5 text-xs font-bold text-green5 transition-colors hover:bg-green4 hover:text-white;
+  }
+  .qty-btn {
+    @apply inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green3;
+  }
+  .section-title {
+    @apply text-xl font-bold text-gray-900 sm:text-2xl;
+  }
 }

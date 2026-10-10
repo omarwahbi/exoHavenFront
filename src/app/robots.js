@@ -1,50 +1,11 @@
-// robots.js - SEO configuration for search engine crawlers
-export default function robots() {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://exohaven-iq.com';
+import { SITE_URL } from '@/utils/metadata';
 
+// Everything is crawlable except the cart. Next's own files (/_next/) must stay
+// open: search engines load a page's scripts and styles to render it.
+export default function robots() {
   return {
-    rules: [
-      {
-        userAgent: '*',
-        allow: '/',
-        disallow: [
-          '/api/',
-          '/admin/',
-          '/_next/',
-          '/private/',
-          '/*.json$',
-          '/cart',  // Don't index cart pages
-        ],
-      },
-      {
-        userAgent: 'Googlebot',
-        allow: '/',
-        disallow: [
-          '/api/',
-          '/admin/',
-          '/cart',
-        ],
-        crawlDelay: 0,
-      },
-      {
-        userAgent: 'Googlebot-Image',
-        allow: '/',
-        disallow: [
-          '/admin/',
-        ],
-      },
-      {
-        userAgent: 'bingbot',
-        allow: '/',
-        disallow: [
-          '/api/',
-          '/admin/',
-          '/cart',
-        ],
-        crawlDelay: 1,
-      },
-    ],
-    sitemap: `${baseUrl}/sitemap.xml`,
-    host: baseUrl,
+    rules: [{ userAgent: '*', allow: '/', disallow: ['/cart'] }],
+    sitemap: `${SITE_URL}/sitemap.xml`,
+    host: SITE_URL,
   };
 }

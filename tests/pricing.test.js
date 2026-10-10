@@ -55,3 +55,29 @@ test("the WhatsApp order message lists items, totals, address and note", () => {
       "\n\nملاحظة: after 5pm"
   );
 });
+
+describe("variants", () => {
+  const lampWithVariants = {
+    documentId: "lamp",
+    name: "Lamp",
+    state: "9999",
+    variants: [
+      { label: "50W", price: 15000 },
+      { label: "100W", price: 22000, low_stock: true },
+      { label: "150W", price: 30000, out_of_stock: true },
+    ],
+  };
+
+  test("a cart line is priced by its variant", () => {
+    const line = { ...lampWithVariants, variant: { label: "100W", price: 22000 }, quantity: 2 };
+    expect(unitPrice(line, noSale)).toBe(22000);
+    expect(unitPrice(line, sale)).toBe(19800);
+    expect(cartSubtotal([line], sale)).toBe(39600);
+  });
+
+  test("the WhatsApp message names the variant", () => {
+    const line = { ...lampWithVariants, variant: { label: "100W", price: 22000 }, quantity: 1 };
+    const message = buildOrderMessage({ cart: [line], sale: noSale, subtotal: 22000, fee: 5000, location: "baghdad", address: "", note: "" });
+    expect(message.startsWith("Lamp (100W)\nالعدد: 1\nالسعر: 22,000 IQD")).toBe(true);
+  });
+});

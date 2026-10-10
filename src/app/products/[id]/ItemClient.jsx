@@ -1,435 +1,307 @@
 "use client";
-import React, { useState, useEffect, useMemo } from "react";
-import { MdCheckCircle, MdSupportAgent, MdLocalShipping, MdShield, MdShoppingCart } from "react-icons/md";
-import AddToCartButton from "@/app/Components/AddToCartBtn";
-import Quantity from "@/app/Components/Quantity";
+import { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
-import Spinner from "@/app/Components/Spinner";
 import { useQuery } from "@tanstack/react-query";
+import { FiCheck, FiChevronLeft, FiChevronRight, FiCreditCard, FiMinus, FiPlus, FiShoppingCart, FiTruck } from "react-icons/fi";
+import { FaWhatsapp } from "react-icons/fa";
 import { fetchItemById, fetchRelatedProducts } from "@/services/api";
 import { QueryKeys } from "@/utils/queryKeys";
 import { useCart } from "@/app/context/CartContext";
-import { calculateSalePrice, isSaleActive } from "@/utils/saleUtils";
 import { useSale } from "@/app/context/SaleContext";
-import { FaTag } from "react-icons/fa";
-import { generateProductSchema, generateBreadcrumbSchema, renderJSONLD } from "@/utils/seo";
-import { itemImageUrl, mediaUrl } from "@/utils/media";
+import { calculateSalePrice, isSaleActive } from "@/utils/saleUtils";
+import { generateProductSchema, renderJSONLD } from "@/utils/seo";
+import { itemImageUrl } from "@/utils/media";
 import { entryKey } from "@/utils/ids";
+import { availableVariants, basePrice, cartVariant, isLowStock, isOutOfStock, variantsOf } from "@/utils/product";
+import { FREE_DELIVERY_THRESHOLD } from "@/utils/pricing";
+import { WHATSAPP_URL } from "@/utils/contact";
+import Breadcrumbs from "@/app/Components/Breadcrumbs";
+import ProductCard from "@/app/Components/ProductCard";
 
-export default function ItemClient({ params }) {
-  const sale = useSale();
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [selectedImage, setSelectedImage] = useState(null);
-  const { cart } = useCart();
-
-  // Check if cart has items
-  const hasItemsInCart = cart.length > 0;
-
-  // Fetch item data
-  const {
-    data: item,
-    isLoading,
-    error
-  } = useQuery({
-    queryKey: QueryKeys.item(params.id),
-    queryFn: () => fetchItemById(params.id),
-    enabled: !!params.id
+// All of a product's pictures: the thumbnail first, then its images, without repeats.
+const galleryOf = (item) => {
+  const seen = new Set();
+  return [item?.item_thumbnail, ...(item?.item_images || [])].filter((media) => {
+    if (!media?.url || seen.has(media.url)) return false;
+    seen.add(media.url);
+    return true;
   });
+};
 
-  // Derived data using useMemo to prevent recreation on each render
-  const itemImgs = useMemo(() => item?.item_images || [], [item]);
-  const categoryId = entryKey(item?.category);
+function Gallery({ item, dimmed }) {
+  const images = useMemo(() => galleryOf(item), [item]);
+  const [active, setActive] = useState(0);
+  const current = images[active]?.url || itemImageUrl(item);
+  const go = (step) => setActive((index) => (index + step + images.length) % images.length);
 
-  // Fetch related products
-  const {
-    data: relatedProducts = []
-  } = useQuery({
-    queryKey: QueryKeys.relatedProducts(categoryId, entryKey(item)),
-    queryFn: () => fetchRelatedProducts(categoryId, entryKey(item)),
-    enabled: !!categoryId && !!item
-  });
-
-  // Generate structured data for SEO
-  const productSchema = item ? generateProductSchema(item, sale) : null;
-  const breadcrumbSchema = item ? generateBreadcrumbSchema([
-    { name: 'الرئيسية', url: 'https://exohaven-iq.com/' },
-    { name: 'المنتجات', url: 'https://exohaven-iq.com/products' },
-    { name: item.name, url: `https://exohaven-iq.com/products/${entryKey(item)}` }
-  ]) : null;
-
-  // Handle image selection and rotation
-  useEffect(() => {
-    if (itemImgs && itemImgs.length > 0) {
-      setSelectedImage(itemImgs[activeIndex].url);
-
-      const interval = setInterval(() => {
-        setActiveIndex((current) =>
-          current === itemImgs.length - 1 ? 0 : current + 1
-        );
-      }, 10000); // Change slide every 10 seconds
-
-      return () => clearInterval(interval); // Clean up on component unmount
-    }
-  }, [itemImgs, activeIndex]);
-
-  const handleThumbnailClick = (index) => {
-    setActiveIndex(index);
-    setSelectedImage(itemImgs[index].url);
-  };
-
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center min-h-[50vh]">
-        <Spinner size="lg" />
+  return (
+    <div>
+      <div className="relative aspect-square overflow-hidden rounded-2xl border border-gray-100 bg-white">
+        <Image
+          key={current}
+          src={current}
+          alt={item.name}
+          fill
+          sizes="(max-width: 1024px) 100vw, 50vw"
+          className={`object-contain p-4 ${dimmed ? "opacity-60 grayscale" : ""}`}
+          priority
+        />
+        {images.length > 1 && (
+          <>
+            <button type="button" aria-label="الصورة السابقة" onClick={() => go(-1)} className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-gray-700 shadow">
+              <FiChevronRight />
+            </button>
+            <button type="button" aria-label="الصورة التالية" onClick={() => go(1)} className="absolute left-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-gray-700 shadow">
+              <FiChevronLeft />
+            </button>
+          </>
+        )}
       </div>
+      {images.length > 1 && (
+        <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
+          {images.map((image, index) => (
+            <button
+              key={image.url}
+              type="button"
+              onClick={() => setActive(index)}
+              aria-label={`الصورة ${index + 1}`}
+              aria-current={index === active}
+              className={`relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border-2 bg-white sm:h-20 sm:w-20 ${index === active ? "border-green4" : "border-gray-100 hover:border-green2"}`}
+            >
+              <Image src={image.url} alt="" fill sizes="80px" className="object-cover" />
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Add-to-cart, or once it's in the cart a quantity stepper and a link to the cart.
+function PurchaseControls({ item, variant, outOfStock, compact = false }) {
+  const { quantityOf, addItem, decreaseItem } = useCart();
+  const line = { ...item, variant: cartVariant(variant) };
+  const quantity = quantityOf(line);
+
+  if (outOfStock) {
+    return (
+      <button type="button" disabled className="btn-primary w-full">
+        غير متوفر حالياً
+      </button>
     );
   }
+  if (quantity === 0) {
+    return (
+      <button type="button" onClick={() => addItem(item, variant)} className="btn-primary w-full py-3 text-base">
+        <FiShoppingCart size={18} />
+        أضف إلى السلة
+      </button>
+    );
+  }
+  return (
+    <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 rounded-full border border-gray-200 bg-white p-1">
+        <button type="button" aria-label="إنقاص الكمية" onClick={() => decreaseItem(line)} className="qty-btn h-9 w-9 bg-gray-100 text-gray-700">
+          <FiMinus />
+        </button>
+        <span className="min-w-[1.5rem] text-center font-bold">{quantity}</span>
+        <button type="button" aria-label="زيادة الكمية" onClick={() => addItem(item, variant)} className="qty-btn h-9 w-9 bg-green4 text-white">
+          <FiPlus />
+        </button>
+      </div>
+      <Link href="/cart" className="btn-outline flex-1">
+        <FiCheck />
+        {compact ? "السلة" : "في السلة – عرض السلة"}
+      </Link>
+    </div>
+  );
+}
+
+function Price({ price, sale, outOfStock, large = false }) {
+  if (outOfStock) return <span className="font-bold text-gray-400">غير متوفر</span>;
+  const onSale = isSaleActive(sale);
+  return (
+    <div className="flex items-baseline gap-2">
+      <span className={`font-extrabold ${large ? "text-3xl" : "text-lg"} ${onSale ? "text-red-600" : "text-gray-900"}`}>
+        {(onSale ? calculateSalePrice(price, sale) : price).toLocaleString("en-US")}
+        <span className="mr-1 text-sm font-semibold">د.ع</span>
+      </span>
+      {onSale && <span className="text-sm text-gray-400 line-through">{price.toLocaleString("en-US")}</span>}
+    </div>
+  );
+}
+
+const ProductSkeleton = () => (
+  <div className="container-page grid gap-8 py-8 lg:grid-cols-2">
+    <div className="aspect-square animate-pulse rounded-2xl bg-white" />
+    <div className="space-y-4">
+      <div className="h-8 w-2/3 animate-pulse rounded bg-white" />
+      <div className="h-6 w-1/3 animate-pulse rounded bg-white" />
+      <div className="h-24 animate-pulse rounded bg-white" />
+    </div>
+  </div>
+);
+
+// initialItem: the product as the server read it (null if that failed; this then
+// fetches it in the browser).
+export default function ItemClient({ params, initialItem }) {
+  const sale = useSale();
+  const { data: item, isLoading, error } = useQuery({
+    queryKey: QueryKeys.item(params.id),
+    queryFn: () => fetchItemById(params.id),
+    enabled: !!params.id,
+    initialData: initialItem ?? undefined,
+  });
+
+  // For items with variants: the one the shopper picked (by label), defaulting to
+  // the first one in stock.
+  const [variantLabel, setVariantLabel] = useState(null);
+  const variants = variantsOf(item);
+  const variant = variants.find((v) => v.label === variantLabel) ?? availableVariants(item)[0] ?? variants[0];
+  const outOfStock = item ? isOutOfStock(item, variant) : false;
+  const price = item ? basePrice(item, variant) : 0;
+
+  const categoryId = entryKey(item?.category);
+  const { data: relatedProducts = [] } = useQuery({
+    queryKey: QueryKeys.relatedProducts(categoryId, entryKey(item)),
+    queryFn: () => fetchRelatedProducts(categoryId, entryKey(item)),
+    enabled: !!categoryId && !!item,
+  });
+
+  if (isLoading) return <ProductSkeleton />;
 
   if (error || !item) {
     return (
-      <div className="flex flex-col justify-center items-center min-h-[50vh] px-4 text-center">
-        <div className="text-red-500 text-xl font-medium mb-4">
-          {error ? 'Unable to load product information. Please try again later.' : 'المنتج غير موجود'}
-        </div>
-        <Link href="/products" className="bg-green4 text-white px-6 py-2 rounded-md hover:bg-green3 transition-colors">
-          العودة إلى المنتجات
+      <div className="container-page flex min-h-[50vh] flex-col items-center justify-center gap-4 text-center" dir="rtl">
+        <p className="text-lg font-bold text-gray-900">{error ? "تعذر تحميل المنتج، حاول مرة أخرى." : "المنتج غير موجود"}</p>
+        <Link href="/products" className="btn-primary">
+          تصفح المنتجات
         </Link>
       </div>
     );
   }
 
+  const productSchema = generateProductSchema(item, sale);
+
   return (
     <>
-      {/* JSON-LD Structured Data for SEO */}
-      {productSchema && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={renderJSONLD(productSchema)}
-        />
-      )}
-      {breadcrumbSchema && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={renderJSONLD(breadcrumbSchema)}
-        />
-      )}
+      {productSchema && <script type="application/ld+json" dangerouslySetInnerHTML={renderJSONLD(productSchema)} />}
 
-      <div className="max-w-7xl mx-auto mt-8 mb-14 px-4 md:px-6 lg:px-8">
-        {/* Breadcrumb */}
-        <nav className="mb-6 text-sm font-medium" dir="rtl">
-          <ol className="flex items-center space-x-1 space-x-reverse">
-            <li>
-              <Link href="/" className="text-gray-600 hover:text-green4">
-                الرئيسية
-              </Link>
-            </li>
-            <li className="mx-2">/</li>
-            <li>
-              <Link href="/products" className="text-gray-600 hover:text-green4">
-                المنتجات
-              </Link>
-            </li>
-            <li className="mx-2">/</li>
-            <li className="text-green5 font-bold">{item.name}</li>
-          </ol>
-        </nav>
+      <div className="container-page py-6 sm:py-8" dir="rtl">
+        <Breadcrumbs
+          className="mb-5"
+          items={[
+            { label: item.category?.name, href: item.category ? `/categories/${entryKey(item.category)}` : null },
+            { label: item.sub_category?.name, href: item.sub_category ? `/sub-categories/${entryKey(item.sub_category)}` : null },
+            { label: item.name },
+          ]}
+        />
 
-        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-          <div className="flex flex-col lg:flex-row">
-            {/* Product Images Section - Thumbnails and Main Image */}
-            <div className="w-full lg:w-1/2">
-              <div className="p-4 md:p-6">
-                <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-                  {/* Thumbnails on side */}
-                  <div className="hidden md:flex md:col-span-1 flex-col space-y-3 order-first">
-                    {itemImgs && itemImgs.length > 0 && itemImgs.map((img, index) => (
-                      <div
-                        key={img.id || index}
-                        className={`relative cursor-pointer rounded-md overflow-hidden border-2 ${
-                          index === activeIndex ? 'border-green4' : 'border-transparent'
-                        } hover:border-green3 transition-all duration-200`}
-                        onClick={() => handleThumbnailClick(index)}
+        <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
+          <Gallery item={item} dimmed={isOutOfStock(item)} />
+
+          <div className="flex flex-col gap-5">
+            <div>
+              <div className="mb-2 flex flex-wrap gap-2">
+                {outOfStock ? (
+                  <span className="badge bg-gray-900 text-white">نفذت الكمية</span>
+                ) : isLowStock(item, variant) ? (
+                  <span className="badge bg-amber-500 text-white">آخر قطعة – اطلبها الآن</span>
+                ) : (
+                  <span className="badge bg-green1 text-green5">متوفر</span>
+                )}
+                {item.new_arrival && <span className="badge bg-blue-50 text-blue-700">وصل حديثاً</span>}
+                {isSaleActive(sale) && !outOfStock && <span className="badge bg-red-50 text-red-600">خصم {sale.percent}%</span>}
+              </div>
+              <h1 className="text-2xl font-extrabold leading-snug text-gray-900 sm:text-3xl">{item.name}</h1>
+              {item.Item_ID && <p className="mt-1 text-xs text-gray-400">رمز المنتج: {item.Item_ID}</p>}
+            </div>
+
+            <Price price={price} sale={sale} outOfStock={outOfStock} large />
+
+            {variants.length > 0 && (
+              <div>
+                <h2 className="mb-2 text-sm font-bold text-gray-700">
+                  اختر النوع: <span className="font-semibold text-green5">{variant?.label}</span>
+                </h2>
+                <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="اختر النوع">
+                  {variants.map((v) => {
+                    const selected = v.label === variant?.label;
+                    return (
+                      <button
+                        key={v.label}
+                        type="button"
+                        role="radio"
+                        aria-checked={selected}
+                        onClick={() => setVariantLabel(v.label)}
+                        className={`min-w-[5rem] rounded-xl border-2 px-4 py-2 text-sm font-semibold transition-colors ${
+                          selected ? "border-green4 bg-green1 text-green5" : "border-gray-200 bg-white text-gray-700 hover:border-green3"
+                        } ${v.out_of_stock ? "opacity-50" : ""}`}
                       >
-                        <div className="pb-[100%] relative">
-                          <Image
-                            src={img.url}
-                            fill
-                            sizes="(max-width: 768px) 20vw, 10vw"
-                            className="object-cover absolute inset-0"
-                            alt={`Thumbnail ${index + 1}`}
-                            priority={index === 0}
-                            loading={index === 0 ? "eager" : "lazy"}
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Main image display */}
-                  <div className="md:col-span-4 relative">
-                    <div className="bg-white rounded-lg overflow-hidden">
-                      <div className="relative pt-[100%]">
-                        <AnimatePresence mode="wait">
-                          <motion.div
-                            key={activeIndex}
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 0.3 }}
-                            className="absolute inset-0"
-                          >
-                            <Image
-                              src={selectedImage || mediaUrl(item?.item_images) || itemImageUrl(item)}
-                              fill
-                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                              className="object-contain p-4"
-                              alt={item.name}
-                              priority
-                              fetchPriority="high"
-                            />
-                          </motion.div>
-                        </AnimatePresence>
-
-                        {/* Out of stock overlay */}
-                        {item.out_of_stock && (
-                          <div className="absolute inset-0 flex items-center justify-center bg-green5/60 z-10">
-                            <div className="bg-red-500 text-white py-2 px-6 rounded-full text-lg font-bold transform -rotate-12">
-                              نفذت الكمية
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Mobile thumbnails */}
-                <div className="flex justify-center space-x-2 mt-4 md:hidden overflow-x-auto py-2">
-                  {itemImgs && itemImgs.map((img, index) => (
-                    <div
-                      key={img.id || index}
-                      onClick={() => handleThumbnailClick(index)}
-                      className={`w-16 h-16 rounded-md overflow-hidden flex-shrink-0 border-2 ${
-                        index === activeIndex ? 'border-green4' : 'border-gray-200'
-                      }`}
-                    >
-                      <Image
-                        src={img.url}
-                        width={64}
-                        height={64}
-                        className="object-cover w-full h-full"
-                        alt={`Thumbnail ${index + 1}`}
-                      />
-                    </div>
-                  ))}
+                        <span className={v.out_of_stock ? "line-through" : ""}>{v.label}</span>
+                        <span className="block text-xs font-normal text-gray-500">{Number(v.price).toLocaleString("en-US")} د.ع</span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
+            )}
+
+            <div className="hidden sm:block">
+              <PurchaseControls item={item} variant={variant} outOfStock={outOfStock} />
             </div>
 
-            {/* Product Information Section */}
-            <div className="w-full lg:w-1/2 border-t lg:border-t-0 lg:border-r border-gray-100">
-              <div className="p-4 md:p-6" dir="rtl">
+            <ul className="grid gap-3 rounded-2xl border border-gray-100 bg-white p-4 text-sm text-gray-700 sm:grid-cols-2">
+              <li className="flex items-center gap-2">
+                <FiTruck className="shrink-0 text-green5" size={18} />
+                توصيل لكل العراق، مجاني فوق {FREE_DELIVERY_THRESHOLD.toLocaleString("en-US")} د.ع
+              </li>
+              <li className="flex items-center gap-2">
+                <FiCreditCard className="shrink-0 text-green5" size={18} />
+                الدفع عند الاستلام
+              </li>
+              <li className="sm:col-span-2">
+                <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 font-semibold text-[#128C7E] hover:underline">
+                  <FaWhatsapp size={18} />
+                  عندك سؤال عن هذا المنتج؟ راسلنا
+                </a>
+              </li>
+            </ul>
 
-
-                {/* Product name */}
-                <h1 className="text-2xl md:text-3xl font-bold mb-2 text-gray-800">
-                  {item.name}
-                </h1>
-
-                {/* Availability tag */}
-                <div className="mb-4">
-                  {item.out_of_stock ? (
-                    <span className="inline-block bg-red-100 text-red-800 text-sm font-medium px-3 py-1 rounded-full">
-                      غير متوفر
-                    </span>
-                  ) : (
-                    <span className="inline-block bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full">
-                      متوفر
-                    </span>
-                  )}
-
-                  {/* New arrival tag */}
-                  {item.new_arrival && (
-                    <span className="inline-block bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full mr-2">
-                      وصل حديثاً
-                    </span>
-                  )}
-
-                  {/* Sale tag */}
-                  {isSaleActive(sale) && !item.out_of_stock && (
-                    <span className="inline-block bg-amber-100 text-amber-800 text-sm font-medium px-3 py-1 rounded-full mr-2">
-                      <FaTag className="inline-block ml-1" size={12} />
-                      خصم {sale.percent}%
-                    </span>
-                  )}
-                </div>
-
-                {/* Price */}
-                <div className="my-5">
-                  {isSaleActive(sale) && !item.out_of_stock ? (
-                    <>
-                      <div className="flex flex-col">
-                        <span className="text-lg line-through text-gray-500 mb-1">
-                          {Number(item.state).toLocaleString()}
-                          <span className="text-sm font-medium mr-1">د.ع</span>
-                        </span>
-                        <span className="text-3xl font-bold text-amber-600">
-                          {calculateSalePrice(item.state, sale).toLocaleString()}
-                          <span className="text-lg font-medium mr-1">د.ع</span>
-                        </span>
-                      </div>
-                    </>
-                  ) : (
-                    <span className="text-3xl font-bold text-green5">
-                      {Number(item.state).toLocaleString()}
-                      <span className="text-lg font-medium mr-1">د.ع</span>
-                    </span>
-                  )}
-                </div>
-
-                {/* Description */}
-                <div className="my-6">
-                  <h3 className="text-lg font-medium mb-2">وصف المنتج</h3>
-                  <div className="text-gray-700 whitespace-pre-line bg-gray-50 p-4 rounded-lg">
-                    {item.description || "لا يوجد وصف متاح لهذا المنتج."}
-                  </div>
-                </div>
-
-                {/* Divider */}
-                <div className="border-t border-gray-200 my-6"></div>
-
-                {/* Features */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                  <div className="flex items-center">
-                    <MdCheckCircle size={24} className="shrink-0 ml-2 text-green-500" />
-                    <span className="text-gray-700">منتج ذو جودة عالية</span>
-                  </div>
-
-                  <div className="flex items-center">
-                    <MdLocalShipping size={24} className="shrink-0 ml-2 text-blue-500" />
-                    <span className="text-gray-700">توصيل سريع وآمن</span>
-                  </div>
-                  <div className="flex items-center">
-                    <MdSupportAgent size={24} className="shrink-0 ml-2 text-red-500" />
-                    <span className="text-gray-700">خدمة عملاء متميزة</span>
-                  </div>
-                </div>
-
-                {/* Cart Actions */}
-                <div className="flex flex-col gap-4 mt-6">
-                  {/* Add to Cart & Quantity Control - Responsive Layout */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:flex md:items-center gap-4">
-                    {/* Add to Cart Button - Full width on mobile, partial on larger screens */}
-                    <div className="w-full sm:col-span-2 md:flex-1 order-1">
-                      <AddToCartButton item={item} />
-                    </div>
-
-                    {/* Quantity Control - Full width on mobile, auto on larger screens */}
-                    <div className="w-full sm:col-span-1 md:w-auto order-2 flex justify-center sm:justify-start">
-                      <Quantity item={item} />
-                    </div>
-
-                    {/* Go to Cart Button - Only shown when cart has items */}
-                    {hasItemsInCart && (
-                      <div className="w-full sm:col-span-1 md:w-auto order-3">
-                        <Link href="/cart" className="block w-full">
-                          <motion.div
-                            className="bg-gray-50 border border-green4 text-green5 font-medium py-2.5 px-4 rounded-full
-                                    flex items-center justify-center gap-2 hover:bg-green1 transition-all duration-300"
-                            whileHover={{
-                              scale: 1.02,
-                              boxShadow: "0 4px 6px rgba(0, 0, 0, 0.05)"
-                            }}
-                            whileTap={{ scale: 0.98 }}
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.3 }}
-                          >
-                            <MdShoppingCart size={20} className="shrink-0" />
-                            <span>عرض السلة</span>
-                          </motion.div>
-                        </Link>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Extra Info */}
-                  <div className="bg-gray-50 rounded-lg p-4 mt-2">
-                    <div className="flex items-start">
-                      <MdShield className="shrink-0 text-gray-500 ml-3 mt-1" size={20} />
-                      <div className="text-sm text-gray-700">
-                        <p className="font-medium mb-1">معلومات إضافية</p>
-                        <p>الدفع عند الاستلام متاح في بغداد والمحافظات</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <section>
+              <h2 className="mb-2 text-base font-bold text-gray-900">وصف المنتج</h2>
+              <p className="whitespace-pre-line text-sm leading-7 text-gray-700">{item.description || "لا يوجد وصف لهذا المنتج بعد."}</p>
+            </section>
           </div>
         </div>
 
-        {/* Related Products Section */}
-        {relatedProducts && relatedProducts.length > 0 && (
-          <div className="mt-12">
-            <h2 className="text-2xl font-bold mb-6 text-right text-gray-800">منتجات ذات صلة</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {relatedProducts.map((product, index) => (
-                <Link href={`/products/${entryKey(product)}`} key={product.id} className="group h-full">
-                  <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 h-full flex flex-col">
-                    <div className="relative pt-[100%]">
-                      <Image
-                        src={itemImageUrl(product)}
-                        alt={product.name}
-                        fill
-                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 20vw"
-                        className="object-cover group-hover:scale-105 transition-transform duration-500"
-                        priority={index < 2}
-                      />
-                      {product.out_of_stock && (
-                        <div className="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
-                          نفذت الكمية
-                        </div>
-                      )}
-                      {/* Sale tag - Display only if sale is active */}
-                      {isSaleActive(sale) && !product.out_of_stock && (
-                        <div className="absolute top-2 left-2 bg-amber-500 text-white text-xs font-semibold px-2 py-1 rounded-lg">
-                          -{sale.percent}%
-                        </div>
-                      )}
-                    </div>
-                    <div className="p-3 flex-grow flex flex-col">
-                      <h3 className="font-medium text-gray-800 mb-2 line-clamp-2 group-hover:text-green4 transition-colors text-right min-h-[2.5rem]">
-                        {product.name}
-                      </h3>
-                      <div className="text-right mt-auto">
-                        {product.out_of_stock ? (
-                          <span className="font-bold text-gray-400">غير متوفر</span>
-                        ) : isSaleActive(sale) ? (
-                          <div>
-                            <span className="text-gray-500 line-through text-sm block">
-                              {Number(product.state).toLocaleString()} د.ع
-                            </span>
-                            <span className="font-bold text-amber-600">
-                              {calculateSalePrice(product.state, sale).toLocaleString()} د.ع
-                            </span>
-                          </div>
-                        ) : (
-                          <span className="font-bold text-green5">
-                            {Number(product.state).toLocaleString()} د.ع
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </Link>
+        {relatedProducts.length > 0 && (
+          <section className="mt-14" aria-labelledby="related-products">
+            <h2 id="related-products" className="section-title mb-5">
+              منتجات من نفس القسم
+            </h2>
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
+              {relatedProducts.map((product) => (
+                <ProductCard key={product.id} item={product} />
               ))}
             </div>
-          </div>
+          </section>
         )}
       </div>
+
+      {/* Phones: price and add-to-cart stay in reach above the tab bar. */}
+      <div className="fixed inset-x-0 bottom-[calc(3.6rem+env(safe-area-inset-bottom))] z-30 border-t border-gray-200 bg-white/95 px-4 py-3 backdrop-blur sm:hidden" dir="rtl">
+        <div className="flex items-center gap-3">
+          <div className="shrink-0">
+            <Price price={price} sale={sale} outOfStock={outOfStock} />
+          </div>
+          <div className="flex-1">
+            <PurchaseControls item={item} variant={variant} outOfStock={outOfStock} compact />
+          </div>
+        </div>
+      </div>
+      <div className="h-20 sm:hidden" aria-hidden="true" />
     </>
   );
 }
