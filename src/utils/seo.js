@@ -2,6 +2,7 @@
 
 import { mediaUrl } from './media';
 import { entryKey } from './ids';
+import { deliveryFee, unitPrice } from './pricing';
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://exohaven-iq.com';
 const imageKitUrl = 'https://ik.imagekit.io/5a72nvbtu';
@@ -116,13 +117,13 @@ export function generateProductSchema(item) {
   const {
     name,
     description,
-    state,
     out_of_stock,
     category,
   } = item;
 
-  // Ensure we have a valid price
-  if (!state || typeof state !== 'number') return null;
+  // Prices are stored as strings; skip items without a usable one.
+  const salePrice = unitPrice(item);
+  if (!salePrice) return null;
 
   // Get image URL
   let imageUrl = `${baseUrl}/icons/icon-512x512.png`; // Default image
@@ -133,10 +134,6 @@ export function generateProductSchema(item) {
       : `${imageKitUrl}${thumbnailUrl}`;
   }
 
-  // Calculate actual price (10% discount for sale)
-  const regularPrice = state;
-  const salePrice = regularPrice * 0.9;
-
   return {
     '@context': 'https://schema.org',
     '@type': 'Product',
@@ -144,7 +141,7 @@ export function generateProductSchema(item) {
     name: name || 'Product',
     description: description || 'Exotic pet accessory available at ExoHaven Iraq',
     image: imageUrl,
-    sku: `EXOHAVEN-${item.id}`,
+    sku: item.Item_ID || entryKey(item),
     brand: {
       '@type': 'Brand',
       name: 'ExoHaven',
@@ -170,7 +167,7 @@ export function generateProductSchema(item) {
         '@type': 'OfferShippingDetails',
         shippingRate: {
           '@type': 'MonetaryAmount',
-          value: salePrice >= 50000 ? 0 : 5000,
+          value: deliveryFee(salePrice, 'baghdad'),
           currency: 'IQD',
         },
         shippingDestination: {
@@ -193,11 +190,6 @@ export function generateProductSchema(item) {
           },
         },
       },
-    },
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue: '4.5',
-      reviewCount: '1',
     },
   };
 }

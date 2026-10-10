@@ -4,6 +4,7 @@ import axios from 'axios';
 import { API_URL as apiUrl } from '@/services/api';
 import { mediaUrl } from '@/utils/media';
 import { entryKey } from '@/utils/ids';
+import { unitPrice } from '@/utils/pricing';
 import { flattenResponse } from '@/utils/strapi';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://exohaven-iq.com';
@@ -35,7 +36,7 @@ export async function generateMetadata(props) {
     };
   }
 
-  const { name, description, state, out_of_stock, category } = item;
+  const { name, description, out_of_stock, category } = item;
 
   // Get image URL
   let imageUrl = `${siteUrl}/og-image.png`;
@@ -46,10 +47,7 @@ export async function generateMetadata(props) {
       : `https://ik.imagekit.io/5a72nvbtu${thumbnailUrl}`;
   }
 
-  // Calculate sale price if active
-  const saleActive = true; // You can implement date check here
-  const price = state;
-  const salePrice = saleActive ? price * 0.9 : price; // 10% discount
+  const salePrice = unitPrice(item);
 
   const productTitle = `${name} | ExoHaven Iraq - مستلزمات الحيوانات الأليفة`;
   const productDescription = description
