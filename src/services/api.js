@@ -160,4 +160,61 @@ export const fetchSuggestedItems = async (limit = 4) => {
   return data.data;
 };
 
+// One page of /products: optionally one category and a name search.
+export const fetchProductsPage = async ({ pageParam = 1, categoryId, searchQuery, signal }) => {
+  const params = {
+    pagination: {
+      page: pageParam,
+      pageSize: 12
+    },
+    // Only select specific fields we need, excluding buffer data
+    fields: ['name', 'description', 'state', 'new_arrival', 'out_of_stock', 'Item_ID'],
+    // Use specific fields to populate instead of '*' to reduce response size
+    populate: {
+      item_thumbnail: {
+        fields: ['name', 'url', 'width', 'height', 'formats']
+      },
+      // Fallback image for items saved without a thumbnail
+      item_images: {
+        fields: ['url']
+      },
+      category: {
+        fields: ['name']
+      },
+      sub_category: {
+        fields: ['name']
+      }
+    },
+    // Sort: new items first, out of stock at bottom, then by creation date
+    sort: ['new_arrival:desc', 'out_of_stock:asc', 'createdAt:desc']
+  };
+
+  if (categoryId) {
+    params.filters = {
+      ...params.filters,
+      category: { documentId: { $eq: categoryId } }
+    };
+  }
+  
+  if (searchQuery) {
+    params.filters = {
+      ...params.filters,
+      name: { $containsi: searchQuery }
+    };
+  }
+
+  try {
+    const data = await api.get('/api/items', { params, signal });
+    return {
+      items: data.data.data,
+      nextPage: pageParam + 1,
+      hasMore: pageParam < data.data.meta.pagination.pageCount,
+      total: data.data.meta.pagination.total,
+    };
+  } catch (error) {
+    console.error("Error fetching items:", error);
+    throw error;
+  }
+};
+
 export default api; 
