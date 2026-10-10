@@ -1,10 +1,12 @@
 import React from "react";
+import { pageMetadata } from "@/utils/metadata";
 import { FaInstagram, FaTiktok, FaEnvelope, FaPhone, FaWhatsapp, FaMapMarkerAlt } from "react-icons/fa";
 
-export const metadata = {
+export const metadata = pageMetadata({
   title: "تواصل معنا",
   description: "تواصل مع فريق إكزو هيفن للاستفسارات وطلبات المساعدة - نحن هنا لخدمتك",
-};
+  path: "/contact",
+});
 
 const ContactInfo = ({ icon, title, children, link, linkText }) => (
   <div className="bg-white shadow-md rounded-lg p-6 flex flex-col items-center text-center hover:shadow-lg transition-shadow">

@@ -1,13 +1,12 @@
 // SEO Utility Functions - JSON-LD Structured Data Generators
 
-import { mediaUrl } from './media';
+import { absoluteMediaUrl } from './metadata';
 import { entryKey } from './ids';
 import { deliveryFee, unitPrice } from './pricing';
 import { isSaleActive } from './saleUtils';
 import { availableVariants, hasPriceRange, isOutOfStock } from './product';
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://exohaven-iq.com';
-const imageKitUrl = 'https://ik.imagekit.io/5a72nvbtu';
 
 /**
  * Generate Organization structured data (JSON-LD)
@@ -102,7 +101,7 @@ export function generateWebSiteSchema() {
       '@type': 'SearchAction',
       target: {
         '@type': 'EntryPoint',
-        urlTemplate: `${baseUrl}/search?q={search_term_string}`,
+        urlTemplate: `${baseUrl}/products?q={search_term_string}`,
       },
       'query-input': 'required name=search_term_string',
     },
@@ -122,14 +121,8 @@ export function generateProductSchema(item, sale) {
   const salePrice = unitPrice(item, sale);
   if (!salePrice) return null;
 
-  // Get image URL
-  let imageUrl = `${baseUrl}/icons/icon-512x512.png`; // Default image
-  const thumbnailUrl = mediaUrl(item.item_thumbnail) || mediaUrl(item.item_images);
-  if (thumbnailUrl) {
-    imageUrl = thumbnailUrl.startsWith('http')
-      ? thumbnailUrl
-      : `${imageKitUrl}${thumbnailUrl}`;
-  }
+  const imageUrl =
+    absoluteMediaUrl(item.item_thumbnail) || absoluteMediaUrl(item.item_images) || `${baseUrl}/icons/icon-512x512.png`;
 
   return {
     '@context': 'https://schema.org',
@@ -156,9 +149,9 @@ export function generateProductSchema(item, sale) {
         : { '@type': 'Offer', price: salePrice }),
       url: `${baseUrl}/products/${entryKey(item)}`,
       priceCurrency: 'IQD',
-      priceValidUntil: new Date(
-        new Date().setFullYear(new Date().getFullYear() + 1)
-      ).toISOString(),
+      // A date, not a timestamp: this is rendered on the server and again in the
+      // browser, and the two must match.
+      priceValidUntil: `${new Date().getFullYear() + 1}-12-31`,
       itemCondition: 'https://schema.org/NewCondition',
       availability: isOutOfStock(item)
         ? 'https://schema.org/OutOfStock'

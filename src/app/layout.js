@@ -91,13 +91,8 @@ export const metadata = {
     { rel: "apple-touch-icon", url: "/icons/icon-192x192.png" },
     { rel: "icon", url: "/icons/icon-512x512.png" },
   ],
-  alternates: {
-    canonical: '/',
-    languages: {
-      'ar-IQ': '/',
-      'en-US': '/',
-    },
-  },
+  // No site-wide canonical: each page sets its own (a canonical here would tell
+  // search engines that every page without one is a copy of the home page).
   openGraph: {
     type: 'website',
     locale: 'ar_IQ',

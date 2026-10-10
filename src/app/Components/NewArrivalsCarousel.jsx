@@ -1,260 +1,100 @@
 "use client";
-import React, { useMemo, useRef } from "react";
-import Image from "next/image";
-import Link from "next/link";
-import { motion } from "framer-motion";
-import { FaArrowLeft, FaChevronLeft, FaChevronRight, FaEye, FaTag } from "react-icons/fa";
-import Spinner from "./Spinner";
+import { useMemo, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay } from "swiper/modules";
+import "swiper/css";
+import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { fetchNewArrivals } from "@/services/api";
 import { QueryKeys } from "@/utils/queryKeys";
-import { isSaleActive, calculateSalePrice } from "@/utils/saleUtils";
-import { useSale } from "@/app/context/SaleContext";
-// Import Swiper React components
-import { Swiper, SwiperSlide } from 'swiper/react';
-// Import Swiper styles
-import 'swiper/css';
-import 'swiper/css/effect-coverflow';
-// Import required modules
-import { Autoplay, EffectCoverflow } from 'swiper/modules';
-import { itemImageUrl } from "@/utils/media";
-import { entryKey } from "@/utils/ids";
-import { basePrice, isOutOfStock, hasPriceRange } from "@/utils/product";
+import ProductCard from "./ProductCard";
+import SectionHeader from "./SectionHeader";
 
 const NEW_ARRIVALS_LIMIT = 12;
 
-// Swiper's loop mode needs slidesPerView + ceil(slidesPerView / 2) slides (5 + 3 on wide
-// screens), otherwise it silently disables the loop and leaves empty space beside the
-// first slide.
-const MIN_LOOP_SLIDES = 8;
+// Swiper's loop mode needs at least 2 x slidesPerView slides (5 per view on wide
+// screens), otherwise it silently stops looping; with fewer products they repeat.
+const MIN_LOOP_SLIDES = 10;
 
-// Only the slides visible on first paint load their images eagerly.
-const PRIORITY_SLIDES = 3;
+const BREAKPOINTS = {
+  0: { slidesPerView: 2.15, spaceBetween: 12 },
+  640: { slidesPerView: 3, spaceBetween: 16 },
+  1024: { slidesPerView: 4, spaceBetween: 20 },
+  1280: { slidesPerView: 5, spaceBetween: 20 },
+};
 
+const CardSkeleton = () => (
+  <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white">
+    <div className="aspect-square animate-pulse bg-gray-100" />
+    <div className="space-y-2 p-4">
+      <div className="h-4 w-3/4 animate-pulse rounded bg-gray-100" />
+      <div className="h-4 w-1/3 animate-pulse rounded bg-gray-100" />
+    </div>
+  </div>
+);
+
+// Home page: newest products, in an endless carousel with arrows.
 export default function NewArrivalsCarousel() {
-  const sale = useSale();
-  // Fetch new arrivals using React Query
-  const { 
-    data: images = [],
-    isLoading,
-    error 
-  } = useQuery({
+  const { data: items = [], isLoading } = useQuery({
     queryKey: [QueryKeys.newArrivals, NEW_ARRIVALS_LIMIT],
-    queryFn: () => fetchNewArrivals(NEW_ARRIVALS_LIMIT)
+    queryFn: () => fetchNewArrivals(NEW_ARRIVALS_LIMIT),
   });
-
   const swiperRef = useRef(null);
 
   // A single product is shown on its own; looping it would fill the row with copies.
-  const canLoop = images.length > 1;
-
-  // Repeat the products until there are enough slides for the loop to work.
+  const canLoop = items.length > 1;
   const slides = useMemo(() => {
-    if (!images.length) return [];
-    const copies = canLoop ? Math.ceil(MIN_LOOP_SLIDES / images.length) : 1;
-    return Array.from({ length: copies }, (_, copy) =>
-      images.map((img, index) => ({ img, copy, index, key: `${img.id}-${copy}` }))
-    ).flat();
-  }, [images, canLoop]);
+    const copies = canLoop ? Math.ceil(MIN_LOOP_SLIDES / items.length) : 1;
+    return Array.from({ length: copies }, (_, copy) => items.map((item) => ({ item, copy, key: `${item.id}-${copy}` }))).flat();
+  }, [items, canLoop]);
+
+  if (!isLoading && items.length === 0) return null;
+
+  const arrow = "absolute top-1/3 z-10 hidden h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-700 shadow-md transition-colors hover:text-green5 sm:flex";
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="relative py-4 mb-4"
-    >
+    <section className="container-page" aria-labelledby="home-new-arrivals" dir="rtl">
+      <div id="home-new-arrivals">
+        <SectionHeader title="وصل حديثاً" href="/new-arrivals" />
+      </div>
       {isLoading ? (
-        <div className="justify-center h-[200px] items-center flex">
-          <Spinner />
-        </div>
-      ) : error ? (
-        <div className="text-center py-6 text-red-500">
-          <p>Failed to load new arrivals</p>
-        </div>
-      ) : images && images.length > 0 ? (
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex flex-col md:flex-row items-center md:items-end justify-between mb-4">
-            <motion.div
-              className="flex items-center mb-2 md:mb-0"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
-              <div className="h-8 w-1.5 bg-green4 rounded-full mr-2 hidden md:block"></div>
-              <h2 className="text-lg mx-1 md:text-xl font-bold text-green4 md:text-right">
-                وصل حديثاً
-              </h2>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-            >
-              <Link 
-                href="/new-arrivals" 
-                className="text-xs md:text-sm font-medium text-green3 hover:text-green4 transition-colors duration-300 flex items-center group"
-              >
-                عرض الكل
-                <FaArrowLeft className="mr-1 text-xs group-hover:translate-x-[-4px] transition-transform duration-300" />
-              </Link>
-            </motion.div>
-          </div>
-          
-          <motion.div 
-            className="new-arrivals-3d-carousel relative"
-            initial={{ opacity: 0, scale: 0.98 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-          >
-            <Swiper
-              onSwiper={(swiper) => {
-                swiperRef.current = swiper;
-              }}
-              effect={'coverflow'}
-              grabCursor={true}
-              centeredSlides={true}
-              slidesPerView={2}
-              spaceBetween={10}
-              coverflowEffect={{
-                rotate: 10,
-                stretch: 0,
-                depth: 120,
-                modifier: 1.5,
-                slideShadows: true,
-              }}
-              loop={canLoop}
-              autoplay={{
-                delay: 3000,
-                disableOnInteraction: false,
-                pauseOnMouseEnter: true,
-              }}
-              pagination={false}
-              modules={[EffectCoverflow, Autoplay]}
-              className="pb-2"
-              preventClicks={false}
-              preventClicksPropagation={false}
-              touchMoveStopPropagation={false}
-              passiveListeners={true}
-              breakpoints={{
-                640: {
-                  slidesPerView: 2,
-                  spaceBetween: 15,
-                },
-                768: {
-                  slidesPerView: 3,
-                  spaceBetween: -30,
-                },
-                1024: {
-                  slidesPerView: 4,
-                  spaceBetween: -50,
-                },
-                1280: {
-                  slidesPerView: 5,
-                  spaceBetween: -60,
-                },
-              }}
-            >
-              {slides.map(({ img, copy, index, key }) => (
-                <SwiperSlide
-                  key={key}
-                  className="w-[260px] md:w-[240px] h-auto"
-                  // Repeated copies exist only for the loop; keep them out of the tab order
-                  // and away from screen readers.
-                  aria-hidden={copy > 0 || undefined}
-                >
-                  <div className="overflow-hidden rounded-lg bg-white shadow-md h-full transform transition-all duration-300 border border-gray-100">
-                    <Link 
-                      className="group block"
-                      href={`/products/${entryKey(img)}`}
-                      tabIndex={copy > 0 ? -1 : undefined}
-                    >
-                      <div className="relative aspect-[4/3] overflow-hidden">
-                        <Image
-                          src={itemImageUrl(img)}
-                          fill
-                          sizes="(max-width: 640px) 80vw, 240px"
-                          alt={img.name}
-                          className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-700 ease-out"
-                          priority={copy === 0 && index < PRIORITY_SLIDES}
-                        />
-                        
-                        <div className="absolute top-1 left-1 bg-green4 text-white text-[10px] font-medium px-1.5 py-0.5 rounded-sm z-10">
-                          جديد
-                        </div>
-                        
-                        {/* Sale badge - Only shown if sale is active */}
-                        {isSaleActive(sale) && !isOutOfStock(img) && (
-                          <div className="absolute top-1 right-1 bg-amber-500 text-white text-[10px] font-medium px-1.5 py-0.5 rounded-full z-10 flex items-center gap-0.5">
-                            <FaTag className="text-[8px]" />
-                            <span>-{sale.percent}%</span>
-                          </div>
-                        )}
-                        
-                        <div className="absolute inset-0 bg-gradient-to-t from-green5/60 via-green5/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                          <div className="bg-white/80 p-1.5 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">
-                            <FaEye className="text-green4 text-sm" />
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div className="p-2">
-                        <h3 className="font-bold text-gray-800 text-xs line-clamp-1 group-hover:text-green4 transition-colors">
-                          {img.name}
-                        </h3>
-                        {basePrice(img) > 0 && (
-                          <div className="flex items-center justify-between mt-0.5">
-                            {isSaleActive(sale) && !isOutOfStock(img) ? (
-                              <div>
-                                <span className="text-gray-500 line-through text-[10px] block">
-                                  {basePrice(img).toLocaleString()} IQD
-                                </span>
-                                <span className="font-bold text-amber-600 text-xs">
-                                  {hasPriceRange(img) && "من "}{calculateSalePrice(basePrice(img), sale).toLocaleString()} IQD
-                                </span>
-                              </div>
-                            ) : (
-                              <span className="font-bold text-green4 text-xs">
-                                {hasPriceRange(img) && "من "}{basePrice(img).toLocaleString()} IQD
-                              </span>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    </Link>
-                  </div>
-                </SwiperSlide>
-              ))}
-              {canLoop && (
-                <>
-                  {/* Swiper renders non-slide children inside its element, so hovering the arrows keeps autoplay paused.
-                      The page is RTL: the right arrow goes back, the left arrow goes forward. */}
-                  <button
-                    type="button"
-                    aria-label="المنتج السابق"
-                    onClick={() => swiperRef.current?.slidePrev()}
-                    className="absolute right-1 top-1/2 -translate-y-1/2 z-10 flex h-9 w-9 md:h-10 md:w-10 items-center justify-center rounded-full bg-white/90 text-green4 shadow-md border border-gray-100 hover:bg-green4 hover:text-white transition-colors duration-300"
-                  >
-                    <FaChevronRight className="text-sm" />
-                  </button>
-                  <button
-                    type="button"
-                    aria-label="المنتج التالي"
-                    onClick={() => swiperRef.current?.slideNext()}
-                    className="absolute left-1 top-1/2 -translate-y-1/2 z-10 flex h-9 w-9 md:h-10 md:w-10 items-center justify-center rounded-full bg-white/90 text-green4 shadow-md border border-gray-100 hover:bg-green4 hover:text-white transition-colors duration-300"
-                  >
-                    <FaChevronLeft className="text-sm" />
-                  </button>
-                </>
-              )}
-            </Swiper>
-          </motion.div>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+          {Array.from({ length: 5 }, (_, i) => (
+            <CardSkeleton key={i} />
+          ))}
         </div>
       ) : (
-        <div className="text-center py-6">
-          <p>لا توجد منتجات جديدة حالياً</p>
+        <div className="relative">
+          <Swiper
+            modules={[Autoplay]}
+            dir="rtl"
+            loop={canLoop}
+            breakpoints={BREAKPOINTS}
+            autoplay={canLoop ? { delay: 4500, disableOnInteraction: false, pauseOnMouseEnter: true } : false}
+            onSwiper={(swiper) => {
+              swiperRef.current = swiper;
+            }}
+            className="!pb-1"
+          >
+            {slides.map(({ item, copy, key }, index) => (
+              // Repeated copies are hidden from screen readers.
+              <SwiperSlide key={key} className="!h-auto" aria-hidden={copy > 0 ? "true" : undefined}>
+                <ProductCard item={item} priority={index < 2} />
+              </SwiperSlide>
+            ))}
+          </Swiper>
+          {canLoop && (
+            <>
+              <button type="button" aria-label="السابق" onClick={() => swiperRef.current?.slidePrev()} className={`${arrow} -right-3`}>
+                <FiChevronRight size={20} />
+              </button>
+              <button type="button" aria-label="التالي" onClick={() => swiperRef.current?.slideNext()} className={`${arrow} -left-3`}>
+                <FiChevronLeft size={20} />
+              </button>
+            </>
+          )}
         </div>
       )}
-    </motion.div>
+    </section>
   );
-} 
+}

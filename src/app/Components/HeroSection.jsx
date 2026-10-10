@@ -1,192 +1,79 @@
 "use client";
-import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { motion } from "framer-motion";
-import Spinner from "./Spinner";
 import { useQuery } from "@tanstack/react-query";
+import { FiTruck, FiCreditCard, FiGift } from "react-icons/fi";
 import { fetchLatestProducts } from "@/services/api";
 import { QueryKeys } from "@/utils/queryKeys";
+import { itemImageUrl } from "@/utils/media";
 import { entryKey } from "@/utils/ids";
+import { FREE_DELIVERY_THRESHOLD } from "@/utils/pricing";
 
-const HeroSection = () => {
-  // Use React Query for fetching latest products
-  const { 
-    data: products = [], 
-    isLoading 
-  } = useQuery({
+const PERKS = [
+  { Icon: FiTruck, text: "توصيل لكل محافظات العراق" },
+  { Icon: FiCreditCard, text: "الدفع عند الاستلام" },
+  { Icon: FiGift, text: `توصيل مجاني فوق ${FREE_DELIVERY_THRESHOLD.toLocaleString()} د.ع` },
+];
+
+// Top of the home page: what the shop is, the two main ways in, and the three
+// newest products.
+export default function HeroSection() {
+  const { data: products = [] } = useQuery({
     queryKey: [QueryKeys.latestProducts],
-    queryFn: () => fetchLatestProducts(3)
+    queryFn: () => fetchLatestProducts(3),
   });
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-green2 via-green3 to-green4 text-white py-12 sm:py-20 px-4 sm:px-6 lg:px-8 mb-8 sm:mb-12 rounded-b-2xl sm:rounded-b-4xl shadow-xl">
-      {/* Modern gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-mesh opacity-30"></div>
-      <div className="absolute inset-0 bg-pattern-dots opacity-20"></div>
+    <section className="container-page pt-4 sm:pt-6" dir="rtl">
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-l from-green5 to-green4 px-6 py-10 text-white sm:px-10 lg:py-14">
+        {/* Soft decorative circles. */}
+        <div className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full bg-white/10" />
+        <div className="pointer-events-none absolute -bottom-32 left-1/3 h-72 w-72 rounded-full bg-white/5" />
 
-      <div className="relative max-w-screen-xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 sm:gap-12">
-        <motion.div
-          className="md:w-1/2 text-center md:text-right z-10"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <motion.span
-            className="glass text-white text-xs sm:text-sm px-4 py-1.5 rounded-full inline-block mb-4 font-medium shadow-sm"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            متجر عصري
-          </motion.span>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-3 sm:mb-5 tracking-tight leading-tight">
-            أحدث المنتجات المضافة
-          </h1>
-          <p className="text-base sm:text-lg md:text-xl mb-6 sm:mb-8 text-white/95 leading-relaxed">
-            تصفح أحدث المنتجات التي تمت إضافتها حديثاً إلى متجرنا
-          </p>
-          <motion.div
-            whileHover={{ scale: 1.05, y: -2 }}
-            whileTap={{ scale: 0.97 }}
-            transition={{ type: "spring", stiffness: 400, damping: 17 }}
-          >
-            <Link href="/products" className="inline-flex items-center gap-2 bg-white text-green4 font-bold py-3 sm:py-3.5 px-6 sm:px-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-400 hover:-translate-y-0.5 group">
-              <span>تسوق الآن</span>
-              <svg className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l-5 5 5 5" />
-              </svg>
-            </Link>
-          </motion.div>
-        </motion.div>
-
-        <motion.div
-          className="w-full md:w-1/2 frosted p-5 sm:p-10 rounded-2xl sm:rounded-3xl shadow-2xl mt-6 md:mt-0 z-10"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-        >
-          {isLoading ? (
-            <div className="h-64 sm:h-80 flex items-center justify-center">
-              <Spinner />
+        <div className="relative grid items-center gap-10 lg:grid-cols-2">
+          <div>
+            <p className="mb-3 inline-block rounded-full bg-white/15 px-3 py-1 text-xs font-semibold">
+              متجر مستلزمات الحيوانات الأليفة الغريبة في العراق
+            </p>
+            <h1 className="text-3xl font-extrabold leading-tight sm:text-4xl lg:text-5xl">كل ما تحتاجه زواحفك وطيورك في مكان واحد</h1>
+            <p className="mt-4 max-w-xl text-sm text-white/85 sm:text-base">
+              إضاءة، أحواض، أغذية وإكسسوارات مختارة بعناية، تصلك لباب البيت.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <Link href="/products" className="inline-flex items-center rounded-full bg-white px-6 py-3 text-sm font-bold text-green5 shadow-lg transition-transform hover:-translate-y-0.5">
+                تسوق الآن
+              </Link>
+              <Link href="/categories" className="inline-flex items-center rounded-full border border-white/40 px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-white/10">
+                تصفح الأقسام
+              </Link>
             </div>
-          ) : (
-            <div className="relative h-64 sm:h-80 overflow-hidden rounded-xl sm:rounded-2xl">
-              {/* Product Showcase Grid */}
-              <div className="absolute inset-0 grid grid-cols-2 gap-3 p-3">
-                <div className="flex flex-col gap-3">
-                  {/* First product image */}
-                  {products.length > 0 && products[0]?.item_thumbnail?.url ? (
-                    <Link
-                      href={`/products/${entryKey(products[0])}`}
-                      className="relative h-full rounded-xl overflow-hidden border-2 border-white/40 bg-white shadow-sm group z-20 transition-all duration-400 hover:shadow-card-hover hover:scale-[1.02]"
-                    >
-                      <div className="relative w-full h-full">
-                        <Image
-                          src={products[0].item_thumbnail?.url}
-                          alt={products[0].name || "Featured Product 1"}
-                          fill
-                          sizes="(max-width: 768px) 40vw, (max-width: 1024px) 30vw, 20vw"
-                          className="object-contain p-2"
-                          priority
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-green4/20 opacity-0 group-hover:opacity-100 transition-opacity duration-400 pointer-events-none"></div>
-                        <div className="absolute inset-x-0 bottom-0 p-2 transform translate-y-full group-hover:translate-y-0 transition-transform duration-400 pointer-events-none">
-                          <span className="text-white text-[10px] sm:text-xs font-bold bg-green4/90 px-2 py-1 rounded-lg inline-block shadow-sm backdrop-blur-sm line-clamp-1">
-                            {products[0]?.name || "منتج #1"}
-                          </span>
-                        </div>
-                      </div>
-                    </Link>
-                  ) : (
-                    <div className="relative h-full rounded-xl overflow-hidden border-2 border-white/40 bg-gradient-to-br from-green1 to-green2 flex items-center justify-center shadow-sm">
-                      <span className="text-green5 text-xs sm:text-sm font-semibold">منتج #1</span>
-                    </div>
-                  )}
+            <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-xs text-white/90 sm:text-sm">
+              {PERKS.map(({ Icon, text }) => (
+                <li key={text} className="flex items-center gap-2">
+                  <Icon size={16} />
+                  {text}
+                </li>
+              ))}
+            </ul>
+          </div>
 
-                  {/* Second product image */}
-                  {products.length > 1 && products[1]?.item_thumbnail?.url ? (
-                    <Link
-                      href={`/products/${entryKey(products[1])}`}
-                      className="relative h-full rounded-xl overflow-hidden border-2 border-white/40 bg-white shadow-sm group z-20 transition-all duration-400 hover:shadow-card-hover hover:scale-[1.02]"
-                    >
-                      <div className="relative w-full h-full">
-                        <Image
-                          src={products[1].item_thumbnail?.url}
-                          alt={products[1].name || "Featured Product 2"}
-                          fill
-                          sizes="(max-width: 768px) 40vw, (max-width: 1024px) 30vw, 20vw"
-                          className="object-contain p-2"
-                          priority
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-green4/20 opacity-0 group-hover:opacity-100 transition-opacity duration-400 pointer-events-none"></div>
-                        <div className="absolute inset-x-0 bottom-0 p-2 transform translate-y-full group-hover:translate-y-0 transition-transform duration-400 pointer-events-none">
-                          <span className="text-white text-[10px] sm:text-xs font-bold bg-green4/90 px-2 py-1 rounded-lg inline-block shadow-sm backdrop-blur-sm line-clamp-1">
-                            {products[1]?.name || "منتج #2"}
-                          </span>
-                        </div>
-                      </div>
-                    </Link>
-                  ) : (
-                    <div className="relative h-full rounded-xl overflow-hidden border-2 border-white/40 bg-gradient-to-br from-green2 to-green3 flex items-center justify-center shadow-sm">
-                      <span className="text-white text-xs sm:text-sm font-semibold">منتج #2</span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Third product image - larger */}
-                {products.length > 2 && products[2]?.item_thumbnail?.url ? (
-                  <Link
-                    href={`/products/${entryKey(products[2])}`}
-                    className="relative h-full rounded-xl overflow-hidden border-2 border-white/40 bg-white shadow-sm group z-20 transition-all duration-400 hover:shadow-card-hover hover:scale-[1.02]"
-                  >
-                    <div className="relative w-full h-full">
-                      <Image
-                        src={products[2].item_thumbnail?.url}
-                        alt={products[2].name || "Featured Product 3"}
-                        fill
-                        sizes="(max-width: 768px) 50vw, (max-width: 1024px) 40vw, 25vw"
-                        className="object-contain p-3"
-                        priority
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-green4/20 opacity-0 group-hover:opacity-100 transition-opacity duration-400 pointer-events-none"></div>
-                      <div className="absolute inset-x-0 bottom-0 p-2 transform translate-y-full group-hover:translate-y-0 transition-transform duration-400 pointer-events-none">
-                        <span className="text-white text-[10px] sm:text-xs font-bold bg-green4/90 px-3 py-1.5 rounded-lg inline-block shadow-sm backdrop-blur-sm line-clamp-1">
-                          {products[2]?.name || "منتج #3"}
-                        </span>
-                      </div>
-                    </div>
-                  </Link>
-                ) : (
-                  <div className="relative h-full rounded-xl overflow-hidden border-2 border-white/40 bg-gradient-to-br from-green3 to-green4 flex items-center justify-center shadow-sm">
-                    <span className="text-white text-xs sm:text-sm font-semibold">منتج #3</span>
-                  </div>
-                )}
-              </div>
-
-              {/* Floating badges */}
-              <motion.div
-                className="absolute top-3 right-3 glass-green text-green5 text-[10px] sm:text-xs px-3 py-1.5 rounded-full z-30 pointer-events-none font-bold shadow-sm"
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.8, duration: 0.4 }}
+          {/* The newest products, desktop only. */}
+          <div className="hidden grid-cols-3 gap-3 lg:grid">
+            {products.slice(0, 3).map((product, index) => (
+              <Link
+                key={product.id}
+                href={`/products/${entryKey(product)}`}
+                className={`group relative aspect-[3/4] overflow-hidden rounded-2xl bg-white/10 ring-1 ring-white/20 ${index === 1 ? "-translate-y-6" : ""}`}
               >
-                جديد
-              </motion.div>
-              <motion.div
-                className="absolute bottom-3 left-3 glass-green text-green5 text-[10px] sm:text-xs px-3 py-1.5 rounded-full z-30 pointer-events-none font-bold shadow-sm"
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.9, duration: 0.4 }}
-              >
-                حصري
-              </motion.div>
-            </div>
-          )}
-        </motion.div>
+                <Image src={itemImageUrl(product)} alt={product.name || ""} fill sizes="200px" className="object-cover transition-transform duration-500 group-hover:scale-105" priority />
+                <span className="absolute inset-x-2 bottom-2 line-clamp-1 rounded-xl bg-white/90 px-2 py-1 text-center text-xs font-bold text-gray-900">
+                  {product.name}
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   );
-};
-
-export default HeroSection; 
+}

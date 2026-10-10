@@ -1,216 +1,24 @@
-"use client";
-import Spinner from "@/app/Components/Spinner";
-import Link from "next/link";
-import { useParams } from "next/navigation";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import React, { useRef, useCallback, useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { fetchSubCategoryById, fetchSubCategoryItems } from "@/services/api";
-import { QueryKeys } from "@/utils/queryKeys";
-import { entryKey } from "@/utils/ids";
-import ProductGridCard from "@/app/Components/ProductGridCard";
-import Breadcrumbs from "@/app/Components/Breadcrumbs";
+import { notFound } from "next/navigation";
+import { getSubCategory } from "@/services/catalog";
+import { absoluteMediaUrl, pageMetadata } from "@/utils/metadata";
+import SubCategoryClient from "./SubCategoryClient";
 
-const Items = () => {
-  const { id } = useParams();
-  const observerRef = useRef(null);
-  const [sortBy, setSortBy] = useState("newest");
-  const [categoryName, setCategoryName] = useState("");
-  const [subcategoryName, setSubcategoryName] = useState("");
-
-  // Animation variants
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: { type: "spring", stiffness: 300, damping: 24 }
-    }
-  };
-
-  // Fetch subcategory info for breadcrumbs
-  const { data: subcategoryData, isLoading: isSubcategoryLoading } = useQuery({
-    queryKey: QueryKeys.subcategory(id),
-    queryFn: () => fetchSubCategoryById(id),
-    enabled: !!id
+export async function generateMetadata({ params }) {
+  const { id } = await params;
+  const { entry: sub } = await getSubCategory(id);
+  if (!sub) return { title: "القسم" };
+  const title = sub.category?.name ? `${sub.name} - ${sub.category.name}` : sub.name;
+  return pageMetadata({
+    title,
+    description: `تسوق ${sub.name}${sub.category?.name ? ` من قسم ${sub.category.name}` : ""} في ExoHaven: أسعار واضحة، الدفع عند الاستلام، والتوصيل لجميع محافظات العراق.`,
+    path: `/sub-categories/${id}`,
+    image: absoluteMediaUrl(sub.subcategory_thumbnail),
   });
+}
 
-  useEffect(() => {
-    if (subcategoryData?.data) {
-      setSubcategoryName(subcategoryData.data.name || "");
-      setCategoryName(subcategoryData.data.category?.name || "");
-    }
-  }, [subcategoryData]);
-
-  const categoryId = entryKey(subcategoryData?.data?.category);
-
-  const fetchItems = async ({ pageParam = 1 }) => {
-    let sortQuery = "";
-    
-    switch (sortBy) {
-      case "priceAsc":
-        sortQuery = "state:asc";
-        break;
-      case "priceDesc":
-        sortQuery = "state:desc";
-        break;
-      case "newest":
-        sortQuery = "createdAt:desc";
-        break;
-      case "nameAsc":
-        sortQuery = "name:asc";
-        break;
-      default:
-        sortQuery = "createdAt:desc";
-    }
-    
-    return fetchSubCategoryItems(id, pageParam, 12, sortQuery);
-  };
-
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage, refetch } =
-    useInfiniteQuery({
-      queryKey: QueryKeys.subcategoryItems(id, sortBy),
-      queryFn: fetchItems,
-      getNextPageParam: (lastPage) => {
-        const nextPage = lastPage?.meta?.pagination?.page + 1;
-        return nextPage <= lastPage?.meta?.pagination?.pageCount
-          ? nextPage
-          : undefined;
-      },
-    });
-
-  useEffect(() => {
-    if (sortBy) {
-      refetch();
-    }
-  }, [sortBy, refetch]);
-
-  const lastItemRef = useCallback(
-    (node) => {
-      if (isFetchingNextPage) return;
-      if (observerRef.current) observerRef.current.disconnect();
-      observerRef.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && hasNextPage) {
-          fetchNextPage();
-        }
-      });
-      if (node) observerRef.current.observe(node);
-    },
-    [isFetchingNextPage, hasNextPage, fetchNextPage]
-  );
-
-  const items = data?.pages?.flatMap((page) => page.data) || [];
-  const isPageLoading = isLoading || isSubcategoryLoading;
-
-  // Skeleton loading component
-  const ItemSkeleton = () => (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden animate-pulse">
-      <div className="h-48 md:h-56 bg-gray-200"></div>
-      <div className="p-4">
-        <div className="h-4 bg-gray-200 rounded w-3/4 mx-auto"></div>
-      </div>
-    </div>
-  );
-
-  // Render skeletons during loading
-  const renderSkeletons = () => {
-    return Array(8).fill(0).map((_, index) => (
-      <ItemSkeleton key={`skeleton-${index}`} />
-    ));
-  };
-
-  return (
-    <div className="w-11/12 md:w-4/5 m-auto mt-8 mb-14">
-      <Breadcrumbs
-        className="mb-6"
-        items={[
-          { label: categoryName, href: categoryId ? `/categories/${categoryId}` : null },
-          { label: subcategoryName },
-        ]}
-      />
-
-      {items.length === 0 && !isPageLoading ? (
-        <div className="text-center text-gray-500 py-20 text-lg">عذراً لا يوجد مواد هنا</div>
-      ) : (
-        <>
-          <div className="flex flex-col md:flex-row justify-between items-center mb-6">
-            <div className="mb-4 md:mb-0 text-center md:text-right">
-              {/* Which category this sub-category belongs to. */}
-              {categoryName && (
-                <Link
-                  href={categoryId ? `/categories/${categoryId}` : "/products"}
-                  className="inline-block mb-1 text-sm font-medium text-green3 hover:text-green4"
-                >
-                  {categoryName}
-                </Link>
-              )}
-              <h1 className="text-2xl md:text-3xl font-bold text-green4">
-                {subcategoryName || "المنتجات المتاحة"}
-              </h1>
-            </div>
-            
-            {/* Sort dropdown */}
-            <div className="relative">
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="bg-white border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded leading-tight focus:outline-none focus:border-green4"
-              >
-                <option value="newest">الأحدث</option>
-                <option value="priceAsc">السعر: من الأقل للأعلى</option>
-                <option value="priceDesc">السعر: من الأعلى للأقل</option>
-                <option value="nameAsc">أبجدياً: أ-ي</option>
-              </select>
-            </div>
-          </div>
-          
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible" 
-            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6"
-          >
-            {isPageLoading ? (
-              renderSkeletons()
-            ) : (
-              items.map((item, index) => (
-                <motion.div
-                  key={item.id}
-                  variants={itemVariants}
-                  ref={index === items.length - 1 ? lastItemRef : null}
-                >
-                  <ProductGridCard item={item} index={index} />
-                </motion.div>
-              ))
-            )}
-          </motion.div>
-        </>
-      )}
-      
-      {isFetchingNextPage && (
-        <div className="justify-center items-center flex mt-6">
-          <Spinner />
-        </div>
-      )}
-      
-      {!isPageLoading && !hasNextPage && items.length > 0 && (
-        <div className="text-center text-gray-500 mt-8 pb-4">
-          لقد وصلت إلى نهاية القائمة
-        </div>
-      )}
-    </div>
-  );
-};
-
-export default Items;
-
+export default async function SubCategoryPage({ params }) {
+  const { id } = await params;
+  const { entry, missing } = await getSubCategory(id);
+  if (missing) notFound();
+  return <SubCategoryClient initialSubCategory={entry} />;
+}

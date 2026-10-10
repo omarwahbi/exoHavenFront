@@ -1,9 +1,11 @@
 import React from "react";
+import { pageMetadata } from "@/utils/metadata";
 
-export const metadata = {
+export const metadata = pageMetadata({
   title: "عن إكزو هيفن",
   description: "تعرف على قصتنا ورؤيتنا في تقديم أفضل المنتجات للعناية بالزواحف والحيوانات الغريبة",
-};
+  path: "/aboutUs",
+});
 
 const AboutUs = () => {
   return (

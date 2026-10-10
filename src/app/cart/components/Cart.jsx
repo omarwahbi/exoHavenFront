@@ -14,7 +14,7 @@ import { FREE_DELIVERY_THRESHOLD, cartSubtotal, deliveryFee } from "@/utils/pric
 import { buildOrderMessage } from "@/utils/orderMessage";
 import CartLine from "./CartLine";
 import OrderSummary from "./OrderSummary";
-import SuggestedProductCard from "./SuggestedProductCard";
+import ProductCard from "@/app/Components/ProductCard";
 import Breadcrumbs from "@/app/Components/Breadcrumbs";
 import { isOutOfStock, lineKey } from "@/utils/product";
 
@@ -179,7 +179,7 @@ const Cart = () => {
                   <h3 className="text-lg font-medium text-gray-700 mb-6 text-center">منتجات قد تعجبك</h3>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {suggestedItems.slice(0, 4).map((product, index) => (
-                      <SuggestedProductCard key={product.id} product={product} index={index} />
+                      <ProductCard key={product.id} item={product} />
                     ))}
                   </div>
                 </div>
@@ -204,9 +204,9 @@ const Cart = () => {
                           <span className="font-medium">تهانينا! لقد حصلت على توصيل مجاني في جميع أنحاء العراق!</span>
                         ) : (
                           <>
-                            <span className="font-medium">توصيل مجاني</span> للطلبات التي تزيد عن {FREE_DELIVERY_THRESHOLD.toLocaleString()} IQD في جميع أنحاء العراق. 
+                            <span className="font-medium">توصيل مجاني</span> للطلبات التي تزيد عن {FREE_DELIVERY_THRESHOLD.toLocaleString()} د.ع في جميع أنحاء العراق. 
                             <span className="text-green4 font-medium mr-1">
-                              أضف {(FREE_DELIVERY_THRESHOLD - subtotal).toLocaleString()} IQD أخرى للحصول على توصيل مجاني!
+                              أضف {(FREE_DELIVERY_THRESHOLD - subtotal).toLocaleString()} د.ع أخرى للحصول على توصيل مجاني!
                             </span>
                           </>
                         )}
@@ -279,7 +279,7 @@ const Cart = () => {
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {suggestedItems.slice(0, 4).map((product, index) => (
-                      <SuggestedProductCard key={product.id} product={product} index={index} />
+                      <ProductCard key={product.id} item={product} />
                     ))}
                   </div>
                 </motion.div>
