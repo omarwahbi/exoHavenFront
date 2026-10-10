@@ -5,13 +5,12 @@ import React, { useState, useEffect, useMemo } from "react";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import Spinner from "../Components/Spinner";
 import { motion } from "framer-motion";
-import { FaSearch, FaFilter, FaShoppingCart, FaEye, FaPlus, FaMinus, FaCheck, FaTag } from "react-icons/fa";
+import { FaSearch, FaFilter, FaShoppingCart, FaEye, FaPlus, FaMinus, FaTag } from "react-icons/fa";
 import { useCart } from "../context/CartContext";
 import { fetchCategories } from "@/services/api";
 import api from "@/services/api";
 import { QueryKeys } from "@/utils/queryKeys";
 import { isSaleActive, calculateSalePrice } from "@/utils/saleUtils";
-import SaleBanner from "../Components/SaleBanner";
 import { itemImageUrl } from "@/utils/media";
 import { entryKey } from "@/utils/ids";
 
@@ -82,7 +81,7 @@ const Category = () => {
   const [hideOutOfStock, setHideOutOfStock] = useState(false);
   const { quantityOf, addItem, decreaseItem } = useCart();
 
-  const { data: categories = [], isLoading: isCategoriesLoading } = useQuery({
+  const { data: categories = [] } = useQuery({
     queryKey: [QueryKeys.categoriesList],
     queryFn: fetchCategories
   });
@@ -100,7 +99,6 @@ const Category = () => {
     isFetchingNextPage, 
     isLoading,
     isFetching,
-    refetch
   } = useInfiniteQuery({
     queryKey: queryKey,
     queryFn: ({ pageParam = 1, signal }) =>
@@ -159,8 +157,6 @@ const Category = () => {
     return filteredItems.length;
   }, [filteredItems]);
 
-  const allItems = data ? data.pages.flatMap((page) => page.items) : [];
-  const totalItems = data?.pages[0]?.total || 0;
 
   useEffect(() => {
     const handleScroll = () => {

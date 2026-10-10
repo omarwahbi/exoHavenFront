@@ -2,7 +2,7 @@
 import Spinner from "@/app/Components/Spinner";
 import Image from "next/image";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import React, { useRef, useCallback, useState, useEffect } from "react";
 import { motion } from "framer-motion";
@@ -16,7 +16,6 @@ import { entryKey } from "@/utils/ids";
 
 const Items = () => {
   const { id } = useParams();
-  const router = useRouter();
   const observerRef = useRef(null);
   const [sortBy, setSortBy] = useState("newest");
   const [categoryName, setCategoryName] = useState("");
