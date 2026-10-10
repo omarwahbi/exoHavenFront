@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import Spinner from "../Components/Spinner";
 
 // Dynamically import client components with SSR disabled
-const CartComponent = dynamic(() => import("../Components/Cart"), { 
+const CartComponent = dynamic(() => import("./components/Cart"), { 
   ssr: false,
   loading: () => <LoadingFallback /> 
 });

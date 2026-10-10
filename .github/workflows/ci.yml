@@ -1,6 +1,6 @@
 name: CI
 
-# Lint and build every pull request, so a broken build shows up as a red check
+# Lint, test and build every pull request, so a broken build shows up as a red check
 # before it reaches a Vercel deployment.
 on:
   pull_request:
@@ -29,4 +29,5 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run lint
+      - run: npm test
       - run: npm run build

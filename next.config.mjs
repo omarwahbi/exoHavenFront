@@ -16,6 +16,22 @@ const nextConfig = {
     // Drop debug logging from production builds, keep errors.
     removeConsole: process.env.NODE_ENV !== "development" && { exclude: ["error"] },
   },
+  // Basic hardening for every response. (Vercel already sends HSTS.)
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          // Nobody may show the shop inside a frame (clickjacking).
+          { key: "X-Frame-Options", value: "DENY" },
+          { key: "Content-Security-Policy", value: "frame-ancestors 'none'" },
+          { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), payment=()" },
+        ],
+      },
+    ];
+  },
   // Old page URLs. Renamed sections with an id are redirected in src/middleware.js.
   async redirects() {
     return [

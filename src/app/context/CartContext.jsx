@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useReducer, useEffect, useMemo } from "react";
+import { createContext, useContext, useReducer, useEffect, useMemo, useState } from "react";
 import { flattenEntry } from "@/utils/strapi";
 import { entryKey } from "@/utils/ids";
 
@@ -10,7 +10,7 @@ const CartContext = createContext();
 // every time it is published.
 const sameItem = (a, b) => entryKey(a) === entryKey(b);
 
-const cartReducer = (state, action) => {
+export const cartReducer = (state, action) => {
   const { item } = action;
   switch (action.type) {
     case "ADD_ITEM":
@@ -35,13 +35,15 @@ const cartReducer = (state, action) => {
     case "CLEAR_CART":
       return [];
 
+    case "LOAD":
+      return action.lines;
+
     default:
       return state;
   }
 };
 
 const loadCart = () => {
-  if (typeof window === "undefined") return [];
   try {
     const storedCart = localStorage.getItem("cart");
     // Carts saved before the switch to Strapi 5 hold products in the old v4 shape.
@@ -53,19 +55,30 @@ const loadCart = () => {
 };
 
 const CartProvider = ({ children }) => {
-  const [cart, dispatch] = useReducer(cartReducer, [], loadCart);
+  // The server knows nothing about the visitor's cart, so the first render is
+  // always empty (on the server and in the browser, so they match) and the saved
+  // cart is loaded right after.
+  const [cart, dispatch] = useReducer(cartReducer, []);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
+    dispatch({ type: "LOAD", lines: loadCart() });
+    setLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (!loaded) return; // don't overwrite the saved cart before it is read
     try {
       localStorage.setItem("cart", JSON.stringify(cart));
     } catch {
       // Storage full or blocked: the cart still works for this visit.
     }
-  }, [cart]);
+  }, [cart, loaded]);
 
   const value = useMemo(
     () => ({
       cart,
+      loaded,
       itemCount: cart.reduce((total, line) => total + line.quantity, 0),
       quantityOf: (item) => cart.find((line) => sameItem(line, item))?.quantity ?? 0,
       addItem: (item) => {
@@ -75,7 +88,7 @@ const CartProvider = ({ children }) => {
       removeItem: (item) => dispatch({ type: "REMOVE_ITEM", item }),
       clearCart: () => dispatch({ type: "CLEAR_CART" }),
     }),
-    [cart]
+    [cart, loaded]
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
