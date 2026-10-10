@@ -111,7 +111,7 @@ export function generateWebSiteSchema() {
  * @param {Object} item - Product item from API
  */
 export function generateProductSchema(item) {
-  if (!item || !item) return null;
+  if (!item) return null;
 
   const {
     name,
@@ -279,27 +279,6 @@ export function generateFAQSchema() {
         },
       },
     ],
-  };
-}
-
-/**
- * Generate ItemList structured data for category/collection pages
- * @param {Array} items - Array of product items
- * @param {string} listName - Name of the collection
- */
-export function generateItemListSchema(items, listName = 'Products') {
-  if (!items || items.length === 0) return null;
-
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'ItemList',
-    name: listName,
-    itemListElement: items.map((item, index) => ({
-      '@type': 'ListItem',
-      position: index + 1,
-      url: `${baseUrl}/item/${entryKey(item)}`,
-      name: item?.name || 'Product',
-    })),
   };
 }
 

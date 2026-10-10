@@ -50,16 +50,6 @@ export const fetchSubCategories = async (categoryId) => {
 };
 
 // Items
-export const fetchItems = async (params = {}) => {
-  const { data } = await api.get('/api/items', {
-    params: {
-      populate: '*',
-      ...params
-    }
-  });
-  return data;
-};
-
 export const fetchItemById = async (id) => {
   const { data } = await api.get(`/api/items/${id}`, {
     params: {

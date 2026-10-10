@@ -26,19 +26,15 @@ async function getItem(id) {
 // Generate dynamic metadata for each product page
 export async function generateMetadata(props) {
   const params = await props.params;
-  console.log('[Metadata] Generating metadata for item ID:', params.id);
-
   const item = await getItem(params.id);
 
   if (!item) {
-    console.log('[Metadata] Item not found');
     return {
       title: 'منتج غير موجود | ExoHaven Iraq',
       description: 'المنتج الذي تبحث عنه غير متوفر',
     };
   }
 
-  console.log('[Metadata] Item found:', item.id);
   const { name, description, state, out_of_stock, category } = item;
 
   // Get image URL
@@ -59,8 +55,6 @@ export async function generateMetadata(props) {
   const productDescription = description
     ? `${description.substring(0, 150)}... اشتري الآن من ExoHaven مع توصيل مجاني فوق 50,000 دينار. خصم 10% على الطلبات عبر الموقع.`
     : `${name} - متوفر الآن في ExoHaven Iraq. توصيل مجاني للطلبات فوق 50,000 دينار، خصم 10% على الموقع، الدفع عند الاستلام.`;
-
-  console.log('[Metadata] Generated title:', productTitle);
 
   return {
     title: productTitle,
