@@ -14,6 +14,7 @@ import { fetchSuggestedItems } from "@/services/api";
 import { QueryKeys } from "@/utils/queryKeys";
 import { calculateSalePrice, isSaleActive } from "@/utils/saleUtils";
 import { itemImageUrl } from "@/utils/media";
+import { entryKey } from "@/utils/ids";
 
 const Cart = () => {
   const { cart } = useCart();
@@ -231,7 +232,7 @@ const Cart = () => {
 
   // Product card component for consistent design
   const ProductCard = ({ product, index }) => (
-    <Link href={`/item/${product.id}`} className="group">
+    <Link href={`/item/${entryKey(product)}`} className="group">
       <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 h-full flex flex-col">
         <div className="relative pt-[100%]">
           <Image
@@ -380,7 +381,7 @@ const Cart = () => {
                       >
                         <div className="space-y-4 md:flex md:items-center md:gap-6 md:space-y-0">
                           <Link
-                            href={`/item/${item.id}`}
+                            href={`/item/${entryKey(item)}`}
                             className="shrink-0 md:order-1"
                           >
                             <div className="overflow-hidden rounded-lg">
@@ -400,7 +401,7 @@ const Cart = () => {
                           <div className="w-full min-w-0 flex-1 md:order-2 md:max-w-md">
                             <div className="flex justify-between">
                               <Link
-                                href={`/item/${item.id}`}
+                                href={`/item/${entryKey(item)}`}
                                 className="text-lg font-bold text-gray-900 hover:text-green4"
                               >
                                 {item.attributes.name}

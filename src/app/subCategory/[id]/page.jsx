@@ -7,6 +7,7 @@ import Spinner from "@/app/Components/Spinner";
 import { useQuery } from "@tanstack/react-query";
 import { fetchSubCategories, fetchCategoryItems } from "@/services/api";
 import { imageUrl, itemImageUrl } from "@/utils/media";
+import { entryKey } from "@/utils/ids";
 
 const SubCategories = () => {
   const { id } = useParams();
@@ -65,7 +66,7 @@ const SubCategories = () => {
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 mb-14 w-10/12 mx-auto mt-14">
       {subCategories.length > 0
         ? subCategories.map((subCategory) => (
-            <Link href={`/items/${subCategory.id}`} key={subCategory.id} className="h-full">
+            <Link href={`/items/${entryKey(subCategory)}`} key={subCategory.id} className="h-full">
               <div className="flex flex-col items-center p-4 shadow-md rounded-lg bg-white hover:shadow-lg transition-shadow duration-300 h-full">
                 <div className="w-24 h-24 sm:w-36 sm:h-36 rounded-full overflow-hidden mb-4 flex-shrink-0">
                   <Image
@@ -87,7 +88,7 @@ const SubCategories = () => {
             </Link>
           ))
         : items.map((item) => (
-            <Link href={`/item/${item.id}`} key={item.id} className="h-full">
+            <Link href={`/item/${entryKey(item)}`} key={item.id} className="h-full">
               <div className="flex flex-col items-center p-4 shadow-md rounded-lg bg-white hover:shadow-lg transition-shadow duration-300 h-full">
                 <div className="w-24 h-24 sm:w-36 sm:h-36 rounded-full overflow-hidden mb-4 flex-shrink-0">
                   <Image

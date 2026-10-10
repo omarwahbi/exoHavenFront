@@ -3,6 +3,7 @@ import ItemClient from './ItemClient';
 import axios from 'axios';
 import { API_URL as apiUrl } from '@/services/api';
 import { mediaUrl } from '@/utils/media';
+import { entryKey } from '@/utils/ids';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://exohaven-iq.com';
 
@@ -78,7 +79,7 @@ export async function generateMetadata(props) {
       description: productDescription,
       type: 'website', // Changed from 'product' to 'website' - Next.js doesn't support 'product' type
       locale: 'ar_IQ',
-      url: `${siteUrl}/item/${params.id}`,
+      url: `${siteUrl}/item/${entryKey(item)}`,
       images: [
         {
           url: imageUrl,
@@ -96,7 +97,7 @@ export async function generateMetadata(props) {
       images: [imageUrl],
     },
     alternates: {
-      canonical: `/item/${params.id}`,
+      canonical: `/item/${entryKey(item)}`,
     },
     other: {
       'product:price:amount': salePrice.toString(),

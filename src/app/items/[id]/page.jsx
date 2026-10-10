@@ -12,6 +12,7 @@ import { fetchSubCategoryById, fetchSubCategoryItems } from "@/services/api";
 import { QueryKeys } from "@/utils/queryKeys";
 import { isSaleActive, calculateSalePrice } from "@/utils/saleUtils";
 import { itemImageUrl } from "@/utils/media";
+import { entryKey } from "@/utils/ids";
 
 const Items = () => {
   const { id } = useParams();
@@ -56,7 +57,7 @@ const Items = () => {
     }
   }, [subcategoryData]);
 
-  const categoryId = subcategoryData?.data?.attributes?.category?.data?.id;
+  const categoryId = entryKey(subcategoryData?.data?.attributes?.category?.data);
 
   const fetchItems = async ({ pageParam = 1 }) => {
     let sortQuery = "";
@@ -220,7 +221,7 @@ const Items = () => {
                   >
                     <div className="h-full">
                       <div className="group bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 h-full flex flex-col">
-                        <Link href={`/item/${item.id}`} className="block relative pt-[100%]">
+                        <Link href={`/item/${entryKey(item)}`} className="block relative pt-[100%]">
                           <Image
                             src={itemImageUrl(item.attributes)}
                             alt={item.attributes.name}
@@ -261,7 +262,7 @@ const Items = () => {
                         </Link>
                         
                         <div className="p-3 flex-grow flex flex-col">
-                          <Link href={`/item/${item.id}`}>
+                          <Link href={`/item/${entryKey(item)}`}>
                             <h3 className="font-medium text-gray-800 mb-2 line-clamp-2 hover:text-green4 transition-colors min-h-[2.5rem]">
                               {item.attributes.name}
                             </h3>

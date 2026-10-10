@@ -10,6 +10,7 @@ import { fetchFeaturedProducts } from "@/services/api";
 import { QueryKeys } from "@/utils/queryKeys";
 import { calculateSalePrice, isSaleActive } from "@/utils/saleUtils";
 import { itemImageUrl } from "@/utils/media";
+import { entryKey } from "@/utils/ids";
 
 const FeaturedProducts = () => {
   // Fetch featured products using React Query
@@ -94,7 +95,7 @@ const FeaturedProducts = () => {
               transition={{ duration: 0.5, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
               className="group"
             >
-              <Link href={`/item/${product.id}`}>
+              <Link href={`/item/${entryKey(product)}`}>
                 <div className="bg-white rounded-2xl shadow-card overflow-hidden transition-all duration-400 group-hover:shadow-card-hover group-hover:-translate-y-1 h-full flex flex-col border border-gray-100">
                   <div className="relative">
                     <div className="aspect-square overflow-hidden bg-gradient-to-br from-gray-50 to-white">

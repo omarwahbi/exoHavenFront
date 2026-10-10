@@ -1,6 +1,7 @@
 // sitemap.js - Dynamic sitemap generation for SEO
 import axios from 'axios';
 import { API_URL as apiUrl } from '@/services/api';
+import { entryKey } from "@/utils/ids";
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://exohaven-iq.com';
 
@@ -82,7 +83,7 @@ export default async function sitemap() {
 
   // Category pages: /subCategory/[id] lists a category's subcategories
   const categoryPages = categories.map((category) => ({
-    url: `${baseUrl}/subCategory/${category.id}`,
+    url: `${baseUrl}/subCategory/${entryKey(category)}`,
     lastModified: category.attributes?.updatedAt
       ? new Date(category.attributes.updatedAt)
       : new Date(),
@@ -92,7 +93,7 @@ export default async function sitemap() {
 
   // Subcategory pages: /items/[id] lists a subcategory's products
   const subCategoryPages = subCategories.map((subCategory) => ({
-    url: `${baseUrl}/items/${subCategory.id}`,
+    url: `${baseUrl}/items/${entryKey(subCategory)}`,
     lastModified: subCategory.attributes?.updatedAt
       ? new Date(subCategory.attributes.updatedAt)
       : new Date(),
@@ -102,7 +103,7 @@ export default async function sitemap() {
 
   // Generate item detail pages
   const itemPages = items.map((item) => ({
-    url: `${baseUrl}/item/${item.id}`,
+    url: `${baseUrl}/item/${entryKey(item)}`,
     lastModified: item.attributes?.updatedAt
       ? new Date(item.attributes.updatedAt)
       : new Date(),

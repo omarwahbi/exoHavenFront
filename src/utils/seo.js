@@ -1,6 +1,7 @@
 // SEO Utility Functions - JSON-LD Structured Data Generators
 
 import { mediaUrl } from './media';
+import { entryKey } from './ids';
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://exohaven-iq.com';
 const imageKitUrl = 'https://ik.imagekit.io/5a72nvbtu';
@@ -139,7 +140,7 @@ export function generateProductSchema(item) {
   return {
     '@context': 'https://schema.org',
     '@type': 'Product',
-    '@id': `${baseUrl}/item/${item.id}`,
+    '@id': `${baseUrl}/item/${entryKey(item)}`,
     name: name || 'Product',
     description: description || 'Exotic pet accessory available at ExoHaven Iraq',
     image: imageUrl,
@@ -151,7 +152,7 @@ export function generateProductSchema(item) {
     category: category?.data?.attributes?.name || 'Pet Accessories',
     offers: {
       '@type': 'Offer',
-      url: `${baseUrl}/item/${item.id}`,
+      url: `${baseUrl}/item/${entryKey(item)}`,
       priceCurrency: 'IQD',
       price: salePrice,
       priceValidUntil: new Date(
@@ -296,7 +297,7 @@ export function generateItemListSchema(items, listName = 'Products') {
     itemListElement: items.map((item, index) => ({
       '@type': 'ListItem',
       position: index + 1,
-      url: `${baseUrl}/item/${item.id}`,
+      url: `${baseUrl}/item/${entryKey(item)}`,
       name: item.attributes?.name || 'Product',
     })),
   };

@@ -15,6 +15,7 @@ import { calculateSalePrice, isSaleActive } from "@/utils/saleUtils";
 import { FaTag } from "react-icons/fa";
 import { generateProductSchema, generateBreadcrumbSchema, renderJSONLD } from "@/utils/seo";
 import { itemImageUrl, mediaUrl } from "@/utils/media";
+import { entryKey } from "@/utils/ids";
 
 export default function ItemClient({ params }) {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -37,15 +38,15 @@ export default function ItemClient({ params }) {
 
   // Derived data using useMemo to prevent recreation on each render
   const itemImgs = useMemo(() => item?.attributes?.item_images?.data || [], [item]);
-  const categoryId = item?.attributes?.category?.data?.id;
+  const categoryId = entryKey(item?.attributes?.category?.data);
 
   // Fetch related products
   const {
     data: relatedProducts = []
   } = useQuery({
-    queryKey: QueryKeys.relatedProducts(categoryId, params.id),
-    queryFn: () => fetchRelatedProducts(categoryId, params.id),
-    enabled: !!categoryId && !!params.id
+    queryKey: QueryKeys.relatedProducts(categoryId, entryKey(item)),
+    queryFn: () => fetchRelatedProducts(categoryId, entryKey(item)),
+    enabled: !!categoryId && !!item
   });
 
   // Generate structured data for SEO
@@ -53,7 +54,7 @@ export default function ItemClient({ params }) {
   const breadcrumbSchema = item ? generateBreadcrumbSchema([
     { name: 'الرئيسية', url: 'https://exohaven-iq.com/' },
     { name: 'المنتجات', url: 'https://exohaven-iq.com/category' },
-    { name: item.attributes.name, url: `https://exohaven-iq.com/item/${item.id}` }
+    { name: item.attributes.name, url: `https://exohaven-iq.com/item/${entryKey(item)}` }
   ]) : null;
 
   // Handle image selection and rotation
@@ -374,7 +375,7 @@ export default function ItemClient({ params }) {
             <h2 className="text-2xl font-bold mb-6 text-right text-gray-800">منتجات ذات صلة</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {relatedProducts.map((product, index) => (
-                <Link href={`/item/${product.id}`} key={product.id} className="group h-full">
+                <Link href={`/item/${entryKey(product)}`} key={product.id} className="group h-full">
                   <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 h-full flex flex-col">
                     <div className="relative pt-[100%]">
                       <Image

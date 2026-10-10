@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-export const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://admin.exohaven-iq.com';
+import { API_URL } from '@/utils/apiUrl';
+
+export { API_URL };
 
 // Create axios instance with default config and improved caching
 const api = axios.create({
@@ -33,7 +35,7 @@ export const fetchCategories = async () => {
 export const fetchSubCategories = async (categoryId) => {
   const { data } = await api.get('/api/sub-categories', {
     params: {
-      'filters[category][id][$eq]': categoryId,
+      'filters[category][documentId][$eq]': categoryId,
       'populate': 'subcategory_thumbnail'
     }
   });
@@ -63,7 +65,7 @@ export const fetchItemById = async (id) => {
 export const fetchCategoryItems = async (categoryId, page = 1, pageSize = 12) => {
   const { data } = await api.get('/api/items', {
     params: {
-      'filters[category][id][$eq]': categoryId,
+      'filters[category][documentId][$eq]': categoryId,
       'populate': 'item_thumbnail,item_images',
       'pagination[page]': page,
       'pagination[pageSize]': pageSize,
@@ -78,7 +80,7 @@ export const fetchCategoryItems = async (categoryId, page = 1, pageSize = 12) =>
 export const fetchSubCategoryItems = async (subCategoryId, page = 1, pageSize = 12, sortBy = null) => {
   const { data } = await api.get('/api/items', {
     params: {
-      'filters[sub_category][id][$eq]': subCategoryId,
+      'filters[sub_category][documentId][$eq]': subCategoryId,
       'populate': '*',
       'pagination[page]': page,
       'pagination[pageSize]': pageSize,
@@ -128,8 +130,8 @@ export const fetchLatestProducts = async (limit = 3) => {
 export const fetchRelatedProducts = async (categoryId, currentItemId, limit = 4) => {
   const { data } = await api.get('/api/items', {
     params: {
-      'filters[category][id][$eq]': categoryId,
-      'filters[id][$ne]': currentItemId,
+      'filters[category][documentId][$eq]': categoryId,
+      'filters[documentId][$ne]': currentItemId,
       'populate': 'item_thumbnail,item_images',
       'pagination[limit]': limit,
       'sort[0]': 'new_arrival:desc',
