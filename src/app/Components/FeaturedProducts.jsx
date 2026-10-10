@@ -100,8 +100,8 @@ const FeaturedProducts = () => {
                   <div className="relative">
                     <div className="aspect-square overflow-hidden bg-gradient-to-br from-gray-50 to-white">
                       <Image
-                        src={itemImageUrl(product.attributes)}
-                        alt={product.attributes.name}
+                        src={itemImageUrl(product)}
+                        alt={product.name}
                         width={400}
                         height={400}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 p-4"
@@ -133,28 +133,28 @@ const FeaturedProducts = () => {
                   <div className="p-4 sm:p-5 flex-grow flex flex-col justify-between">
                     <div>
                       <h3 className="font-bold text-sm sm:text-base md:text-lg text-gray-900 mb-1.5 sm:mb-2 line-clamp-1 group-hover:text-green4 transition-colors duration-300">
-                        {product.attributes.name}
+                        {product.name}
                       </h3>
                       <p className="text-gray-600 text-xs sm:text-sm line-clamp-2 mb-3 sm:mb-4 leading-relaxed">
-                        {product.attributes.description}
+                        {product.description}
                       </p>
                     </div>
 
                     <div className="mt-auto space-y-3">
-                      {product.attributes.state && (
+                      {product.state && (
                         <div>
                           {isSaleActive() ? (
                             <>
                               <p className="text-gray-400 line-through text-xs sm:text-sm font-medium">
-                                {product.attributes.state.toLocaleString()} IQD
+                                {product.state.toLocaleString()} IQD
                               </p>
                               <p className="text-amber-600 font-bold text-base sm:text-lg md:text-xl">
-                                {calculateSalePrice(product.attributes.state).toLocaleString()} IQD
+                                {calculateSalePrice(product.state).toLocaleString()} IQD
                               </p>
                             </>
                           ) : (
                             <p className="text-green4 font-bold text-base sm:text-lg md:text-xl">
-                              {product.attributes.state.toLocaleString()} IQD
+                              {product.state.toLocaleString()} IQD
                             </p>
                           )}
                         </div>

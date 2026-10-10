@@ -149,7 +149,7 @@ const Category = () => {
     
     // Apply out of stock filter if enabled
     if (hideOutOfStock) {
-      items = items.filter(item => !item.attributes.out_of_stock);
+      items = items.filter(item => !item.out_of_stock);
     }
     
     return items;
@@ -243,7 +243,7 @@ const Category = () => {
   
   // Cart action functions
   const addToCart = (item) => {
-    if (item.attributes.out_of_stock) return;
+    if (item.out_of_stock) return;
     dispatch({ type: "ADD_ITEM", payload: item });
   };
   
@@ -419,7 +419,7 @@ const Category = () => {
                           {categories &&
                             categories.map((cat) => (
                               <option key={cat.id} value={entryKey(cat)}>
-                                {cat.attributes.name}
+                                {cat.name}
                               </option>
                             ))}
                         </select>
@@ -501,7 +501,7 @@ const Category = () => {
                 )}
                 {selectedCategoryId && categories.length > 0 && (
                   <span className="inline-flex items-center px-3 py-1 rounded-full bg-green1 text-green4 text-xs">
-                    فئة: {categories.find(c => entryKey(c) === selectedCategoryId)?.attributes.name || selectedCategoryId}
+                    فئة: {categories.find(c => entryKey(c) === selectedCategoryId)?.name || selectedCategoryId}
                     <button 
                       onClick={() => setSelectedCategoryId(null)} 
                       className="mr-1 hover:text-red-500"
@@ -594,8 +594,8 @@ const Category = () => {
                       <div className="group bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 h-full flex flex-col">
                         <Link href={`/item/${entryKey(item)}`} className="block relative pt-[100%]">
                           <Image
-                            src={itemImageUrl(item.attributes)}
-                            alt={item.attributes.name}
+                            src={itemImageUrl(item)}
+                            alt={item.name}
                             fill
                             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                             className="object-cover group-hover:scale-105 transition-transform duration-500"
@@ -610,21 +610,21 @@ const Category = () => {
                           </div>
                           
                           {/* Out of stock badge */}
-                          {item.attributes.out_of_stock && (
+                          {item.out_of_stock && (
                             <div className="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold px-3 py-1 m-2 rounded">
                               نفذت الكمية
                             </div>
                           )}
                           
                           {/* New arrival badge */}
-                          {item.attributes.new_arrival && !item.attributes.out_of_stock && (
+                          {item.new_arrival && !item.out_of_stock && (
                             <div className="absolute top-0 right-0 bg-blue-500 text-white text-xs font-bold px-2 py-1 m-2 rounded">
                               جديد
                             </div>
                           )}
                           
                           {/* Sale badge */}
-                          {isSaleActive() && !item.attributes.out_of_stock && (
+                          {isSaleActive() && !item.out_of_stock && (
                             <div className="absolute top-0 left-0 bg-red-600 text-white text-xs font-bold px-2 py-1 m-2 rounded-full animate-pulse">
                               <FaTag className="inline-block ml-1" size={10} />
                               خصم 10%
@@ -635,30 +635,30 @@ const Category = () => {
                         <div className="p-3 flex-grow flex flex-col">
                           <Link href={`/item/${entryKey(item)}`}>
                             <h3 className="font-medium text-gray-800 mb-1 line-clamp-1 hover:text-green4 transition-colors">
-                              {item.attributes.name}
+                              {item.name}
                             </h3>
                           </Link>
                           
                           <div className="mt-auto pt-2 flex justify-between items-center">
-                            <span className={`font-bold ${item.attributes.out_of_stock ? 'text-gray-400' : ''}`}>
-                              {item.attributes.out_of_stock ? (
+                            <span className={`font-bold ${item.out_of_stock ? 'text-gray-400' : ''}`}>
+                              {item.out_of_stock ? (
                                 "غير متوفر"
                               ) : isSaleActive() ? (
                                 <div>
                                   <span className="text-gray-500 line-through text-xs block">
-                                    {Number(item.attributes.state).toLocaleString()} IQD
+                                    {Number(item.state).toLocaleString()} IQD
                                   </span>
                                   <span className="text-red-600">
-                                    {calculateSalePrice(item.attributes.state).toLocaleString()} IQD
+                                    {calculateSalePrice(item.state).toLocaleString()} IQD
                                   </span>
                                 </div>
                               ) : (
-                                `${Number(item.attributes.state).toLocaleString()} IQD`
+                                `${Number(item.state).toLocaleString()} IQD`
                               )}
                             </span>
                             
                             {/* Cart interaction button */}
-                            {item.attributes.out_of_stock ? (
+                            {item.out_of_stock ? (
                               <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-400 cursor-not-allowed">
                                 <FaShoppingCart size={14} />
                               </div>
@@ -702,28 +702,28 @@ const Category = () => {
                       <div className="flex flex-row h-full">
                         <Link href={`/item/${entryKey(item)}`} className="relative w-1/3 sm:w-1/4">
                           <Image
-                            src={itemImageUrl(item.attributes)}
-                            alt={item.attributes.name}
+                            src={itemImageUrl(item)}
+                            alt={item.name}
                             width={200}
                             height={200}
                             className="object-cover w-full h-full aspect-square"
                             priority
                           />
-                          {item.attributes.out_of_stock && (
+                          {item.out_of_stock && (
                             <div className="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold px-2 py-1 m-1 rounded">
                               نفذت الكمية
                             </div>
                           )}
                           
                           {/* New arrival badge */}
-                          {item.attributes.new_arrival && !item.attributes.out_of_stock && (
+                          {item.new_arrival && !item.out_of_stock && (
                             <div className="absolute top-0 right-0 bg-blue-500 text-white text-xs font-bold px-2 py-1 m-1 rounded">
                               جديد
                             </div>
                           )}
                           
                           {/* Sale badge */}
-                          {isSaleActive() && !item.attributes.out_of_stock && (
+                          {isSaleActive() && !item.out_of_stock && (
                             <div className="absolute top-0 left-0 bg-red-600 text-white text-xs font-bold px-2 py-1 m-1 rounded animate-pulse">
                               <FaTag className="inline-block ml-1" size={10} />
                               خصم 10%
@@ -734,34 +734,34 @@ const Category = () => {
                         <div className="flex-grow p-4 flex flex-col">
                           <Link href={`/item/${entryKey(item)}`}>
                             <h3 className="font-medium text-gray-800 mb-1 hover:text-green4 transition-colors">
-                              {item.attributes.name}
+                              {item.name}
                             </h3>
                           </Link>
                           
                           <p className="text-gray-500 text-sm line-clamp-2 mb-2">
-                            {item.attributes.description || "وصف المنتج غير متوفر"}
+                            {item.description || "وصف المنتج غير متوفر"}
                           </p>
                           
                           <div className="mt-auto flex justify-between items-center">
-                            <span className={`font-bold ${item.attributes.out_of_stock ? 'text-gray-400' : ''}`}>
-                              {item.attributes.out_of_stock ? (
+                            <span className={`font-bold ${item.out_of_stock ? 'text-gray-400' : ''}`}>
+                              {item.out_of_stock ? (
                                 "غير متوفر"
                               ) : isSaleActive() ? (
                                 <div>
                                   <span className="text-gray-500 line-through text-xs block">
-                                    {Number(item.attributes.state).toLocaleString()} IQD
+                                    {Number(item.state).toLocaleString()} IQD
                                   </span>
                                   <span className="text-red-600">
-                                    {calculateSalePrice(item.attributes.state).toLocaleString()} IQD
+                                    {calculateSalePrice(item.state).toLocaleString()} IQD
                                   </span>
                                 </div>
                               ) : (
-                                `${Number(item.attributes.state).toLocaleString()} IQD`
+                                `${Number(item.state).toLocaleString()} IQD`
                               )}
                             </span>
                             
                             {/* Cart interaction for list view */}
-                            {item.attributes.out_of_stock ? (
+                            {item.out_of_stock ? (
                               <button 
                                 disabled
                                 className="px-3 py-1.5 bg-gray-200 text-gray-400 rounded-lg text-sm cursor-not-allowed"

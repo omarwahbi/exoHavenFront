@@ -4,6 +4,7 @@ import axios from 'axios';
 import { API_URL as apiUrl } from '@/services/api';
 import { mediaUrl } from '@/utils/media';
 import { entryKey } from '@/utils/ids';
+import { flattenResponse } from '@/utils/strapi';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://exohaven-iq.com';
 
@@ -15,7 +16,7 @@ async function getItem(id) {
         populate: '*'
       }
     });
-    return data.data;
+    return flattenResponse(data).data;
   } catch (error) {
     console.error('Error fetching item for metadata:', error);
     return null;
@@ -38,11 +39,11 @@ export async function generateMetadata(props) {
   }
 
   console.log('[Metadata] Item found:', item.id);
-  const { name, description, state, out_of_stock, category } = item.attributes;
+  const { name, description, state, out_of_stock, category } = item;
 
   // Get image URL
   let imageUrl = `${siteUrl}/og-image.png`;
-  const thumbnailUrl = mediaUrl(item.attributes.item_thumbnail) || mediaUrl(item.attributes.item_images);
+  const thumbnailUrl = mediaUrl(item.item_thumbnail) || mediaUrl(item.item_images);
   if (thumbnailUrl) {
     imageUrl = thumbnailUrl.startsWith('http')
       ? thumbnailUrl
@@ -70,7 +71,7 @@ export async function generateMetadata(props) {
       'مستلزمات زواحف',
       'ExoHaven Iraq',
       'توصيل مجاني العراق',
-      category?.data?.attributes?.name || 'pet accessories',
+      category?.name || 'pet accessories',
       'exotic pets Iraq',
       'reptile supplies Baghdad',
     ],

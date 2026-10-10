@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useReducer, useEffect } from "react";
+import { flattenEntry } from "@/utils/strapi";
 
 const CartContext = createContext();
 
@@ -46,7 +47,8 @@ const CartProvider = ({ children }) => {
   const [cart, dispatch] = useReducer(cartReducer, [], () => {
     if (typeof window !== "undefined") {
       const storedCart = localStorage.getItem("cart");
-      return storedCart ? JSON.parse(storedCart) : [];
+      // Carts saved before the switch to Strapi 5 hold products in the old v4 shape.
+      return storedCart ? flattenEntry(JSON.parse(storedCart)) : [];
     }
     return [];
   });

@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 import { API_URL } from '@/utils/apiUrl';
+import { flattenResponse } from '@/utils/strapi';
 
 export { API_URL };
 
@@ -13,6 +14,12 @@ const api = axios.create({
 });
 
 // Response interceptor for error handling
+// The app reads Strapi data in its flat v5 shape (see utils/strapi.js).
+api.interceptors.response.use((response) => {
+  response.data = flattenResponse(response.data);
+  return response;
+});
+
 api.interceptors.response.use(
   (response) => response,
   (error) => {

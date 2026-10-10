@@ -114,8 +114,8 @@ export default function ItemsPage() {
                   <div className="group bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 h-full flex flex-col">
                     <Link href={`/item/${entryKey(item)}`} className="block relative pt-[100%]">
                       <Image
-                        src={itemImageUrl(item.attributes)}
-                        alt={item.attributes.name}
+                        src={itemImageUrl(item)}
+                        alt={item.name}
                         fill
                         sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                         className="object-cover group-hover:scale-105 transition-transform duration-500"
@@ -130,14 +130,14 @@ export default function ItemsPage() {
                       </div>
                       
                       {/* New arrival badge */}
-                      {item.attributes.new_arrival && (
+                      {item.new_arrival && (
                         <div className="absolute top-0 right-0 bg-green4 text-white text-xs font-bold px-3 py-1 m-2 rounded">
                           جديد
                         </div>
                       )}
                       
                       {/* Sale badge */}
-                      {isSaleActive() && !item.attributes.out_of_stock && (
+                      {isSaleActive() && !item.out_of_stock && (
                         <div className="absolute top-2 left-2 bg-green4/20 border border-green4/40 text-green4 text-xs font-semibold px-2.5 py-1 m-0 rounded-full flex items-center gap-1">
                           <FaTag className="text-[10px]" />
                           <span>-10%</span>
@@ -148,23 +148,23 @@ export default function ItemsPage() {
                     <div className="p-3 flex-grow flex flex-col">
                       <Link href={`/item/${entryKey(item)}`}>
                         <h3 className="font-medium text-gray-800 mb-1 line-clamp-1 hover:text-green4 transition-colors">
-                          {item.attributes.name}
+                          {item.name}
                         </h3>
                       </Link>
                       
                       <div className="mt-auto pt-2 flex justify-between items-center">
-                        {isSaleActive() && !item.attributes.out_of_stock ? (
+                        {isSaleActive() && !item.out_of_stock ? (
                           <div>
                             <span className="text-gray-500 line-through text-xs block">
-                              {Number(item.attributes.state).toLocaleString()} IQD
+                              {Number(item.state).toLocaleString()} IQD
                             </span>
                             <span className="font-bold text-red-600">
-                              {calculateSalePrice(item.attributes.state).toLocaleString()} IQD
+                              {calculateSalePrice(item.state).toLocaleString()} IQD
                             </span>
                           </div>
                         ) : (
                           <span className="font-bold text-green4">
-                            {Number(item.attributes.state).toLocaleString()} IQD
+                            {Number(item.state).toLocaleString()} IQD
                           </span>
                         )}
                       </div>

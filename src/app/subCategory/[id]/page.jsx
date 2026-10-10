@@ -70,17 +70,17 @@ const SubCategories = () => {
               <div className="flex flex-col items-center p-4 shadow-md rounded-lg bg-white hover:shadow-lg transition-shadow duration-300 h-full">
                 <div className="w-24 h-24 sm:w-36 sm:h-36 rounded-full overflow-hidden mb-4 flex-shrink-0">
                   <Image
-                    src={imageUrl(subCategory.attributes.subcategory_thumbnail)}
+                    src={imageUrl(subCategory.subcategory_thumbnail)}
                     width={144}
                     height={144}
-                    alt={subCategory.attributes.name || "Subcategory Image"}
+                    alt={subCategory.name || "Subcategory Image"}
                     className="w-full h-full object-cover"
                   />
                 </div>
                 <div className="flex-grow flex items-center justify-center">
-                  {subCategory.attributes.name && (
+                  {subCategory.name && (
                     <h2 className="text-lg sm:text-xl font-bold text-green4 hover:text-green2 text-center">
-                      {subCategory.attributes.name}
+                      {subCategory.name}
                     </h2>
                   )}
                 </div>
@@ -92,17 +92,17 @@ const SubCategories = () => {
               <div className="flex flex-col items-center p-4 shadow-md rounded-lg bg-white hover:shadow-lg transition-shadow duration-300 h-full">
                 <div className="w-24 h-24 sm:w-36 sm:h-36 rounded-full overflow-hidden mb-4 flex-shrink-0">
                   <Image
-                    src={itemImageUrl(item.attributes)}
+                    src={itemImageUrl(item)}
                     width={144}
                     height={144}
-                    alt={item.attributes.name || "Item Image"}
+                    alt={item.name || "Item Image"}
                     className="w-full h-full object-cover"
                   />
                 </div>
                 <div className="flex-grow flex items-center justify-center">
-                  {item.attributes.name && (
+                  {item.name && (
                     <h2 className="text-lg sm:text-xl font-bold text-green4 hover:text-green2 text-center">
-                      {item.attributes.name}
+                      {item.name}
                     </h2>
                   )}
                 </div>

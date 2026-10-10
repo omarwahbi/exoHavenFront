@@ -52,12 +52,12 @@ const Items = () => {
 
   useEffect(() => {
     if (subcategoryData?.data) {
-      setSubcategoryName(subcategoryData.data.attributes.name || "");
-      setCategoryName(subcategoryData.data.attributes.category?.data?.attributes?.name || "");
+      setSubcategoryName(subcategoryData.data.name || "");
+      setCategoryName(subcategoryData.data.category?.name || "");
     }
   }, [subcategoryData]);
 
-  const categoryId = entryKey(subcategoryData?.data?.attributes?.category?.data);
+  const categoryId = entryKey(subcategoryData?.data?.category);
 
   const fetchItems = async ({ pageParam = 1 }) => {
     let sortQuery = "";
@@ -124,7 +124,7 @@ const Items = () => {
   };
   
   const addToCart = (item) => {
-    if (item.attributes.out_of_stock) return;
+    if (item.out_of_stock) return;
     dispatch({ type: "ADD_ITEM", payload: item });
   };
   
@@ -223,8 +223,8 @@ const Items = () => {
                       <div className="group bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 h-full flex flex-col">
                         <Link href={`/item/${entryKey(item)}`} className="block relative pt-[100%]">
                           <Image
-                            src={itemImageUrl(item.attributes)}
-                            alt={item.attributes.name}
+                            src={itemImageUrl(item)}
+                            alt={item.name}
                             fill
                             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                             className="object-cover group-hover:scale-105 transition-transform duration-500"
@@ -239,21 +239,21 @@ const Items = () => {
                           </div>
                           
                           {/* Out of stock badge */}
-                          {item.attributes.out_of_stock && (
+                          {item.out_of_stock && (
                             <div className="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold px-3 py-1 m-2 rounded">
                               نفذت الكمية
                             </div>
                           )}
                           
                           {/* New arrival badge */}
-                          {item.attributes.new_arrival && !item.attributes.out_of_stock && (
+                          {item.new_arrival && !item.out_of_stock && (
                             <div className="absolute top-0 right-0 bg-green4 text-white text-xs font-bold px-3 py-1 m-2 rounded">
                               جديد
                             </div>
                           )}
                           
                           {/* Sale badge */}
-                          {isSaleActive() && !item.attributes.out_of_stock && (
+                          {isSaleActive() && !item.out_of_stock && (
                             <div className="absolute top-0 left-0 bg-amber-500 text-white text-xs font-semibold px-2 py-1 m-2 rounded-lg flex items-center gap-1">
                               <FaTag className="text-[10px]" />
                               <span>-10%</span>
@@ -264,30 +264,30 @@ const Items = () => {
                         <div className="p-3 flex-grow flex flex-col">
                           <Link href={`/item/${entryKey(item)}`}>
                             <h3 className="font-medium text-gray-800 mb-2 line-clamp-2 hover:text-green4 transition-colors min-h-[2.5rem]">
-                              {item.attributes.name}
+                              {item.name}
                             </h3>
                           </Link>
                           
                           <div className="mt-auto pt-2 flex justify-between items-center">
-                            <span className={`font-bold ${item.attributes.out_of_stock ? 'text-gray-400' : ''}`}>
-                              {item.attributes.out_of_stock ? (
+                            <span className={`font-bold ${item.out_of_stock ? 'text-gray-400' : ''}`}>
+                              {item.out_of_stock ? (
                                 "غير متوفر"
                               ) : isSaleActive() ? (
                                 <div>
                                   <span className="text-gray-500 line-through text-xs block">
-                                    {Number(item.attributes.state).toLocaleString()} د.ع
+                                    {Number(item.state).toLocaleString()} د.ع
                                   </span>
                                   <span className="text-amber-600">
-                                    {calculateSalePrice(item.attributes.state).toLocaleString()} د.ع
+                                    {calculateSalePrice(item.state).toLocaleString()} د.ع
                                   </span>
                                 </div>
                               ) : (
-                                `${Number(item.attributes.state).toLocaleString()} د.ع`
+                                `${Number(item.state).toLocaleString()} د.ع`
                               )}
                             </span>
                             
                             {/* Cart interaction button */}
-                            {item.attributes.out_of_stock ? (
+                            {item.out_of_stock ? (
                               <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-400 cursor-not-allowed">
                                 <FaShoppingCart size={14} />
                               </div>

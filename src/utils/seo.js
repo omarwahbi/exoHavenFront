@@ -111,7 +111,7 @@ export function generateWebSiteSchema() {
  * @param {Object} item - Product item from API
  */
 export function generateProductSchema(item) {
-  if (!item || !item.attributes) return null;
+  if (!item || !item) return null;
 
   const {
     name,
@@ -119,14 +119,14 @@ export function generateProductSchema(item) {
     state,
     out_of_stock,
     category,
-  } = item.attributes;
+  } = item;
 
   // Ensure we have a valid price
   if (!state || typeof state !== 'number') return null;
 
   // Get image URL
   let imageUrl = `${baseUrl}/icons/icon-512x512.png`; // Default image
-  const thumbnailUrl = mediaUrl(item.attributes.item_thumbnail) || mediaUrl(item.attributes.item_images);
+  const thumbnailUrl = mediaUrl(item.item_thumbnail) || mediaUrl(item.item_images);
   if (thumbnailUrl) {
     imageUrl = thumbnailUrl.startsWith('http')
       ? thumbnailUrl
@@ -149,7 +149,7 @@ export function generateProductSchema(item) {
       '@type': 'Brand',
       name: 'ExoHaven',
     },
-    category: category?.data?.attributes?.name || 'Pet Accessories',
+    category: category?.name || 'Pet Accessories',
     offers: {
       '@type': 'Offer',
       url: `${baseUrl}/item/${entryKey(item)}`,
@@ -298,7 +298,7 @@ export function generateItemListSchema(items, listName = 'Products') {
       '@type': 'ListItem',
       position: index + 1,
       url: `${baseUrl}/item/${entryKey(item)}`,
-      name: item.attributes?.name || 'Product',
+      name: item?.name || 'Product',
     })),
   };
 }

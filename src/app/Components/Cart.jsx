@@ -114,7 +114,7 @@ const Cart = () => {
   const getItemNamesWithQuantities = (cart) => {
     // Calculate total with sale prices if applicable
     const subtotal = cart.reduce((sum, item) => {
-      const price = isSaleActive() ? calculateSalePrice(item.attributes.state) : item.attributes.state;
+      const price = isSaleActive() ? calculateSalePrice(item.state) : item.state;
       return sum + price * item.quantity;
     }, 0);
 
@@ -127,8 +127,8 @@ const Cart = () => {
     const itemDetails = cart
       .map(
         (item) => {
-          const price = isSaleActive() ? calculateSalePrice(item.attributes.state) : item.attributes.state;
-          return `${item.attributes.name}\nالعدد: ${item.quantity}\nالسعر: ${(
+          const price = isSaleActive() ? calculateSalePrice(item.state) : item.state;
+          return `${item.name}\nالعدد: ${item.quantity}\nالسعر: ${(
             price * item.quantity
           ).toLocaleString()} IQD\n`;
         }
@@ -156,7 +156,7 @@ const Cart = () => {
 
   const calculateTotalCost = (cart) => {
     return cart.reduce((total, item) => {
-      let cost = parseInt(item.attributes.state, 10); // Convert state to an integer
+      let cost = parseInt(item.state, 10); // Convert state to an integer
       
       // Apply sale discount if active
       if (isSaleActive()) {
@@ -236,26 +236,26 @@ const Cart = () => {
       <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 h-full flex flex-col">
         <div className="relative pt-[100%]">
           <Image
-            src={itemImageUrl(product.attributes)}
-            alt={product.attributes.name}
+            src={itemImageUrl(product)}
+            alt={product.name}
             fill
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 20vw"
             className="object-cover group-hover:scale-105 transition-transform duration-500"
             priority={index < 2}
             loading={index < 2 ? "eager" : "lazy"}
           />
-          {product.attributes.out_of_stock && (
+          {product.out_of_stock && (
             <div className="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
               نفذت الكمية
             </div>
           )}
-          {product.attributes.new_arrival && (
+          {product.new_arrival && (
             <div className="absolute top-2 left-2 bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded">
               جديد
             </div>
           )}
           {/* Sale tag */}
-          {isSaleActive() && !product.attributes.out_of_stock && (
+          {isSaleActive() && !product.out_of_stock && (
             <div className="absolute top-2 left-2 bg-green4/20 border border-green4/40 text-green4 text-xs font-semibold px-2.5 py-1 rounded-full">
               -10%
             </div>
@@ -263,28 +263,28 @@ const Cart = () => {
         </div>
         <div className="p-3 flex-grow flex flex-col">
           <h4 className="font-medium text-gray-800 mb-1 line-clamp-1 group-hover:text-green4 transition-colors text-right">
-            {product.attributes.name}
+            {product.name}
           </h4>
-          {product.attributes.description && (
+          {product.description && (
             <p className="text-gray-500 text-xs line-clamp-2 mb-2 text-right">
-              {product.attributes.description}
+              {product.description}
             </p>
           )}
           <div className="mt-auto text-right">
-            {product.attributes.out_of_stock ? (
+            {product.out_of_stock ? (
               <span className="font-bold text-gray-400">غير متوفر</span>
             ) : isSaleActive() ? (
               <div>
                 <span className="text-gray-500 line-through text-xs block">
-                  {Number(product.attributes.state).toLocaleString()} IQD
+                  {Number(product.state).toLocaleString()} IQD
                 </span>
                 <span className="font-bold text-red-600">
-                  {calculateSalePrice(product.attributes.state).toLocaleString()} IQD
+                  {calculateSalePrice(product.state).toLocaleString()} IQD
                 </span>
               </div>
             ) : (
               <span className="font-bold text-green4">
-                {Number(product.attributes.state).toLocaleString()} IQD
+                {Number(product.state).toLocaleString()} IQD
               </span>
             )}
           </div>
@@ -388,9 +388,9 @@ const Cart = () => {
                               <Image
                                 className="h-20 w-20 object-cover transition-transform duration-300 hover:scale-110"
                                 src={
-                                  itemImageUrl(item.attributes)
+                                  itemImageUrl(item)
                                 }
-                                alt={item.attributes.name}
+                                alt={item.name}
                                 width={80}
                                 height={80}
                                 priority
@@ -404,13 +404,13 @@ const Cart = () => {
                                 href={`/item/${entryKey(item)}`}
                                 className="text-lg font-bold text-gray-900 hover:text-green4"
                               >
-                                {item.attributes.name}
+                                {item.name}
                               </Link>
                             </div>
                   
-                            {item.attributes.description && (
+                            {item.description && (
                               <p className="mt-1 text-sm text-gray-500 line-clamp-1">
-                                {item.attributes.description}
+                                {item.description}
                               </p>
                             )}
                           </div>
@@ -445,16 +445,16 @@ const Cart = () => {
                                   {isSaleActive() ? (
                                     <>
                                       <span className="text-sm font-normal line-through text-gray-500 block">
-                                        {(item.attributes.state * item.quantity).toLocaleString()} IQD
+                                        {(item.state * item.quantity).toLocaleString()} IQD
                                       </span>
                                       <span className="text-red-600">
-                                        {(calculateSalePrice(item.attributes.state) * item.quantity).toLocaleString()}{" "}
+                                        {(calculateSalePrice(item.state) * item.quantity).toLocaleString()}{" "}
                                         <span className="text-sm font-normal">IQD</span>
                                       </span>
                                     </>
                                   ) : (
                                     <>
-                                      {(item.attributes.state * item.quantity).toLocaleString()}{" "}
+                                      {(item.state * item.quantity).toLocaleString()}{" "}
                                       <span className="text-sm font-normal">IQD</span>
                                     </>
                                   )}

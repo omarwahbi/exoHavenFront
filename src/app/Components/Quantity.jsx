@@ -16,7 +16,7 @@ export default function Quantity({ item, removeOnZero = false }) {
   };
 
   const quantity = getItemQuantityById(cart, item.id);
-  const isOutOfStock = item.attributes.out_of_stock;
+  const isOutOfStock = item.out_of_stock;
   
   // Modified decrease function to handle removal at quantity 1
   const handleDecrease = () => {
@@ -75,15 +75,15 @@ export default function Quantity({ item, removeOnZero = false }) {
       
       {quantity > 0 && (
         <div className="ml-3 sm:ml-4 text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-300">
-          {item.attributes.state && (
+          {item.state && (
             <>
               {isSaleActive() ? (
                 <span>
-                  {(calculateSalePrice(item.attributes.state) * quantity).toLocaleString()} IQD
+                  {(calculateSalePrice(item.state) * quantity).toLocaleString()} IQD
                 </span>
               ) : (
                 <span>
-                  {(item.attributes.state * quantity).toLocaleString()} IQD
+                  {(item.state * quantity).toLocaleString()} IQD
                 </span>
               )}
             </>

@@ -168,10 +168,10 @@ export default function NewArrivalsCarousel() {
                     >
                       <div className="relative aspect-[4/3] overflow-hidden">
                         <Image
-                          src={itemImageUrl(img.attributes)}
+                          src={itemImageUrl(img)}
                           fill
                           sizes="(max-width: 640px) 80vw, 240px"
-                          alt={img.attributes.name}
+                          alt={img.name}
                           className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-700 ease-out"
                           priority={copy === 0 && index < PRIORITY_SLIDES}
                         />
@@ -181,7 +181,7 @@ export default function NewArrivalsCarousel() {
                         </div>
                         
                         {/* Sale badge - Only shown if sale is active */}
-                        {isSaleActive() && !img.attributes.out_of_stock && (
+                        {isSaleActive() && !img.out_of_stock && (
                           <div className="absolute top-1 right-1 bg-amber-500 text-white text-[10px] font-medium px-1.5 py-0.5 rounded-full z-10 flex items-center gap-0.5">
                             <FaTag className="text-[8px]" />
                             <span>-10%</span>
@@ -197,22 +197,22 @@ export default function NewArrivalsCarousel() {
                       
                       <div className="p-2">
                         <h3 className="font-bold text-gray-800 text-xs line-clamp-1 group-hover:text-green4 transition-colors">
-                          {img.attributes.name}
+                          {img.name}
                         </h3>
-                        {img.attributes.state && (
+                        {img.state && (
                           <div className="flex items-center justify-between mt-0.5">
-                            {isSaleActive() && !img.attributes.out_of_stock ? (
+                            {isSaleActive() && !img.out_of_stock ? (
                               <div>
                                 <span className="text-gray-500 line-through text-[10px] block">
-                                  {img.attributes.state.toLocaleString()} IQD
+                                  {img.state.toLocaleString()} IQD
                                 </span>
                                 <span className="font-bold text-amber-600 text-xs">
-                                  {calculateSalePrice(img.attributes.state).toLocaleString()} IQD
+                                  {calculateSalePrice(img.state).toLocaleString()} IQD
                                 </span>
                               </div>
                             ) : (
                               <span className="font-bold text-green4 text-xs">
-                                {img.attributes.state.toLocaleString()} IQD
+                                {img.state.toLocaleString()} IQD
                               </span>
                             )}
                           </div>

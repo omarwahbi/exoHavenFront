@@ -37,8 +37,8 @@ export default function ItemClient({ params }) {
   });
 
   // Derived data using useMemo to prevent recreation on each render
-  const itemImgs = useMemo(() => item?.attributes?.item_images?.data || [], [item]);
-  const categoryId = entryKey(item?.attributes?.category?.data);
+  const itemImgs = useMemo(() => item?.item_images || [], [item]);
+  const categoryId = entryKey(item?.category);
 
   // Fetch related products
   const {
@@ -54,13 +54,13 @@ export default function ItemClient({ params }) {
   const breadcrumbSchema = item ? generateBreadcrumbSchema([
     { name: 'الرئيسية', url: 'https://exohaven-iq.com/' },
     { name: 'المنتجات', url: 'https://exohaven-iq.com/category' },
-    { name: item.attributes.name, url: `https://exohaven-iq.com/item/${entryKey(item)}` }
+    { name: item.name, url: `https://exohaven-iq.com/item/${entryKey(item)}` }
   ]) : null;
 
   // Handle image selection and rotation
   useEffect(() => {
     if (itemImgs && itemImgs.length > 0) {
-      setSelectedImage(itemImgs[activeIndex].attributes.url);
+      setSelectedImage(itemImgs[activeIndex].url);
 
       const interval = setInterval(() => {
         setActiveIndex((current) =>
@@ -74,7 +74,7 @@ export default function ItemClient({ params }) {
 
   const handleThumbnailClick = (index) => {
     setActiveIndex(index);
-    setSelectedImage(itemImgs[index].attributes.url);
+    setSelectedImage(itemImgs[index].url);
   };
 
   if (isLoading) {
@@ -130,7 +130,7 @@ export default function ItemClient({ params }) {
               </Link>
             </li>
             <li className="mx-2">/</li>
-            <li className="text-green5 font-bold">{item.attributes.name}</li>
+            <li className="text-green5 font-bold">{item.name}</li>
           </ol>
         </nav>
 
@@ -152,7 +152,7 @@ export default function ItemClient({ params }) {
                       >
                         <div className="pb-[100%] relative">
                           <Image
-                            src={img.attributes.url}
+                            src={img.url}
                             fill
                             sizes="(max-width: 768px) 20vw, 10vw"
                             className="object-cover absolute inset-0"
@@ -179,11 +179,11 @@ export default function ItemClient({ params }) {
                             className="absolute inset-0"
                           >
                             <Image
-                              src={selectedImage || mediaUrl(item?.attributes?.item_images) || itemImageUrl(item?.attributes)}
+                              src={selectedImage || mediaUrl(item?.item_images) || itemImageUrl(item)}
                               fill
                               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                               className="object-contain p-4"
-                              alt={item.attributes.name}
+                              alt={item.name}
                               priority
                               fetchPriority="high"
                             />
@@ -191,7 +191,7 @@ export default function ItemClient({ params }) {
                         </AnimatePresence>
 
                         {/* Out of stock overlay */}
-                        {item.attributes.out_of_stock && (
+                        {item.out_of_stock && (
                           <div className="absolute inset-0 flex items-center justify-center bg-green5/60 z-10">
                             <div className="bg-red-500 text-white py-2 px-6 rounded-full text-lg font-bold transform -rotate-12">
                               نفذت الكمية
@@ -214,7 +214,7 @@ export default function ItemClient({ params }) {
                       }`}
                     >
                       <Image
-                        src={img.attributes.url}
+                        src={img.url}
                         width={64}
                         height={64}
                         className="object-cover w-full h-full"
@@ -233,12 +233,12 @@ export default function ItemClient({ params }) {
 
                 {/* Product name */}
                 <h1 className="text-2xl md:text-3xl font-bold mb-2 text-gray-800">
-                  {item.attributes.name}
+                  {item.name}
                 </h1>
 
                 {/* Availability tag */}
                 <div className="mb-4">
-                  {item.attributes.out_of_stock ? (
+                  {item.out_of_stock ? (
                     <span className="inline-block bg-red-100 text-red-800 text-sm font-medium px-3 py-1 rounded-full">
                       غير متوفر
                     </span>
@@ -249,14 +249,14 @@ export default function ItemClient({ params }) {
                   )}
 
                   {/* New arrival tag */}
-                  {item.attributes.new_arrival && (
+                  {item.new_arrival && (
                     <span className="inline-block bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full mr-2">
                       وصل حديثاً
                     </span>
                   )}
 
                   {/* Sale tag */}
-                  {isSaleActive() && !item.attributes.out_of_stock && (
+                  {isSaleActive() && !item.out_of_stock && (
                     <span className="inline-block bg-amber-100 text-amber-800 text-sm font-medium px-3 py-1 rounded-full mr-2">
                       <FaTag className="inline-block ml-1" size={12} />
                       خصم 10%
@@ -266,22 +266,22 @@ export default function ItemClient({ params }) {
 
                 {/* Price */}
                 <div className="my-5">
-                  {isSaleActive() && !item.attributes.out_of_stock ? (
+                  {isSaleActive() && !item.out_of_stock ? (
                     <>
                       <div className="flex flex-col">
                         <span className="text-lg line-through text-gray-500 mb-1">
-                          {Number(item.attributes.state).toLocaleString()}
+                          {Number(item.state).toLocaleString()}
                           <span className="text-sm font-medium mr-1">د.ع</span>
                         </span>
                         <span className="text-3xl font-bold text-amber-600">
-                          {calculateSalePrice(item.attributes.state).toLocaleString()}
+                          {calculateSalePrice(item.state).toLocaleString()}
                           <span className="text-lg font-medium mr-1">د.ع</span>
                         </span>
                       </div>
                     </>
                   ) : (
                     <span className="text-3xl font-bold text-green5">
-                      {Number(item.attributes.state).toLocaleString()}
+                      {Number(item.state).toLocaleString()}
                       <span className="text-lg font-medium mr-1">د.ع</span>
                     </span>
                   )}
@@ -291,7 +291,7 @@ export default function ItemClient({ params }) {
                 <div className="my-6">
                   <h3 className="text-lg font-medium mb-2">وصف المنتج</h3>
                   <div className="text-gray-700 whitespace-pre-line bg-gray-50 p-4 rounded-lg">
-                    {item.attributes.description || "لا يوجد وصف متاح لهذا المنتج."}
+                    {item.description || "لا يوجد وصف متاح لهذا المنتج."}
                   </div>
                 </div>
 
@@ -379,20 +379,20 @@ export default function ItemClient({ params }) {
                   <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 h-full flex flex-col">
                     <div className="relative pt-[100%]">
                       <Image
-                        src={itemImageUrl(product.attributes)}
-                        alt={product.attributes.name}
+                        src={itemImageUrl(product)}
+                        alt={product.name}
                         fill
                         sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 20vw"
                         className="object-cover group-hover:scale-105 transition-transform duration-500"
                         priority={index < 2}
                       />
-                      {product.attributes.out_of_stock && (
+                      {product.out_of_stock && (
                         <div className="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
                           نفذت الكمية
                         </div>
                       )}
                       {/* Sale tag - Display only if sale is active */}
-                      {isSaleActive() && !product.attributes.out_of_stock && (
+                      {isSaleActive() && !product.out_of_stock && (
                         <div className="absolute top-2 left-2 bg-amber-500 text-white text-xs font-semibold px-2 py-1 rounded-lg">
                           -10%
                         </div>
@@ -400,23 +400,23 @@ export default function ItemClient({ params }) {
                     </div>
                     <div className="p-3 flex-grow flex flex-col">
                       <h3 className="font-medium text-gray-800 mb-2 line-clamp-2 group-hover:text-green4 transition-colors text-right min-h-[2.5rem]">
-                        {product.attributes.name}
+                        {product.name}
                       </h3>
                       <div className="text-right mt-auto">
-                        {product.attributes.out_of_stock ? (
+                        {product.out_of_stock ? (
                           <span className="font-bold text-gray-400">غير متوفر</span>
                         ) : isSaleActive() ? (
                           <div>
                             <span className="text-gray-500 line-through text-sm block">
-                              {Number(product.attributes.state).toLocaleString()} د.ع
+                              {Number(product.state).toLocaleString()} د.ع
                             </span>
                             <span className="font-bold text-amber-600">
-                              {calculateSalePrice(product.attributes.state).toLocaleString()} د.ع
+                              {calculateSalePrice(product.state).toLocaleString()} د.ع
                             </span>
                           </div>
                         ) : (
                           <span className="font-bold text-green5">
-                            {Number(product.attributes.state).toLocaleString()} د.ع
+                            {Number(product.state).toLocaleString()} د.ع
                           </span>
                         )}
                       </div>

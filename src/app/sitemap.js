@@ -2,6 +2,7 @@
 import axios from 'axios';
 import { API_URL as apiUrl } from '@/services/api';
 import { entryKey } from "@/utils/ids";
+import { flattenResponse } from '@/utils/strapi';
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://exohaven-iq.com';
 
@@ -10,7 +11,7 @@ async function fetchAllCategories() {
     const { data } = await axios.get(`${apiUrl}/api/categories`, {
       params: { populate: '*' }
     });
-    return data.data || [];
+    return flattenResponse(data).data || [];
   } catch (error) {
     console.error('Error fetching categories for sitemap:', error);
     return [];
@@ -22,7 +23,7 @@ async function fetchAllSubCategories() {
     const { data } = await axios.get(`${apiUrl}/api/sub-categories`, {
       params: { populate: '*' }
     });
-    return data.data || [];
+    return flattenResponse(data).data || [];
   } catch (error) {
     console.error('Error fetching subcategories for sitemap:', error);
     return [];
@@ -38,7 +39,7 @@ async function fetchAllItems() {
         'pagination[pageSize]': 100, // Adjust based on your item count
       }
     });
-    return data.data || [];
+    return flattenResponse(data).data || [];
   } catch (error) {
     console.error('Error fetching items for sitemap:', error);
     return [];
@@ -84,8 +85,8 @@ export default async function sitemap() {
   // Category pages: /subCategory/[id] lists a category's subcategories
   const categoryPages = categories.map((category) => ({
     url: `${baseUrl}/subCategory/${entryKey(category)}`,
-    lastModified: category.attributes?.updatedAt
-      ? new Date(category.attributes.updatedAt)
+    lastModified: category?.updatedAt
+      ? new Date(category.updatedAt)
       : new Date(),
     changeFrequency: 'weekly',
     priority: 0.8,
@@ -94,8 +95,8 @@ export default async function sitemap() {
   // Subcategory pages: /items/[id] lists a subcategory's products
   const subCategoryPages = subCategories.map((subCategory) => ({
     url: `${baseUrl}/items/${entryKey(subCategory)}`,
-    lastModified: subCategory.attributes?.updatedAt
-      ? new Date(subCategory.attributes.updatedAt)
+    lastModified: subCategory?.updatedAt
+      ? new Date(subCategory.updatedAt)
       : new Date(),
     changeFrequency: 'weekly',
     priority: 0.7,
@@ -104,8 +105,8 @@ export default async function sitemap() {
   // Generate item detail pages
   const itemPages = items.map((item) => ({
     url: `${baseUrl}/item/${entryKey(item)}`,
-    lastModified: item.attributes?.updatedAt
-      ? new Date(item.attributes.updatedAt)
+    lastModified: item?.updatedAt
+      ? new Date(item.updatedAt)
       : new Date(),
     changeFrequency: 'weekly',
     priority: 0.6,

@@ -12,7 +12,7 @@ const AddToCartButton = ({ item }) => {
   const [particles, setParticles] = useState([]);
 
   const addToCart = (e) => {
-    if (item.attributes.out_of_stock || added) return;
+    if (item.out_of_stock || added) return;
 
     // Create ripple effect
     const rect = e.currentTarget.getBoundingClientRect();
@@ -42,7 +42,7 @@ const AddToCartButton = ({ item }) => {
     }, 2000);
   };
 
-  const isOutOfStock = item.attributes.out_of_stock;
+  const isOutOfStock = item.out_of_stock;
   // Button is disabled when out of stock OR when showing the success animation
   const isDisabled = isOutOfStock || added;
 
