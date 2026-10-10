@@ -6,6 +6,7 @@ import { getSale } from "@/services/sale";
 import "./globals.css";
 import ClientLayout from "./ClientLayout"; // Import the client-side layout component
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 // Font optimization
 const inter = Inter({
@@ -157,6 +158,8 @@ export default async function RootLayout({ children }) {
           </CartProvider>
         </SaleProvider>
         <Analytics />
+        {/* Real visitors' page speed (Core Web Vitals), in Vercel → Speed Insights. */}
+        <SpeedInsights />
       </body>
     </html>
   );

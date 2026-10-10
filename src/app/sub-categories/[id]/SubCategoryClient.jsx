@@ -5,7 +5,8 @@ import { useParams } from "next/navigation";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import React, { useRef, useCallback, useState } from "react";
 import { motion } from "framer-motion";
-import { fetchSubCategoryById, fetchSubCategoryItems } from "@/services/api";
+import { fetchSubCategoryById, searchProducts } from "@/services/api";
+import SortSelect from "@/app/Components/SortSelect";
 import { QueryKeys } from "@/utils/queryKeys";
 import { entryKey } from "@/utils/ids";
 import ProductCard from "@/app/Components/ProductCard";
@@ -16,7 +17,7 @@ import Breadcrumbs from "@/app/Components/Breadcrumbs";
 const Items = ({ initialSubCategory }) => {
   const { id } = useParams();
   const observerRef = useRef(null);
-  const [sortBy, setSortBy] = useState("newest");
+  const [sortBy, setSortBy] = useState("featured");
 
   // Animation variants
   const containerVariants = {
@@ -51,40 +52,14 @@ const Items = ({ initialSubCategory }) => {
 
   const categoryId = entryKey(subcategoryData?.data?.category);
 
-  const fetchItems = async ({ pageParam = 1 }) => {
-    let sortQuery = "";
-    
-    switch (sortBy) {
-      case "priceAsc":
-        sortQuery = "state:asc";
-        break;
-      case "priceDesc":
-        sortQuery = "state:desc";
-        break;
-      case "newest":
-        sortQuery = "createdAt:desc";
-        break;
-      case "nameAsc":
-        sortQuery = "name:asc";
-        break;
-      default:
-        sortQuery = "createdAt:desc";
-    }
-    
-    return fetchSubCategoryItems(id, pageParam, 12, sortQuery);
-  };
-
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useInfiniteQuery({
-      queryKey: QueryKeys.subcategoryItems(id, sortBy),
-      queryFn: fetchItems,
-      getNextPageParam: (lastPage) => {
-        const nextPage = lastPage?.meta?.pagination?.page + 1;
-        return nextPage <= lastPage?.meta?.pagination?.pageCount
-          ? nextPage
-          : undefined;
-      },
-    });
+  // Sorting goes through the search API, which sorts by the real price (variants
+  // included) and keeps items in stock first.
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
+    queryKey: QueryKeys.subcategoryItems(id, sortBy),
+    queryFn: ({ pageParam, signal }) => searchProducts({ subCategory: id, sort: sortBy, page: pageParam, signal }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => (lastPage.hasMore ? lastPage.nextPage : undefined),
+  });
 
   const lastItemRef = useCallback(
     (node) => {
@@ -100,7 +75,7 @@ const Items = ({ initialSubCategory }) => {
     [isFetchingNextPage, hasNextPage, fetchNextPage]
   );
 
-  const items = data?.pages?.flatMap((page) => page.data) || [];
+  const items = data?.pages?.flatMap((page) => page.items) || [];
   const isPageLoading = isLoading || isSubcategoryLoading;
 
   // Skeleton loading component
@@ -146,20 +121,7 @@ const Items = ({ initialSubCategory }) => {
           </h1>
         </div>
         
-        {/* Sort dropdown */}
-        <div className="relative">
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            aria-label="ترتيب المنتجات"
-            className="h-10 rounded-full border border-gray-200 bg-white px-4 text-sm font-medium text-gray-900 focus:border-green3 focus:outline-none focus:ring-2 focus:ring-green2"
-          >
-            <option value="newest">الأحدث</option>
-            <option value="priceAsc">السعر: من الأقل للأعلى</option>
-            <option value="priceDesc">السعر: من الأعلى للأقل</option>
-            <option value="nameAsc">أبجدياً: أ-ي</option>
-          </select>
-        </div>
+        <SortSelect value={sortBy} onChange={setSortBy} />
       </div>
 
       {items.length === 0 && !isPageLoading ? (

@@ -1,10 +1,22 @@
 "use client";
 import { FiX } from "react-icons/fi";
 import { entryKey } from "@/utils/ids";
+import SortSelect from "@/app/Components/SortSelect";
 
-// Filter row of /products: category, "in stock only", and chips for what is
+// Filter row of /products: category, "in stock only", sort, and chips for what is
 // active (including the search from the header), each removable.
-export default function ProductFilters({ categories, categoryId, onCategory, inStockOnly, onInStockOnly, query, onClearQuery, onReset }) {
+export default function ProductFilters({
+  categories,
+  categoryId,
+  onCategory,
+  inStockOnly,
+  onInStockOnly,
+  sort,
+  onSort,
+  query,
+  onClearQuery,
+  onReset,
+}) {
   const categoryName = categories.find((c) => entryKey(c) === categoryId)?.name;
   const active = Boolean(query || categoryId || inStockOnly);
 
@@ -36,6 +48,8 @@ export default function ProductFilters({ categories, categoryId, onCategory, inS
           />
           المتوفر فقط
         </label>
+
+        <SortSelect value={sort} onChange={onSort} hasQuery={Boolean(query)} className="sm:mr-auto" />
       </div>
 
       {active && (

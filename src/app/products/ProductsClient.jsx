@@ -2,9 +2,10 @@
 import { Suspense, useEffect, useMemo, useRef } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { fetchProductsPage } from "@/services/api";
+import { searchProducts } from "@/services/api";
 import { QueryKeys } from "@/utils/queryKeys";
 import { isOutOfStock } from "@/utils/product";
+import { defaultSort, parseSort } from "@/utils/search";
 import Breadcrumbs from "@/app/Components/Breadcrumbs";
 import ProductCard from "@/app/Components/ProductCard";
 import Spinner from "@/app/Components/Spinner";
@@ -12,8 +13,8 @@ import { useCategories } from "@/app/Components/Categories";
 import ProductFilters from "./components/ProductFilters";
 
 // /products: every product, filtered by ?q= (the header's search), ?category= and
-// ?instock=1. Filters live in the URL, so a filtered view can be shared or
-// bookmarked and the back button works.
+// ?instock=1, ordered by ?sort= (utils/search.js). Filters live in the URL, so a
+// filtered view can be shared or bookmarked and the back button works.
 function ProductsPage() {
   const router = useRouter();
   const pathname = usePathname();
@@ -21,6 +22,7 @@ function ProductsPage() {
   const query = params.get("q")?.trim() || "";
   const categoryId = params.get("category") || null;
   const inStockOnly = params.get("instock") === "1";
+  const sort = parseSort(params.get("sort"), Boolean(query));
 
   const setParams = (changes) => {
     const next = new URLSearchParams(params);
@@ -35,9 +37,10 @@ function ProductsPage() {
   const { data: categories = [] } = useCategories();
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError } = useInfiniteQuery({
-    queryKey: [...QueryKeys.categoryItems(categoryId, query), inStockOnly],
+    queryKey: [...QueryKeys.categoryItems(categoryId, query), inStockOnly, sort],
     queryFn: ({ pageParam = 1, signal }) =>
-      fetchProductsPage({ pageParam, signal, categoryId, searchQuery: query, inStockOnly }),
+      searchProducts({ q: query, category: categoryId, inStock: inStockOnly, sort, page: pageParam, signal }),
+    initialPageParam: 1,
     getNextPageParam: (lastPage) => (lastPage.hasMore ? lastPage.nextPage : undefined),
   });
 
@@ -80,6 +83,8 @@ function ProductsPage() {
         onCategory={(id) => setParams({ category: id })}
         inStockOnly={inStockOnly}
         onInStockOnly={(on) => setParams({ instock: on ? "1" : null })}
+        sort={sort}
+        onSort={(value) => setParams({ sort: value === defaultSort(Boolean(query)) ? null : value })}
         query={query}
         onClearQuery={() => setParams({ q: null })}
         onReset={reset}
