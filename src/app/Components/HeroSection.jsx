@@ -12,7 +12,7 @@ import { FREE_DELIVERY_THRESHOLD } from "@/utils/pricing";
 const PERKS = [
   { Icon: FiTruck, text: "توصيل لكل محافظات العراق" },
   { Icon: FiCreditCard, text: "الدفع عند الاستلام" },
-  { Icon: FiGift, text: `توصيل مجاني فوق ${FREE_DELIVERY_THRESHOLD.toLocaleString()} د.ع` },
+  { Icon: FiGift, text: `توصيل مجاني فوق ${FREE_DELIVERY_THRESHOLD.toLocaleString("en-US")} د.ع` },
 ];
 
 // Top of the home page: what the shop is, the two main ways in, and the three

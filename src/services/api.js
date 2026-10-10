@@ -167,8 +167,8 @@ export const fetchSuggestedItems = async (limit = 4) => {
   return data.data;
 };
 
-// One page of /products: optionally one category and a name search.
-export const fetchProductsPage = async ({ pageParam = 1, categoryId, searchQuery, signal }) => {
+// One page of /products: optionally one category, a name search, and in-stock only.
+export const fetchProductsPage = async ({ pageParam = 1, categoryId, searchQuery, inStockOnly = false, signal }) => {
   const params = {
     pagination: {
       page: pageParam,
@@ -204,6 +204,13 @@ export const fetchProductsPage = async ({ pageParam = 1, categoryId, searchQuery
     };
   }
   
+  if (inStockOnly) {
+    params.filters = {
+      ...params.filters,
+      out_of_stock: { $eq: false }
+    };
+  }
+
   if (searchQuery) {
     params.filters = {
       ...params.filters,

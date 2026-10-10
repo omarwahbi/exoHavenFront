@@ -18,9 +18,7 @@ export default function FeaturedProducts() {
 
   return (
     <section className="container-page" aria-labelledby="home-featured" dir="rtl">
-      <div id="home-featured">
-        <SectionHeader title="منتجات مختارة" subtitle="مختارات من متجرنا" href="/products" linkLabel="كل المنتجات" />
-      </div>
+      <SectionHeader id="home-featured" title="منتجات مختارة" subtitle="مختارات من متجرنا" href="/products" linkLabel="كل المنتجات" />
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4">
         {isLoading
           ? Array.from({ length: 4 }, (_, i) => <div key={i} className="aspect-[3/4] animate-pulse rounded-2xl bg-white" />)

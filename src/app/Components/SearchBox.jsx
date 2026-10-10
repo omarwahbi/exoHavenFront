@@ -5,10 +5,18 @@ import { FiSearch, FiX } from "react-icons/fi";
 
 // The header's product search. Submitting opens /products?q=… (the products page
 // reads `q`).
-export default function SearchBox({ className = "", autoFocus = false }) {
+//
+// The header stays mounted between pages, so the box restarts (via its key)
+// whenever the URL's search changes: back/forward or clearing the search on
+// /products then shows the right text.
+export default function SearchBox(props) {
+  const q = useSearchParams().get("q") ?? "";
+  return <SearchForm key={q} initialQuery={q} {...props} />;
+}
+
+function SearchForm({ initialQuery, className = "", autoFocus = false }) {
   const router = useRouter();
-  const params = useSearchParams();
-  const [query, setQuery] = useState(params.get("q") ?? "");
+  const [query, setQuery] = useState(initialQuery);
   // The header renders one box for phones and one for desktop, so ids must differ.
   const id = useId();
 

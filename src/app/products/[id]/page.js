@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import { entryKey } from '@/utils/ids';
 import ItemClient from './ItemClient';
 import { getItem } from '@/services/catalog';
 import { getSale } from '@/services/sale';
@@ -17,7 +18,7 @@ export async function generateMetadata({ params }) {
     description:
       snippet(item.description) ||
       `${item.name} متوفر الآن في ExoHaven. الدفع عند الاستلام والتوصيل لجميع محافظات العراق.`,
-    path: `/products/${id}`,
+    path: `/products/${entryKey(item)}`,
     image: absoluteMediaUrl(item.item_thumbnail) || absoluteMediaUrl(item.item_images),
   });
   return {

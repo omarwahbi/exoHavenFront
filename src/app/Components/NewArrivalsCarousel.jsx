@@ -54,9 +54,7 @@ export default function NewArrivalsCarousel() {
 
   return (
     <section className="container-page" aria-labelledby="home-new-arrivals" dir="rtl">
-      <div id="home-new-arrivals">
-        <SectionHeader title="وصل حديثاً" href="/new-arrivals" />
-      </div>
+      <SectionHeader id="home-new-arrivals" title="وصل حديثاً" href="/new-arrivals" />
       {isLoading ? (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
           {Array.from({ length: 5 }, (_, i) => (

@@ -66,11 +66,11 @@ export default function ProductCard({ item, priority = false, className = "" }) 
             ) : (
               <>
                 {onSale && (
-                  <span className="block text-xs text-gray-400 line-through">{price.toLocaleString()} د.ع</span>
+                  <span className="block text-xs text-gray-400 line-through">{price.toLocaleString("en-US")} د.ع</span>
                 )}
                 <span className={`text-base font-bold ${onSale ? "text-red-600" : "text-gray-900"}`}>
                   <span className="text-xs font-medium text-gray-500">{from}</span>
-                  {(onSale ? calculateSalePrice(price, sale) : price).toLocaleString()}
+                  {(onSale ? calculateSalePrice(price, sale) : price).toLocaleString("en-US")}
                   <span className="mr-1 text-xs font-medium">د.ع</span>
                 </span>
               </>

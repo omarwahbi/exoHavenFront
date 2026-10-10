@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { entryKey } from "@/utils/ids";
 import { getCategory } from "@/services/catalog";
 import { absoluteMediaUrl, pageMetadata, snippet } from "@/utils/metadata";
 import CategoryClient from "./CategoryClient";
@@ -12,7 +13,7 @@ export async function generateMetadata({ params }) {
     description:
       snippet(category.desc) ||
       `تسوق ${category.name} من ExoHaven: مستلزمات الزواحف والحيوانات الأليفة الغريبة مع التوصيل لجميع محافظات العراق.`,
-    path: `/categories/${id}`,
+    path: `/categories/${entryKey(category)}`,
     image: absoluteMediaUrl(category.category_thumbnail),
   });
 }

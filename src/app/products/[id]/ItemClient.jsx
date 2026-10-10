@@ -124,10 +124,10 @@ function Price({ price, sale, outOfStock, large = false }) {
   return (
     <div className="flex items-baseline gap-2">
       <span className={`font-extrabold ${large ? "text-3xl" : "text-lg"} ${onSale ? "text-red-600" : "text-gray-900"}`}>
-        {(onSale ? calculateSalePrice(price, sale) : price).toLocaleString()}
+        {(onSale ? calculateSalePrice(price, sale) : price).toLocaleString("en-US")}
         <span className="mr-1 text-sm font-semibold">د.ع</span>
       </span>
-      {onSale && <span className="text-sm text-gray-400 line-through">{price.toLocaleString()}</span>}
+      {onSale && <span className="text-sm text-gray-400 line-through">{price.toLocaleString("en-US")}</span>}
     </div>
   );
 }
@@ -240,7 +240,7 @@ export default function ItemClient({ params, initialItem }) {
                         } ${v.out_of_stock ? "opacity-50" : ""}`}
                       >
                         <span className={v.out_of_stock ? "line-through" : ""}>{v.label}</span>
-                        <span className="block text-xs font-normal text-gray-500">{Number(v.price).toLocaleString()} د.ع</span>
+                        <span className="block text-xs font-normal text-gray-500">{Number(v.price).toLocaleString("en-US")} د.ع</span>
                       </button>
                     );
                   })}
@@ -255,7 +255,7 @@ export default function ItemClient({ params, initialItem }) {
             <ul className="grid gap-3 rounded-2xl border border-gray-100 bg-white p-4 text-sm text-gray-700 sm:grid-cols-2">
               <li className="flex items-center gap-2">
                 <FiTruck className="shrink-0 text-green5" size={18} />
-                توصيل لكل العراق، مجاني فوق {FREE_DELIVERY_THRESHOLD.toLocaleString()} د.ع
+                توصيل لكل العراق، مجاني فوق {FREE_DELIVERY_THRESHOLD.toLocaleString("en-US")} د.ع
               </li>
               <li className="flex items-center gap-2">
                 <FiCreditCard className="shrink-0 text-green5" size={18} />

@@ -40,7 +40,7 @@ export default function OrderSummary({
           <div className="flex justify-between">
             <p className="text-gray-600">إجمالي السلة</p>
             <p className="font-medium text-gray-900">
-              {subtotal.toLocaleString()} <span className="text-sm font-normal">د.ع</span>
+              {subtotal.toLocaleString("en-US")} <span className="text-sm font-normal">د.ع</span>
             </p>
           </div>
 
@@ -132,7 +132,7 @@ export default function OrderSummary({
             {subtotal >= FREE_DELIVERY_THRESHOLD ? (
               <p className="text-sm font-medium bg-green-100 text-green5 px-2 py-0.5 rounded-full">مجاني</p>
             ) : (
-              <p className="text-sm font-medium">{DELIVERY_FEES[deliveryLocation].toLocaleString()} د.ع</p>
+              <p className="text-sm font-medium">{DELIVERY_FEES[deliveryLocation].toLocaleString("en-US")} د.ع</p>
             )}
           </div>
 
@@ -140,7 +140,7 @@ export default function OrderSummary({
             <div className="flex justify-between items-center">
               <p className="text-lg font-bold text-gray-900">المجموع الكلي</p>
               <p className="text-xl font-bold text-green5">
-                {grandTotal.toLocaleString()} <span className="text-sm font-normal">د.ع</span>
+                {grandTotal.toLocaleString("en-US")} <span className="text-sm font-normal">د.ع</span>
               </p>
             </div>
           </div>

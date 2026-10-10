@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import { API_URL } from "@/utils/apiUrl";
 
-// Redirects old page URLs to current ones with a 308, before the page starts
-// streaming (a redirect() inside a page would answer 200, see app/loading.jsx):
+// Redirects old page URLs to current ones with a 308, before the page renders:
 //
 // - Renamed sections: /item/x -> /products/x, /subCategory/x -> /categories/x,
 //   /items/x -> /sub-categories/x. (/category and /items are in next.config.mjs.)

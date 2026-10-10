@@ -204,9 +204,9 @@ const Cart = () => {
                           <span className="font-medium">تهانينا! لقد حصلت على توصيل مجاني في جميع أنحاء العراق!</span>
                         ) : (
                           <>
-                            <span className="font-medium">توصيل مجاني</span> للطلبات التي تزيد عن {FREE_DELIVERY_THRESHOLD.toLocaleString()} د.ع في جميع أنحاء العراق. 
+                            <span className="font-medium">توصيل مجاني</span> للطلبات التي تزيد عن {FREE_DELIVERY_THRESHOLD.toLocaleString("en-US")} د.ع في جميع أنحاء العراق. 
                             <span className="text-green4 font-medium mr-1">
-                              أضف {(FREE_DELIVERY_THRESHOLD - subtotal).toLocaleString()} د.ع أخرى للحصول على توصيل مجاني!
+                              أضف {(FREE_DELIVERY_THRESHOLD - subtotal).toLocaleString("en-US")} د.ع أخرى للحصول على توصيل مجاني!
                             </span>
                           </>
                         )}

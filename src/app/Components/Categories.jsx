@@ -56,9 +56,7 @@ export function CategoryGrid() {
 export default function Categories() {
   return (
     <section className="container-page" aria-labelledby="home-categories">
-      <div id="home-categories">
-        <SectionHeader title="تسوق حسب القسم" href="/categories" linkLabel="كل الأقسام" />
-      </div>
+      <SectionHeader id="home-categories" title="تسوق حسب القسم" href="/categories" linkLabel="كل الأقسام" />
       <CategoryGrid />
     </section>
   );

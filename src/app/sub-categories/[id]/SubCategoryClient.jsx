@@ -130,63 +130,61 @@ const Items = ({ initialSubCategory }) => {
         ]}
       />
 
-      {items.length === 0 && !isPageLoading ? (
-        <div className="text-center text-gray-500 py-20 text-lg">عذراً لا يوجد مواد هنا</div>
-      ) : (
-        <>
-          <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
-            <div>
-              {/* Which category this sub-category belongs to. */}
-              {categoryName && (
-                <Link
-                  href={categoryId ? `/categories/${categoryId}` : "/products"}
-                  className="mb-1 inline-block text-sm font-semibold text-green5 hover:text-green4"
-                >
-                  {categoryName}
-                </Link>
-              )}
-              <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">
-                {subcategoryName || "المنتجات المتاحة"}
-              </h1>
-            </div>
-            
-            {/* Sort dropdown */}
-            <div className="relative">
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                aria-label="ترتيب المنتجات"
-                className="h-10 rounded-full border border-gray-200 bg-white px-4 text-sm font-medium text-gray-900 focus:border-green3 focus:outline-none focus:ring-2 focus:ring-green2"
-              >
-                <option value="newest">الأحدث</option>
-                <option value="priceAsc">السعر: من الأقل للأعلى</option>
-                <option value="priceDesc">السعر: من الأعلى للأقل</option>
-                <option value="nameAsc">أبجدياً: أ-ي</option>
-              </select>
-            </div>
-          </div>
-          
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible" 
-            className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4"
+      <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
+        <div>
+          {/* Which category this sub-category belongs to. */}
+          {categoryName && (
+            <Link
+              href={categoryId ? `/categories/${categoryId}` : "/products"}
+              className="mb-1 inline-block text-sm font-semibold text-green5 hover:text-green4"
+            >
+              {categoryName}
+            </Link>
+          )}
+          <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">
+            {subcategoryName || "المنتجات المتاحة"}
+          </h1>
+        </div>
+        
+        {/* Sort dropdown */}
+        <div className="relative">
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            aria-label="ترتيب المنتجات"
+            className="h-10 rounded-full border border-gray-200 bg-white px-4 text-sm font-medium text-gray-900 focus:border-green3 focus:outline-none focus:ring-2 focus:ring-green2"
           >
-            {isPageLoading ? (
-              renderSkeletons()
-            ) : (
-              items.map((item, index) => (
-                <motion.div
-                  key={item.id}
-                  variants={itemVariants}
-                  ref={index === items.length - 1 ? lastItemRef : null}
-                >
-                  <ProductCard item={item} priority={index < 4} />
-                </motion.div>
-              ))
-            )}
-          </motion.div>
-        </>
+            <option value="newest">الأحدث</option>
+            <option value="priceAsc">السعر: من الأقل للأعلى</option>
+            <option value="priceDesc">السعر: من الأعلى للأقل</option>
+            <option value="nameAsc">أبجدياً: أ-ي</option>
+          </select>
+        </div>
+      </div>
+
+      {items.length === 0 && !isPageLoading ? (
+        <div className="text-center text-gray-500 py-20 text-lg">لا توجد منتجات في هذا القسم حالياً.</div>
+      ) : (
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible" 
+          className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4"
+        >
+          {isPageLoading ? (
+            renderSkeletons()
+          ) : (
+            items.map((item, index) => (
+              <motion.div
+                key={item.id}
+                variants={itemVariants}
+                ref={index === items.length - 1 ? lastItemRef : null}
+              >
+                <ProductCard item={item} priority={index < 4} />
+              </motion.div>
+            ))
+          )}
+        </motion.div>
       )}
       
       {isFetchingNextPage && (

@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { entryKey } from "@/utils/ids";
 import { getSubCategory } from "@/services/catalog";
 import { absoluteMediaUrl, pageMetadata } from "@/utils/metadata";
 import SubCategoryClient from "./SubCategoryClient";
@@ -11,7 +12,7 @@ export async function generateMetadata({ params }) {
   return pageMetadata({
     title,
     description: `تسوق ${sub.name}${sub.category?.name ? ` من قسم ${sub.category.name}` : ""} في ExoHaven: أسعار واضحة، الدفع عند الاستلام، والتوصيل لجميع محافظات العراق.`,
-    path: `/sub-categories/${id}`,
+    path: `/sub-categories/${entryKey(sub)}`,
     image: absoluteMediaUrl(sub.subcategory_thumbnail),
   });
 }

@@ -35,13 +35,16 @@ function ProductsPage() {
   const { data: categories = [] } = useCategories();
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError } = useInfiniteQuery({
-    queryKey: QueryKeys.categoryItems(categoryId, query),
-    queryFn: ({ pageParam = 1, signal }) => fetchProductsPage({ pageParam, signal, categoryId, searchQuery: query }),
+    queryKey: [...QueryKeys.categoryItems(categoryId, query), inStockOnly],
+    queryFn: ({ pageParam = 1, signal }) =>
+      fetchProductsPage({ pageParam, signal, categoryId, searchQuery: query, inStockOnly }),
     getNextPageParam: (lastPage) => (lastPage.hasMore ? lastPage.nextPage : undefined),
   });
 
   const items = useMemo(() => {
     const all = data ? data.pages.flatMap((page) => page.items) : [];
+    // The API leaves out items marked out of stock; this also drops items whose
+    // variants are all out of stock.
     return inStockOnly ? all.filter((item) => !isOutOfStock(item)) : all;
   }, [data, inStockOnly]);
   const total = data?.pages[0]?.total ?? 0;
@@ -68,7 +71,7 @@ function ProductsPage() {
       <Breadcrumbs className="mb-4" items={[{ label: "المنتجات", href: query ? "/products" : null }, query && { label: `بحث: ${query}` }]} />
       <div className="mb-5 flex flex-wrap items-end justify-between gap-2">
         <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">{query ? `نتائج البحث عن «${query}»` : "كل المنتجات"}</h1>
-        {!isLoading && <p className="text-sm text-gray-500">{total.toLocaleString()} منتج</p>}
+        {!isLoading && <p className="text-sm text-gray-500">{total.toLocaleString("en-US")} منتج</p>}
       </div>
 
       <ProductFilters
@@ -90,7 +93,7 @@ function ProductsPage() {
         </div>
       ) : isError ? (
         <p className="py-16 text-center text-gray-600">تعذر تحميل المنتجات، حاول مرة أخرى.</p>
-      ) : items.length === 0 ? (
+      ) : items.length === 0 && !hasNextPage ? (
         <div className="rounded-2xl border border-gray-100 bg-white px-6 py-14 text-center">
           <p className="text-lg font-bold text-gray-900">لا توجد منتجات مطابقة</p>
           <p className="mt-1 text-sm text-gray-500">جرّب كلمة بحث أخرى أو أزل بعض الفلاتر.</p>

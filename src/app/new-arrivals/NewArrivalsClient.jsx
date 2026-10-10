@@ -9,7 +9,7 @@ const LIMIT = 24;
 
 export default function NewArrivalsPage() {
   const { data: items = [], isLoading, isError } = useQuery({
-    queryKey: [QueryKeys.items, "new_arrival", LIMIT],
+    queryKey: [QueryKeys.newArrivals, LIMIT],
     queryFn: () => fetchNewArrivals(LIMIT),
   });
 
