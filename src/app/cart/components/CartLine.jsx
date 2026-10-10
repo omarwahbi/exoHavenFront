@@ -9,6 +9,7 @@ import { useSale } from "@/app/context/SaleContext";
 import { calculateSalePrice, isSaleActive } from "@/utils/saleUtils";
 import { itemImageUrl } from "@/utils/media";
 import { entryKey } from "@/utils/ids";
+import { basePrice } from "@/utils/product";
 
 // One product in the cart, with its quantity controls and a delete button that
 // asks for confirmation (`confirmingDelete`) before removing it.
@@ -41,6 +42,11 @@ export default function CartLine({ item, variants, confirmingDelete, onDelete })
               {item.name}
             </Link>
           </div>
+          {item.variant && (
+            <span className="mt-1 inline-block rounded-full bg-green1 px-2.5 py-0.5 text-xs font-medium text-green5">
+              {item.variant.label}
+            </span>
+          )}
 
           {item.description && <p className="mt-1 text-sm text-gray-500 line-clamp-1">{item.description}</p>}
         </div>
@@ -73,16 +79,16 @@ export default function CartLine({ item, variants, confirmingDelete, onDelete })
                 {isSaleActive(sale) ? (
                   <>
                     <span className="text-sm font-normal line-through text-gray-500 block">
-                      {(item.state * item.quantity).toLocaleString()} IQD
+                      {(basePrice(item, item.variant) * item.quantity).toLocaleString()} IQD
                     </span>
                     <span className="text-red-600">
-                      {(calculateSalePrice(item.state, sale) * item.quantity).toLocaleString()}{" "}
+                      {(calculateSalePrice(basePrice(item, item.variant), sale) * item.quantity).toLocaleString()}{" "}
                       <span className="text-sm font-normal">IQD</span>
                     </span>
                   </>
                 ) : (
                   <>
-                    {(item.state * item.quantity).toLocaleString()} <span className="text-sm font-normal">IQD</span>
+                    {(basePrice(item, item.variant) * item.quantity).toLocaleString()} <span className="text-sm font-normal">IQD</span>
                   </>
                 )}
               </p>

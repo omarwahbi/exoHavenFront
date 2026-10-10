@@ -12,6 +12,7 @@ import { calculateSalePrice, isSaleActive } from "@/utils/saleUtils";
 import { useSale } from "@/app/context/SaleContext";
 import { itemImageUrl } from "@/utils/media";
 import { entryKey } from "@/utils/ids";
+import { basePrice } from "@/utils/product";
 
 const FeaturedProducts = () => {
   const sale = useSale();
@@ -143,20 +144,20 @@ const FeaturedProducts = () => {
                     </div>
 
                     <div className="mt-auto space-y-3">
-                      {product.state && (
+                      {basePrice(product) > 0 && (
                         <div>
                           {isSaleActive(sale) ? (
                             <>
                               <p className="text-gray-400 line-through text-xs sm:text-sm font-medium">
-                                {product.state.toLocaleString()} IQD
+                                {basePrice(product).toLocaleString()} IQD
                               </p>
                               <p className="text-amber-600 font-bold text-base sm:text-lg md:text-xl">
-                                {calculateSalePrice(product.state, sale).toLocaleString()} IQD
+                                {calculateSalePrice(basePrice(product), sale).toLocaleString()} IQD
                               </p>
                             </>
                           ) : (
                             <p className="text-green4 font-bold text-base sm:text-lg md:text-xl">
-                              {product.state.toLocaleString()} IQD
+                              {basePrice(product).toLocaleString()} IQD
                             </p>
                           )}
                         </div>

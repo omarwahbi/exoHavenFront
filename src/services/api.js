@@ -63,7 +63,7 @@ export const fetchCategoryItems = async (categoryId, page = 1, pageSize = 12) =>
   const { data } = await api.get('/api/items', {
     params: {
       'filters[category][documentId][$eq]': categoryId,
-      'populate': 'item_thumbnail,item_images',
+      'populate': 'item_thumbnail,item_images,variants',
       'pagination[page]': page,
       'pagination[pageSize]': pageSize,
       'sort[0]': 'new_arrival:desc',
@@ -93,7 +93,7 @@ export const fetchNewArrivals = async (limit = 6) => {
   const { data } = await api.get('/api/items', {
     params: {
       'filters[new_arrival][$eq]': true,
-      'populate': 'category,sub_category,item_thumbnail,item_images',
+      'populate': 'category,sub_category,item_thumbnail,item_images,variants',
       'pagination[limit]': limit
     }
   });
@@ -129,7 +129,7 @@ export const fetchRelatedProducts = async (categoryId, currentItemId, limit = 4)
     params: {
       'filters[category][documentId][$eq]': categoryId,
       'filters[documentId][$ne]': currentItemId,
-      'populate': 'item_thumbnail,item_images',
+      'populate': 'item_thumbnail,item_images,variants',
       'pagination[limit]': limit,
       'sort[0]': 'new_arrival:desc',
       'sort[1]': 'out_of_stock:asc',
@@ -151,7 +151,7 @@ export const fetchSubCategoryById = async (id) => {
 export const fetchSuggestedItems = async (limit = 4) => {
   const { data } = await api.get('/api/items', {
     params: {
-      populate: 'item_thumbnail,item_images',
+      populate: 'item_thumbnail,item_images,variants',
       'pagination[limit]': limit,
       sort: 'updatedAt:desc',
       'filters[out_of_stock][$eq]': false
@@ -168,7 +168,7 @@ export const fetchProductsPage = async ({ pageParam = 1, categoryId, searchQuery
       pageSize: 12
     },
     // Only select specific fields we need, excluding buffer data
-    fields: ['name', 'description', 'state', 'new_arrival', 'out_of_stock', 'Item_ID'],
+    fields: ['name', 'description', 'state', 'new_arrival', 'out_of_stock', 'low_stock', 'Item_ID'],
     // Use specific fields to populate instead of '*' to reduce response size
     populate: {
       item_thumbnail: {
@@ -178,6 +178,7 @@ export const fetchProductsPage = async ({ pageParam = 1, categoryId, searchQuery
       item_images: {
         fields: ['url']
       },
+      variants: true,
       category: {
         fields: ['name']
       },

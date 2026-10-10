@@ -77,6 +77,16 @@ redirect:
   (`src/services/sale.js`, cached for 5 minutes). Client components read it with
   `useSale()` and pass it to `isSaleActive` / `calculateSalePrice` /
   `unitPrice`. Never hard-code a discount.
+- **Variants and stock.** An item may have variants (sizes, wattages; set in the
+  admin), each with its own price. Use `src/utils/product.js`, never `item.state`
+  or `item.out_of_stock` directly:
+  - `basePrice(item, variant)`: the price before the sale, or the lowest one for an
+    item with variants;
+  - `isOutOfStock` and `isLowStock`;
+  - `hasVariants`.
+
+  Cards link items with variants to the product page, where the shopper picks one.
+  Cart lines carry the chosen `variant`. `<StockBadge>` shows "آخر قطعة".
 - **Cart.** Use `useCart()` from `src/app/context/CartContext.jsx`. It provides
   `quantityOf`, `addItem`, `decreaseItem`, `removeItem`, `clearCart`,
   `itemCount`, and `loaded`. `loaded` is false until the saved cart has been read

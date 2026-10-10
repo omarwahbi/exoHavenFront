@@ -7,7 +7,7 @@ export const buildOrderMessage = ({ cart, sale, subtotal, fee, location, address
   const itemDetails = cart
     .map(
       (item) =>
-        `${item.name}\nالعدد: ${item.quantity}\nالسعر: ${(unitPrice(item, sale) * item.quantity).toLocaleString()} IQD\n`
+        `${item.name}${item.variant ? ` (${item.variant.label})` : ""}\nالعدد: ${item.quantity}\nالسعر: ${(unitPrice(item, sale) * item.quantity).toLocaleString()} IQD\n`
     )
     .join("\n- ");
 

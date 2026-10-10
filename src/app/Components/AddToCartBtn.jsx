@@ -4,15 +4,17 @@ import { useCart } from "../context/CartContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { FaShoppingCart, FaCheckCircle } from "react-icons/fa";
+import { hasVariants, isOutOfStock } from "@/utils/product";
 
-const AddToCartButton = ({ item }) => {
+// For an item with variants, `variant` is the one the shopper picked.
+const AddToCartButton = ({ item, variant }) => {
   const { addItem } = useCart();
   const [added, setAdded] = useState(false);
   const [ripples, setRipples] = useState([]);
   const [particles, setParticles] = useState([]);
 
   const addToCart = (e) => {
-    if (item.out_of_stock || added) return;
+    if (isDisabled) return;
 
     // Create ripple effect
     const rect = e.currentTarget.getBoundingClientRect();
@@ -32,7 +34,7 @@ const AddToCartButton = ({ item }) => {
     }));
     setParticles(particleArray);
 
-    addItem(item);
+    addItem(item, variant);
     setAdded(true);
 
     // Reset the animation after a delay
@@ -42,16 +44,17 @@ const AddToCartButton = ({ item }) => {
     }, 2000);
   };
 
-  const isOutOfStock = item.out_of_stock;
-  // Button is disabled when out of stock OR when showing the success animation
-  const isDisabled = isOutOfStock || added;
+  const outOfStock = isOutOfStock(item, variant);
+  // Disabled when out of stock, while showing the success animation, or (for an
+  // item with variants) before one is picked.
+  const isDisabled = outOfStock || added || (hasVariants(item) && !variant);
 
   return (
     <motion.button
       disabled={isDisabled}
       onClick={addToCart}
       className={`relative w-full flex items-center justify-center gap-2 px-4 sm:px-5 py-3 sm:py-2.5 rounded-full font-medium overflow-hidden transition-all duration-400 ${
-        isOutOfStock
+        outOfStock
           ? "bg-gray-200 text-gray-500 cursor-not-allowed"
           : added
           ? "bg-gradient-to-r from-green4 to-green3 text-white border-2 border-green4 shadow-green cursor-not-allowed"
@@ -121,7 +124,7 @@ const AddToCartButton = ({ item }) => {
         ))}
       </AnimatePresence>
 
-      {isOutOfStock ? (
+      {outOfStock ? (
         <span className="flex items-center text-sm sm:text-base relative z-10">
           <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -169,7 +172,7 @@ const AddToCartButton = ({ item }) => {
       )}
 
       {/* Background glow effect on hover */}
-      {!isOutOfStock && !added && (
+      {!outOfStock && !added && (
         <motion.span
           className="absolute inset-0 rounded-full bg-gradient-to-r from-green3/20 to-green4/20"
           initial={{ scale: 0, opacity: 0 }}

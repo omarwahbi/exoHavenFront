@@ -5,6 +5,7 @@ import { useSale } from "@/app/context/SaleContext";
 import { calculateSalePrice, isSaleActive } from "@/utils/saleUtils";
 import { itemImageUrl } from "@/utils/media";
 import { entryKey } from "@/utils/ids";
+import { basePrice, isOutOfStock } from "@/utils/product";
 
 // A "you may also like" product under the cart.
 export default function SuggestedProductCard({ product, index }) {
@@ -22,7 +23,7 @@ export default function SuggestedProductCard({ product, index }) {
             priority={index < 2}
             loading={index < 2 ? "eager" : "lazy"}
           />
-          {product.out_of_stock && (
+          {isOutOfStock(product) && (
             <div className="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
               نفذت الكمية
             </div>
@@ -31,7 +32,7 @@ export default function SuggestedProductCard({ product, index }) {
             <div className="absolute top-2 left-2 bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded">جديد</div>
           )}
           {/* Sale tag */}
-          {isSaleActive(sale) && !product.out_of_stock && (
+          {isSaleActive(sale) && !isOutOfStock(product) && (
             <div className="absolute top-2 left-2 bg-green4/20 border border-green4/40 text-green4 text-xs font-semibold px-2.5 py-1 rounded-full">
               -{sale.percent}%
             </div>
@@ -45,19 +46,19 @@ export default function SuggestedProductCard({ product, index }) {
             <p className="text-gray-500 text-xs line-clamp-2 mb-2 text-right">{product.description}</p>
           )}
           <div className="mt-auto text-right">
-            {product.out_of_stock ? (
+            {isOutOfStock(product) ? (
               <span className="font-bold text-gray-400">غير متوفر</span>
             ) : isSaleActive(sale) ? (
               <div>
                 <span className="text-gray-500 line-through text-xs block">
-                  {Number(product.state).toLocaleString()} IQD
+                  {basePrice(product).toLocaleString()} IQD
                 </span>
                 <span className="font-bold text-red-600">
-                  {calculateSalePrice(product.state, sale).toLocaleString()} IQD
+                  {calculateSalePrice(basePrice(product), sale).toLocaleString()} IQD
                 </span>
               </div>
             ) : (
-              <span className="font-bold text-green4">{Number(product.state).toLocaleString()} IQD</span>
+              <span className="font-bold text-green4">{basePrice(product).toLocaleString()} IQD</span>
             )}
           </div>
         </div>
