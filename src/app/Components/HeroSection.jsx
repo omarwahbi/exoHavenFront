@@ -7,6 +7,7 @@ import Spinner from "./Spinner";
 import { useQuery } from "@tanstack/react-query";
 import { fetchLatestProducts } from "@/services/api";
 import { QueryKeys } from "@/utils/queryKeys";
+import { entryKey } from "@/utils/ids";
 
 const HeroSection = () => {
   // Use React Query for fetching latest products
@@ -77,7 +78,7 @@ const HeroSection = () => {
                   {/* First product image */}
                   {products.length > 0 && products[0]?.attributes?.item_thumbnail?.data?.attributes?.url ? (
                     <Link
-                      href={`/item/${products[0]?.id}`}
+                      href={`/item/${entryKey(products[0])}`}
                       className="relative h-full rounded-xl overflow-hidden border-2 border-white/40 bg-white shadow-sm group z-20 transition-all duration-400 hover:shadow-card-hover hover:scale-[1.02]"
                     >
                       <div className="relative w-full h-full">
@@ -106,7 +107,7 @@ const HeroSection = () => {
                   {/* Second product image */}
                   {products.length > 1 && products[1]?.attributes?.item_thumbnail?.data?.attributes?.url ? (
                     <Link
-                      href={`/item/${products[1]?.id}`}
+                      href={`/item/${entryKey(products[1])}`}
                       className="relative h-full rounded-xl overflow-hidden border-2 border-white/40 bg-white shadow-sm group z-20 transition-all duration-400 hover:shadow-card-hover hover:scale-[1.02]"
                     >
                       <div className="relative w-full h-full">
@@ -136,7 +137,7 @@ const HeroSection = () => {
                 {/* Third product image - larger */}
                 {products.length > 2 && products[2]?.attributes?.item_thumbnail?.data?.attributes?.url ? (
                   <Link
-                    href={`/item/${products[2]?.id}`}
+                    href={`/item/${entryKey(products[2])}`}
                     className="relative h-full rounded-xl overflow-hidden border-2 border-white/40 bg-white shadow-sm group z-20 transition-all duration-400 hover:shadow-card-hover hover:scale-[1.02]"
                   >
                     <div className="relative w-full h-full">

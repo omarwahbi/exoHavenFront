@@ -13,6 +13,7 @@ import { QueryKeys } from "@/utils/queryKeys";
 import { isSaleActive, calculateSalePrice } from "@/utils/saleUtils";
 import SaleBanner from "../Components/SaleBanner";
 import { itemImageUrl } from "@/utils/media";
+import { entryKey } from "@/utils/ids";
 
 const fetchCategoryItems = async ({ pageParam = 1, categoryId, searchQuery, signal }) => {
   const params = {
@@ -45,7 +46,7 @@ const fetchCategoryItems = async ({ pageParam = 1, categoryId, searchQuery, sign
   if (categoryId) {
     params.filters = {
       ...params.filters,
-      category: { id: { $eq: categoryId } }
+      category: { documentId: { $eq: categoryId } }
     };
   }
   
@@ -417,7 +418,7 @@ const Category = () => {
                           <option value="all">كل المنتجات</option>
                           {categories &&
                             categories.map((cat) => (
-                              <option key={cat.id} value={cat.id}>
+                              <option key={cat.id} value={entryKey(cat)}>
                                 {cat.attributes.name}
                               </option>
                             ))}
@@ -500,7 +501,7 @@ const Category = () => {
                 )}
                 {selectedCategoryId && categories.length > 0 && (
                   <span className="inline-flex items-center px-3 py-1 rounded-full bg-green1 text-green4 text-xs">
-                    فئة: {categories.find(c => c.id === selectedCategoryId)?.attributes.name || selectedCategoryId}
+                    فئة: {categories.find(c => entryKey(c) === selectedCategoryId)?.attributes.name || selectedCategoryId}
                     <button 
                       onClick={() => setSelectedCategoryId(null)} 
                       className="mr-1 hover:text-red-500"
@@ -591,7 +592,7 @@ const Category = () => {
                   {viewStyle === "grid" ? (
                     <div className="h-full">
                       <div className="group bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 h-full flex flex-col">
-                        <Link href={`/item/${item.id}`} className="block relative pt-[100%]">
+                        <Link href={`/item/${entryKey(item)}`} className="block relative pt-[100%]">
                           <Image
                             src={itemImageUrl(item.attributes)}
                             alt={item.attributes.name}
@@ -632,7 +633,7 @@ const Category = () => {
                         </Link>
                         
                         <div className="p-3 flex-grow flex flex-col">
-                          <Link href={`/item/${item.id}`}>
+                          <Link href={`/item/${entryKey(item)}`}>
                             <h3 className="font-medium text-gray-800 mb-1 line-clamp-1 hover:text-green4 transition-colors">
                               {item.attributes.name}
                             </h3>
@@ -699,7 +700,7 @@ const Category = () => {
                     // List view
                     <div className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
                       <div className="flex flex-row h-full">
-                        <Link href={`/item/${item.id}`} className="relative w-1/3 sm:w-1/4">
+                        <Link href={`/item/${entryKey(item)}`} className="relative w-1/3 sm:w-1/4">
                           <Image
                             src={itemImageUrl(item.attributes)}
                             alt={item.attributes.name}
@@ -731,7 +732,7 @@ const Category = () => {
                         </Link>
                         
                         <div className="flex-grow p-4 flex flex-col">
-                          <Link href={`/item/${item.id}`}>
+                          <Link href={`/item/${entryKey(item)}`}>
                             <h3 className="font-medium text-gray-800 mb-1 hover:text-green4 transition-colors">
                               {item.attributes.name}
                             </h3>

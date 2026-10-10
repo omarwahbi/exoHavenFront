@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchCategories } from "@/services/api";
 import { QueryKeys } from "@/utils/queryKeys";
 import { imageUrl } from "@/utils/media";
+import { entryKey } from "@/utils/ids";
 
 const Categories = () => {
   // Fetch categories using React Query
@@ -108,7 +109,7 @@ const Categories = () => {
             variants={itemVariants}
             className="w-[calc(50%-8px)] sm:w-[calc(50%-10px)] md:w-[calc(25%-18px)] lg:w-[calc(20%-19.2px)]"
           >
-            <Link href={`/subCategory/${category.id}`} className="block h-full">
+            <Link href={`/subCategory/${entryKey(category)}`} className="block h-full">
               <motion.div
                 className="flex flex-col items-center p-5 sm:p-6 bg-white rounded-2xl shadow-card hover:shadow-card-hover transition-all duration-400 relative overflow-hidden group h-full border border-gray-100"
                 whileHover={{ y: -8 }}

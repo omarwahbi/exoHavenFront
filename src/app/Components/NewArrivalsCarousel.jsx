@@ -17,6 +17,7 @@ import 'swiper/css/effect-coverflow';
 // Import required modules
 import { Autoplay, EffectCoverflow } from 'swiper/modules';
 import { itemImageUrl } from "@/utils/media";
+import { entryKey } from "@/utils/ids";
 
 const NEW_ARRIVALS_LIMIT = 12;
 
@@ -162,7 +163,7 @@ export default function NewArrivalsCarousel() {
                   <div className="overflow-hidden rounded-lg bg-white shadow-md h-full transform transition-all duration-300 border border-gray-100">
                     <Link 
                       className="group block"
-                      href={`/item/${img.id}`}
+                      href={`/item/${entryKey(img)}`}
                       tabIndex={copy > 0 ? -1 : undefined}
                     >
                       <div className="relative aspect-[4/3] overflow-hidden">
