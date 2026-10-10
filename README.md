@@ -78,6 +78,11 @@ redirect:
 - **Cart.** Use `useCart()` from `src/app/context/CartContext.jsx`. It provides
   `quantityOf`, `addItem`, `decreaseItem`, `removeItem`, `clearCart` and
   `itemCount`. The cart is saved in localStorage.
+- **Where components go.** Components that only one page uses go in that page's
+  folder, in `components/` (for example `src/app/products/components/`). Shared
+  ones go in `src/app/Components/`, such as `ItemPrice` for a product's price
+  with its sale. API calls go in `src/services/api.js`, and plain logic goes in
+  `src/utils/`, such as the WhatsApp order text in `orderMessage.js`.
 - **Server state** goes through TanStack Query, with keys from
   `src/utils/queryKeys.js`.
 - **UI.** Tailwind and framer-motion, with icons from react-icons.
