@@ -8,6 +8,7 @@ import { isOutOfStock } from "@/utils/product";
 import { defaultSort, parseSort } from "@/utils/search";
 import Breadcrumbs from "@/app/Components/Breadcrumbs";
 import ProductCard from "@/app/Components/ProductCard";
+import { entryKey } from "@/utils/ids";
 import Spinner from "@/app/Components/Spinner";
 import { useCategories } from "@/app/Components/Categories";
 import ProductFilters from "./components/ProductFilters";
@@ -110,7 +111,7 @@ function ProductsPage() {
         <>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4">
             {items.map((item, index) => (
-              <ProductCard key={item.id} item={item} priority={index < 4} />
+              <ProductCard key={entryKey(item)} item={item} priority={index < 4} />
             ))}
           </div>
           <div ref={sentinel} className="flex justify-center py-8">

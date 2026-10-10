@@ -64,6 +64,8 @@ function SearchForm({ initialQuery, className = "", autoFocus = false }) {
 
   // Close when the page changes (a suggestion was followed).
   useEffect(() => setOpen(false), [pathname]);
+  // New suggestions: nothing is picked until the shopper moves to one.
+  useEffect(() => setActive(-1), [data]);
 
   // What the list shows, in keyboard order.
   const options = searching
@@ -92,12 +94,14 @@ function SearchForm({ initialQuery, className = "", autoFocus = false }) {
 
   const submit = (event) => {
     event.preventDefault();
-    const option = options[active];
+    // While suggestions are still for an older query, Enter searches what's typed.
+    const option = debounced === typed ? options[active] : null;
     if (option) return go(option.href, option.kind === "all" ? debounced : option.kind === "recent" ? option.q : null);
     go(typed ? productsUrl(typed) : "/products", typed);
   };
 
   const onKeyDown = (event) => {
+    if (event.nativeEvent.isComposing) return;
     if (event.key === "ArrowDown" || event.key === "ArrowUp") {
       event.preventDefault();
       setOpen(true);
@@ -109,7 +113,9 @@ function SearchForm({ initialQuery, className = "", autoFocus = false }) {
         if (next < -1) return options.length - 1;
         return next >= options.length ? -1 : next;
       });
-    } else if (event.key === "Escape") {
+    } else if (event.key === "Escape" && showList) {
+      // Without this, a search box's native Escape also clears the text.
+      event.preventDefault();
       setOpen(false);
       setActive(-1);
     }
@@ -127,7 +133,7 @@ function SearchForm({ initialQuery, className = "", autoFocus = false }) {
         role="combobox"
         aria-autocomplete="list"
         aria-expanded={showList}
-        aria-controls={listId}
+        aria-controls={showList ? listId : undefined}
         aria-activedescendant={showList && options[active] ? `${id}-${active}` : undefined}
         autoComplete="off"
         value={query}
@@ -140,7 +146,10 @@ function SearchForm({ initialQuery, className = "", autoFocus = false }) {
           setRecent(readRecentSearches());
           setOpen(true);
         }}
-        onBlur={() => setOpen(false)}
+        onBlur={() => {
+          setOpen(false);
+          setActive(-1);
+        }}
         onKeyDown={onKeyDown}
         placeholder="ابحث عن منتج، مثل: إضاءة، حوض، طعام…"
         autoFocus={autoFocus}
@@ -170,6 +179,8 @@ function SearchForm({ initialQuery, className = "", autoFocus = false }) {
         // mousedown would blur the input (closing the list) before the click lands.
         <div
           onMouseDown={(event) => event.preventDefault()}
+          // Hover only highlights; leaving the list hands Enter back to the search.
+          onMouseLeave={() => setActive(-1)}
           className="absolute inset-x-0 top-full z-50 mt-2 max-h-[70vh] overflow-y-auto rounded-2xl border border-gray-100 bg-white py-2 shadow-xl"
         >
           {!searching && (

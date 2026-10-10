@@ -138,7 +138,7 @@ const Items = ({ initialSubCategory }) => {
           ) : (
             items.map((item, index) => (
               <motion.div
-                key={item.id}
+                key={entryKey(item)}
                 variants={itemVariants}
                 ref={index === items.length - 1 ? lastItemRef : null}
               >
