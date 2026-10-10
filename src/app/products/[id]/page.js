@@ -4,6 +4,10 @@ import axios from 'axios';
 import { API_URL as apiUrl } from '@/services/api';
 import { mediaUrl } from '@/utils/media';
 import { entryKey } from '@/utils/ids';
+import { unitPrice } from '@/utils/pricing';
+import { getSale } from '@/services/sale';
+import { isSaleActive } from '@/utils/saleUtils';
+import { flattenResponse } from '@/utils/strapi';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://exohaven-iq.com';
 
@@ -15,7 +19,7 @@ async function getItem(id) {
         populate: '*'
       }
     });
-    return data.data;
+    return flattenResponse(data).data;
   } catch (error) {
     console.error('Error fetching item for metadata:', error);
     return null;
@@ -25,41 +29,33 @@ async function getItem(id) {
 // Generate dynamic metadata for each product page
 export async function generateMetadata(props) {
   const params = await props.params;
-  console.log('[Metadata] Generating metadata for item ID:', params.id);
-
-  const item = await getItem(params.id);
+  const [item, sale] = await Promise.all([getItem(params.id), getSale()]);
 
   if (!item) {
-    console.log('[Metadata] Item not found');
     return {
       title: 'منتج غير موجود | ExoHaven Iraq',
       description: 'المنتج الذي تبحث عنه غير متوفر',
     };
   }
 
-  console.log('[Metadata] Item found:', item.id);
-  const { name, description, state, out_of_stock, category } = item.attributes;
+  const { name, description, out_of_stock, category } = item;
 
   // Get image URL
   let imageUrl = `${siteUrl}/og-image.png`;
-  const thumbnailUrl = mediaUrl(item.attributes.item_thumbnail) || mediaUrl(item.attributes.item_images);
+  const thumbnailUrl = mediaUrl(item.item_thumbnail) || mediaUrl(item.item_images);
   if (thumbnailUrl) {
     imageUrl = thumbnailUrl.startsWith('http')
       ? thumbnailUrl
       : `https://ik.imagekit.io/5a72nvbtu${thumbnailUrl}`;
   }
 
-  // Calculate sale price if active
-  const saleActive = true; // You can implement date check here
-  const price = state;
-  const salePrice = saleActive ? price * 0.9 : price; // 10% discount
+  const salePrice = unitPrice(item, sale);
+  const discount = isSaleActive(sale) ? ` خصم ${sale.percent}% على الطلبات عبر الموقع.` : '';
 
   const productTitle = `${name} | ExoHaven Iraq - مستلزمات الحيوانات الأليفة`;
   const productDescription = description
-    ? `${description.substring(0, 150)}... اشتري الآن من ExoHaven مع توصيل مجاني فوق 50,000 دينار. خصم 10% على الطلبات عبر الموقع.`
-    : `${name} - متوفر الآن في ExoHaven Iraq. توصيل مجاني للطلبات فوق 50,000 دينار، خصم 10% على الموقع، الدفع عند الاستلام.`;
-
-  console.log('[Metadata] Generated title:', productTitle);
+    ? `${description.substring(0, 150)}... اشتري الآن من ExoHaven مع توصيل مجاني فوق 50,000 دينار.${discount}`
+    : `${name} - متوفر الآن في ExoHaven Iraq. توصيل مجاني للطلبات فوق 50,000 دينار، الدفع عند الاستلام.${discount}`;
 
   return {
     title: productTitle,
@@ -70,7 +66,7 @@ export async function generateMetadata(props) {
       'مستلزمات زواحف',
       'ExoHaven Iraq',
       'توصيل مجاني العراق',
-      category?.data?.attributes?.name || 'pet accessories',
+      category?.name || 'pet accessories',
       'exotic pets Iraq',
       'reptile supplies Baghdad',
     ],
@@ -79,7 +75,7 @@ export async function generateMetadata(props) {
       description: productDescription,
       type: 'website', // Changed from 'product' to 'website' - Next.js doesn't support 'product' type
       locale: 'ar_IQ',
-      url: `${siteUrl}/item/${entryKey(item)}`,
+      url: `${siteUrl}/products/${entryKey(item)}`,
       images: [
         {
           url: imageUrl,
@@ -97,7 +93,7 @@ export async function generateMetadata(props) {
       images: [imageUrl],
     },
     alternates: {
-      canonical: `/item/${entryKey(item)}`,
+      canonical: `/products/${entryKey(item)}`,
     },
     other: {
       'product:price:amount': salePrice.toString(),

@@ -9,6 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchNewArrivals } from "@/services/api";
 import { QueryKeys } from "@/utils/queryKeys";
 import { isSaleActive, calculateSalePrice } from "@/utils/saleUtils";
+import { useSale } from "@/app/context/SaleContext";
 // Import Swiper React components
 import { Swiper, SwiperSlide } from 'swiper/react';
 // Import Swiper styles
@@ -30,6 +31,7 @@ const MIN_LOOP_SLIDES = 8;
 const PRIORITY_SLIDES = 3;
 
 export default function NewArrivalsCarousel() {
+  const sale = useSale();
   // Fetch new arrivals using React Query
   const { 
     data: images = [],
@@ -89,7 +91,7 @@ export default function NewArrivalsCarousel() {
               transition={{ duration: 0.5, delay: 0.3 }}
             >
               <Link 
-                href="/items?filter=new_arrival" 
+                href="/new-arrivals" 
                 className="text-xs md:text-sm font-medium text-green3 hover:text-green4 transition-colors duration-300 flex items-center group"
               >
                 عرض الكل
@@ -163,15 +165,15 @@ export default function NewArrivalsCarousel() {
                   <div className="overflow-hidden rounded-lg bg-white shadow-md h-full transform transition-all duration-300 border border-gray-100">
                     <Link 
                       className="group block"
-                      href={`/item/${entryKey(img)}`}
+                      href={`/products/${entryKey(img)}`}
                       tabIndex={copy > 0 ? -1 : undefined}
                     >
                       <div className="relative aspect-[4/3] overflow-hidden">
                         <Image
-                          src={itemImageUrl(img.attributes)}
+                          src={itemImageUrl(img)}
                           fill
                           sizes="(max-width: 640px) 80vw, 240px"
-                          alt={img.attributes.name}
+                          alt={img.name}
                           className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-700 ease-out"
                           priority={copy === 0 && index < PRIORITY_SLIDES}
                         />
@@ -181,10 +183,10 @@ export default function NewArrivalsCarousel() {
                         </div>
                         
                         {/* Sale badge - Only shown if sale is active */}
-                        {isSaleActive() && !img.attributes.out_of_stock && (
+                        {isSaleActive(sale) && !img.out_of_stock && (
                           <div className="absolute top-1 right-1 bg-amber-500 text-white text-[10px] font-medium px-1.5 py-0.5 rounded-full z-10 flex items-center gap-0.5">
                             <FaTag className="text-[8px]" />
-                            <span>-10%</span>
+                            <span>-{sale.percent}%</span>
                           </div>
                         )}
                         
@@ -197,22 +199,22 @@ export default function NewArrivalsCarousel() {
                       
                       <div className="p-2">
                         <h3 className="font-bold text-gray-800 text-xs line-clamp-1 group-hover:text-green4 transition-colors">
-                          {img.attributes.name}
+                          {img.name}
                         </h3>
-                        {img.attributes.state && (
+                        {img.state && (
                           <div className="flex items-center justify-between mt-0.5">
-                            {isSaleActive() && !img.attributes.out_of_stock ? (
+                            {isSaleActive(sale) && !img.out_of_stock ? (
                               <div>
                                 <span className="text-gray-500 line-through text-[10px] block">
-                                  {img.attributes.state.toLocaleString()} IQD
+                                  {img.state.toLocaleString()} IQD
                                 </span>
                                 <span className="font-bold text-amber-600 text-xs">
-                                  {calculateSalePrice(img.attributes.state).toLocaleString()} IQD
+                                  {calculateSalePrice(img.state, sale).toLocaleString()} IQD
                                 </span>
                               </div>
                             ) : (
                               <span className="font-bold text-green4 text-xs">
-                                {img.attributes.state.toLocaleString()} IQD
+                                {img.state.toLocaleString()} IQD
                               </span>
                             )}
                           </div>

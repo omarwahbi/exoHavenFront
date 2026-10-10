@@ -1,6 +1,8 @@
 // app/layout.js
 import { Inter, Cairo } from "next/font/google";
 import { CartProvider } from "./context/CartContext";
+import { SaleProvider } from "./context/SaleContext";
+import { getSale } from "@/services/sale";
 import "./globals.css";
 import ClientLayout from "./ClientLayout"; // Import the client-side layout component
 import { Analytics } from "@vercel/analytics/react";
@@ -25,7 +27,7 @@ export const metadata = {
     template: '%s | إكزو هيفن ExoHaven',
     default: 'إكزو هيفن - متجر مستلزمات الحيوانات الأليفة الغريبة في العراق | ExoHaven Iraq',
   },
-  description: "متجر إكزو هيفن المتخصص في بيع جميع مستلزمات الحيوانات الأليفة الغريبة والزواحف في العراق. توصيل مجاني للطلبات فوق 50,000 دينار عراقي. خصم 10% على الطلبات عبر الموقع. الدفع عند الاستلام متاح. ExoHaven - Your trusted exotic pets accessories shop in Iraq with free delivery above 50k IQD, 10% website discount, and cash on delivery.",
+  description: "متجر إكزو هيفن المتخصص في بيع جميع مستلزمات الحيوانات الأليفة الغريبة والزواحف في العراق. توصيل مجاني للطلبات فوق 50,000 دينار عراقي. الدفع عند الاستلام متاح. ExoHaven - Your trusted exotic pets accessories shop in Iraq with free delivery above 50k IQD and cash on delivery.",
   generator: "Next.js",
   manifest: "/manifest.json",
   keywords: [
@@ -102,7 +104,7 @@ export const metadata = {
     alternateLocale: ['en_US'],
     url: 'https://exohaven-iq.com/',
     title: 'إكزو هيفن - متجر مستلزمات الحيوانات الأليفة الغريبة في العراق',
-    description: 'متجر متخصص في بيع جميع مستلزمات الحيوانات الأليفة الغريبة والزواحف في العراق. توصيل مجاني للطلبات فوق 50,000 دينار. خصم 10% على الطلبات عبر الموقع. الدفع عند الاستلام.',
+    description: 'متجر متخصص في بيع جميع مستلزمات الحيوانات الأليفة الغريبة والزواحف في العراق. توصيل مجاني للطلبات فوق 50,000 دينار. الدفع عند الاستلام.',
     siteName: 'ExoHaven Iraq | إكزو هيفن العراق',
     images: [{
       url: '/og-image.png',
@@ -116,7 +118,7 @@ export const metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'إكزو هيفن - متجر مستلزمات الحيوانات الأليفة الغريبة في العراق',
-    description: 'متجر متخصص في بيع جميع مستلزمات الحيوانات الأليفة الغريبة والزواحف. توصيل مجاني فوق 50,000 دينار، خصم 10%، الدفع عند الاستلام',
+    description: 'متجر متخصص في بيع جميع مستلزمات الحيوانات الأليفة الغريبة والزواحف. توصيل مجاني فوق 50,000 دينار، الدفع عند الاستلام',
     images: ['/og-image.png'],
     creator: '@exohaven.iq',
   },
@@ -149,13 +151,16 @@ export const viewport = {
   viewportFit: "cover",
 };
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  const sale = await getSale();
   return (
     <html lang="ar" dir="rtl" className={`${inter.variable} ${cairo.variable}`}>
       <body className="font-cairo">
-        <CartProvider>
-          <ClientLayout>{children}</ClientLayout>
-        </CartProvider>
+        <SaleProvider sale={sale}>
+          <CartProvider>
+            <ClientLayout>{children}</ClientLayout>
+          </CartProvider>
+        </SaleProvider>
         <Analytics />
       </body>
     </html>

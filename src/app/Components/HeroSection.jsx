@@ -51,7 +51,7 @@ const HeroSection = () => {
             whileTap={{ scale: 0.97 }}
             transition={{ type: "spring", stiffness: 400, damping: 17 }}
           >
-            <Link href="/category" className="inline-flex items-center gap-2 bg-white text-green4 font-bold py-3 sm:py-3.5 px-6 sm:px-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-400 hover:-translate-y-0.5 group">
+            <Link href="/products" className="inline-flex items-center gap-2 bg-white text-green4 font-bold py-3 sm:py-3.5 px-6 sm:px-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-400 hover:-translate-y-0.5 group">
               <span>تسوق الآن</span>
               <svg className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l-5 5 5 5" />
@@ -76,15 +76,15 @@ const HeroSection = () => {
               <div className="absolute inset-0 grid grid-cols-2 gap-3 p-3">
                 <div className="flex flex-col gap-3">
                   {/* First product image */}
-                  {products.length > 0 && products[0]?.attributes?.item_thumbnail?.data?.attributes?.url ? (
+                  {products.length > 0 && products[0]?.item_thumbnail?.url ? (
                     <Link
-                      href={`/item/${entryKey(products[0])}`}
+                      href={`/products/${entryKey(products[0])}`}
                       className="relative h-full rounded-xl overflow-hidden border-2 border-white/40 bg-white shadow-sm group z-20 transition-all duration-400 hover:shadow-card-hover hover:scale-[1.02]"
                     >
                       <div className="relative w-full h-full">
                         <Image
-                          src={products[0].attributes.item_thumbnail.data.attributes.url}
-                          alt={products[0].attributes.name || "Featured Product 1"}
+                          src={products[0].item_thumbnail?.url}
+                          alt={products[0].name || "Featured Product 1"}
                           fill
                           sizes="(max-width: 768px) 40vw, (max-width: 1024px) 30vw, 20vw"
                           className="object-contain p-2"
@@ -93,7 +93,7 @@ const HeroSection = () => {
                         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-green4/20 opacity-0 group-hover:opacity-100 transition-opacity duration-400 pointer-events-none"></div>
                         <div className="absolute inset-x-0 bottom-0 p-2 transform translate-y-full group-hover:translate-y-0 transition-transform duration-400 pointer-events-none">
                           <span className="text-white text-[10px] sm:text-xs font-bold bg-green4/90 px-2 py-1 rounded-lg inline-block shadow-sm backdrop-blur-sm line-clamp-1">
-                            {products[0]?.attributes?.name || "منتج #1"}
+                            {products[0]?.name || "منتج #1"}
                           </span>
                         </div>
                       </div>
@@ -105,15 +105,15 @@ const HeroSection = () => {
                   )}
 
                   {/* Second product image */}
-                  {products.length > 1 && products[1]?.attributes?.item_thumbnail?.data?.attributes?.url ? (
+                  {products.length > 1 && products[1]?.item_thumbnail?.url ? (
                     <Link
-                      href={`/item/${entryKey(products[1])}`}
+                      href={`/products/${entryKey(products[1])}`}
                       className="relative h-full rounded-xl overflow-hidden border-2 border-white/40 bg-white shadow-sm group z-20 transition-all duration-400 hover:shadow-card-hover hover:scale-[1.02]"
                     >
                       <div className="relative w-full h-full">
                         <Image
-                          src={products[1].attributes.item_thumbnail.data.attributes.url}
-                          alt={products[1].attributes.name || "Featured Product 2"}
+                          src={products[1].item_thumbnail?.url}
+                          alt={products[1].name || "Featured Product 2"}
                           fill
                           sizes="(max-width: 768px) 40vw, (max-width: 1024px) 30vw, 20vw"
                           className="object-contain p-2"
@@ -122,7 +122,7 @@ const HeroSection = () => {
                         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-green4/20 opacity-0 group-hover:opacity-100 transition-opacity duration-400 pointer-events-none"></div>
                         <div className="absolute inset-x-0 bottom-0 p-2 transform translate-y-full group-hover:translate-y-0 transition-transform duration-400 pointer-events-none">
                           <span className="text-white text-[10px] sm:text-xs font-bold bg-green4/90 px-2 py-1 rounded-lg inline-block shadow-sm backdrop-blur-sm line-clamp-1">
-                            {products[1]?.attributes?.name || "منتج #2"}
+                            {products[1]?.name || "منتج #2"}
                           </span>
                         </div>
                       </div>
@@ -135,15 +135,15 @@ const HeroSection = () => {
                 </div>
 
                 {/* Third product image - larger */}
-                {products.length > 2 && products[2]?.attributes?.item_thumbnail?.data?.attributes?.url ? (
+                {products.length > 2 && products[2]?.item_thumbnail?.url ? (
                   <Link
-                    href={`/item/${entryKey(products[2])}`}
+                    href={`/products/${entryKey(products[2])}`}
                     className="relative h-full rounded-xl overflow-hidden border-2 border-white/40 bg-white shadow-sm group z-20 transition-all duration-400 hover:shadow-card-hover hover:scale-[1.02]"
                   >
                     <div className="relative w-full h-full">
                       <Image
-                        src={products[2].attributes.item_thumbnail.data.attributes.url}
-                        alt={products[2].attributes.name || "Featured Product 3"}
+                        src={products[2].item_thumbnail?.url}
+                        alt={products[2].name || "Featured Product 3"}
                         fill
                         sizes="(max-width: 768px) 50vw, (max-width: 1024px) 40vw, 25vw"
                         className="object-contain p-3"
@@ -152,7 +152,7 @@ const HeroSection = () => {
                       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-green4/20 opacity-0 group-hover:opacity-100 transition-opacity duration-400 pointer-events-none"></div>
                       <div className="absolute inset-x-0 bottom-0 p-2 transform translate-y-full group-hover:translate-y-0 transition-transform duration-400 pointer-events-none">
                         <span className="text-white text-[10px] sm:text-xs font-bold bg-green4/90 px-3 py-1.5 rounded-lg inline-block shadow-sm backdrop-blur-sm line-clamp-1">
-                          {products[2]?.attributes?.name || "منتج #3"}
+                          {products[2]?.name || "منتج #3"}
                         </span>
                       </div>
                     </div>

@@ -3,6 +3,7 @@ import Categories from "./Components/Categories";
 import FeaturedProducts from "./Components/FeaturedProducts";
 import CtaBanner from "./Components/CtaBanner";
 import HeroSection from "./Components/HeroSection";
+import { getSale } from "@/services/sale";
 import {
   generateOrganizationSchema,
   generateWebSiteSchema,
@@ -15,7 +16,7 @@ import {
 export const metadata = {
   title: 'الصفحة الرئيسية - متجر مستلزمات الحيوانات الأليفة الغريبة | Home - Exotic Pets Accessories',
   description:
-    'تسوق أفضل مستلزمات الحيوانات الأليفة الغريبة والزواحف في العراق. توصيل مجاني للطلبات فوق 50,000 دينار، خصم 10% على الطلبات عبر الموقع، الدفع عند الاستلام. Shop the best exotic pets and reptile accessories in Iraq with free delivery above 50k IQD, 10% discount, and cash on delivery.',
+    'تسوق أفضل مستلزمات الحيوانات الأليفة الغريبة والزواحف في العراق. توصيل مجاني للطلبات فوق 50,000 دينار، الدفع عند الاستلام. Shop the best exotic pets and reptile accessories in Iraq with free delivery above 50k IQD and cash on delivery.',
   keywords: [
     'مستلزمات الحيوانات الغريبة العراق',
     'مستلزمات الزواحف بغداد',
@@ -28,7 +29,7 @@ export const metadata = {
   openGraph: {
     title: 'ExoHaven - متجر مستلزمات الحيوانات الأليفة الغريبة في العراق',
     description:
-      'أفضل متجر لمستلزمات الحيوانات الأليفة الغريبة والزواحف في العراق. توصيل مجاني، خصم 10%، الدفع عند الاستلام',
+      'أفضل متجر لمستلزمات الحيوانات الأليفة الغريبة والزواحف في العراق. توصيل مجاني، الدفع عند الاستلام',
     type: 'website',
     locale: 'ar_IQ',
     images: [
@@ -51,12 +52,12 @@ export const metadata = {
   },
 };
 
-export default function Home() {
+export default async function Home() {
   // Generate structured data for the homepage
   const organizationSchema = generateOrganizationSchema();
   const websiteSchema = generateWebSiteSchema();
   const localBusinessSchema = generateLocalBusinessSchema();
-  const faqSchema = generateFAQSchema();
+  const faqSchema = generateFAQSchema(await getSale());
   return (
     <>
       {/* JSON-LD Structured Data for SEO */}

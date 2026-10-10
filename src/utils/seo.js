@@ -2,6 +2,8 @@
 
 import { mediaUrl } from './media';
 import { entryKey } from './ids';
+import { deliveryFee, unitPrice } from './pricing';
+import { isSaleActive } from './saleUtils';
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://exohaven-iq.com';
 const imageKitUrl = 'https://ik.imagekit.io/5a72nvbtu';
@@ -18,7 +20,7 @@ export function generateOrganizationSchema() {
     name: 'ExoHaven Iraq | إكزو هيفن',
     alternateName: 'إكزو هيفن',
     url: baseUrl,
-    logo: `${baseUrl}/icons/icon-512x512.png`,
+    logo: `${baseUrl}/logo.png`,
     image: `${baseUrl}/og-image.png`,
     description:
       'متجر متخصص في بيع جميع مستلزمات الحيوانات الأليفة الغريبة والزواحف في العراق. توصيل مجاني للطلبات فوق 50,000 دينار عراقي.',
@@ -110,49 +112,45 @@ export function generateWebSiteSchema() {
  * Generate Product structured data (JSON-LD)
  * @param {Object} item - Product item from API
  */
-export function generateProductSchema(item) {
-  if (!item || !item.attributes) return null;
+export function generateProductSchema(item, sale) {
+  if (!item) return null;
 
   const {
     name,
     description,
-    state,
     out_of_stock,
     category,
-  } = item.attributes;
+  } = item;
 
-  // Ensure we have a valid price
-  if (!state || typeof state !== 'number') return null;
+  // Prices are stored as strings; skip items without a usable one.
+  const salePrice = unitPrice(item, sale);
+  if (!salePrice) return null;
 
   // Get image URL
   let imageUrl = `${baseUrl}/icons/icon-512x512.png`; // Default image
-  const thumbnailUrl = mediaUrl(item.attributes.item_thumbnail) || mediaUrl(item.attributes.item_images);
+  const thumbnailUrl = mediaUrl(item.item_thumbnail) || mediaUrl(item.item_images);
   if (thumbnailUrl) {
     imageUrl = thumbnailUrl.startsWith('http')
       ? thumbnailUrl
       : `${imageKitUrl}${thumbnailUrl}`;
   }
 
-  // Calculate actual price (10% discount for sale)
-  const regularPrice = state;
-  const salePrice = regularPrice * 0.9;
-
   return {
     '@context': 'https://schema.org',
     '@type': 'Product',
-    '@id': `${baseUrl}/item/${entryKey(item)}`,
+    '@id': `${baseUrl}/products/${entryKey(item)}`,
     name: name || 'Product',
     description: description || 'Exotic pet accessory available at ExoHaven Iraq',
     image: imageUrl,
-    sku: `EXOHAVEN-${item.id}`,
+    sku: item.Item_ID || entryKey(item),
     brand: {
       '@type': 'Brand',
       name: 'ExoHaven',
     },
-    category: category?.data?.attributes?.name || 'Pet Accessories',
+    category: category?.name || 'Pet Accessories',
     offers: {
       '@type': 'Offer',
-      url: `${baseUrl}/item/${entryKey(item)}`,
+      url: `${baseUrl}/products/${entryKey(item)}`,
       priceCurrency: 'IQD',
       price: salePrice,
       priceValidUntil: new Date(
@@ -170,7 +168,7 @@ export function generateProductSchema(item) {
         '@type': 'OfferShippingDetails',
         shippingRate: {
           '@type': 'MonetaryAmount',
-          value: salePrice >= 50000 ? 0 : 5000,
+          value: deliveryFee(salePrice, 'baghdad'),
           currency: 'IQD',
         },
         shippingDestination: {
@@ -193,11 +191,6 @@ export function generateProductSchema(item) {
           },
         },
       },
-    },
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue: '4.5',
-      reviewCount: '1',
     },
   };
 }
@@ -225,7 +218,7 @@ export function generateBreadcrumbSchema(breadcrumbs) {
  * Generate FAQ structured data (JSON-LD)
  * For FAQ or About pages
  */
-export function generateFAQSchema() {
+export function generateFAQSchema(sale) {
   return {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
@@ -246,14 +239,19 @@ export function generateFAQSchema() {
           text: 'نعم، نوفر خدمة الدفع عند الاستلام لجميع الطلبات.',
         },
       },
-      {
-        '@type': 'Question',
-        name: 'ما هو خصم الطلب عبر الموقع؟',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'نقدم خصم 10% على جميع الطلبات التي يتم إجراؤها عبر الموقع الإلكتروني.',
-        },
-      },
+      // Only while a sale runs (set in the admin).
+      ...(isSaleActive(sale)
+        ? [
+            {
+              '@type': 'Question',
+              name: 'ما هو خصم الطلب عبر الموقع؟',
+              acceptedAnswer: {
+                '@type': 'Answer',
+                text: `نقدم خصم ${sale.percent}% على جميع الطلبات التي يتم إجراؤها عبر الموقع الإلكتروني.`,
+              },
+            },
+          ]
+        : []),
       {
         '@type': 'Question',
         name: 'ما هي المناطق التي تغطيها خدمة التوصيل؟',
@@ -279,27 +277,6 @@ export function generateFAQSchema() {
         },
       },
     ],
-  };
-}
-
-/**
- * Generate ItemList structured data for category/collection pages
- * @param {Array} items - Array of product items
- * @param {string} listName - Name of the collection
- */
-export function generateItemListSchema(items, listName = 'Products') {
-  if (!items || items.length === 0) return null;
-
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'ItemList',
-    name: listName,
-    itemListElement: items.map((item, index) => ({
-      '@type': 'ListItem',
-      position: index + 1,
-      url: `${baseUrl}/item/${entryKey(item)}`,
-      name: item.attributes?.name || 'Product',
-    })),
   };
 }
 

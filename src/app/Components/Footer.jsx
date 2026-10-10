@@ -28,7 +28,7 @@ const Footer = () => {
             >
               <div className="bg-white rounded-2xl p-3 inline-block shadow-lg">
                 <Image
-                  src="/favicon.png"
+                  src="/logo.png"
                   alt="ExoHaven Logo"
                   width={90}
                   height={30}
@@ -55,7 +55,7 @@ const Footer = () => {
             <ul className="space-y-3" dir="rtl">
               {[
                 { href: "/", label: "الرئيسية" },
-                { href: "/category", label: "كل المواد" },
+                { href: "/products", label: "كل المواد" },
                 { href: "/aboutUs", label: "من نحن؟" },
                 { href: "/contact", label: "اتصل بنا" }
               ].map((link) => (

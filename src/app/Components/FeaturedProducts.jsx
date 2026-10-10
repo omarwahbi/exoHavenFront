@@ -9,10 +9,12 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchFeaturedProducts } from "@/services/api";
 import { QueryKeys } from "@/utils/queryKeys";
 import { calculateSalePrice, isSaleActive } from "@/utils/saleUtils";
+import { useSale } from "@/app/context/SaleContext";
 import { itemImageUrl } from "@/utils/media";
 import { entryKey } from "@/utils/ids";
 
 const FeaturedProducts = () => {
+  const sale = useSale();
   // Fetch featured products using React Query
   const {
     data: products = [],
@@ -78,7 +80,7 @@ const FeaturedProducts = () => {
             <p className="text-sm text-gray-600 mt-2 text-center md:text-right md:mr-6">اكتشف أفضل المنتجات المختارة بعناية</p>
           </div>
           <Link
-            href="/category"
+            href="/products"
             className="group flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green4 to-green3 text-white font-bold rounded-2xl shadow-green hover:shadow-green-lg transition-all duration-400 hover:-translate-y-0.5"
           >
             <span>عرض المزيد</span>
@@ -95,13 +97,13 @@ const FeaturedProducts = () => {
               transition={{ duration: 0.5, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
               className="group"
             >
-              <Link href={`/item/${entryKey(product)}`}>
+              <Link href={`/products/${entryKey(product)}`}>
                 <div className="bg-white rounded-2xl shadow-card overflow-hidden transition-all duration-400 group-hover:shadow-card-hover group-hover:-translate-y-1 h-full flex flex-col border border-gray-100">
                   <div className="relative">
                     <div className="aspect-square overflow-hidden bg-gradient-to-br from-gray-50 to-white">
                       <Image
-                        src={itemImageUrl(product.attributes)}
-                        alt={product.attributes.name}
+                        src={itemImageUrl(product)}
+                        alt={product.name}
                         width={400}
                         height={400}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 p-4"
@@ -110,10 +112,10 @@ const FeaturedProducts = () => {
                     </div>
 
                     {/* Sale tag - Display only if sale is active */}
-                    {isSaleActive() && (
+                    {isSaleActive(sale) && (
                       <div className="absolute top-3 left-3 bg-amber-500 text-[10px] sm:text-xs font-semibold text-white px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-lg shadow-sm flex items-center gap-1">
                         <FaTag className="text-[9px] sm:text-xs" />
-                        <span>-10%</span>
+                        <span>-{sale.percent}%</span>
                       </div>
                     )}
 
@@ -133,28 +135,28 @@ const FeaturedProducts = () => {
                   <div className="p-4 sm:p-5 flex-grow flex flex-col justify-between">
                     <div>
                       <h3 className="font-bold text-sm sm:text-base md:text-lg text-gray-900 mb-1.5 sm:mb-2 line-clamp-1 group-hover:text-green4 transition-colors duration-300">
-                        {product.attributes.name}
+                        {product.name}
                       </h3>
                       <p className="text-gray-600 text-xs sm:text-sm line-clamp-2 mb-3 sm:mb-4 leading-relaxed">
-                        {product.attributes.description}
+                        {product.description}
                       </p>
                     </div>
 
                     <div className="mt-auto space-y-3">
-                      {product.attributes.state && (
+                      {product.state && (
                         <div>
-                          {isSaleActive() ? (
+                          {isSaleActive(sale) ? (
                             <>
                               <p className="text-gray-400 line-through text-xs sm:text-sm font-medium">
-                                {product.attributes.state.toLocaleString()} IQD
+                                {product.state.toLocaleString()} IQD
                               </p>
                               <p className="text-amber-600 font-bold text-base sm:text-lg md:text-xl">
-                                {calculateSalePrice(product.attributes.state).toLocaleString()} IQD
+                                {calculateSalePrice(product.state, sale).toLocaleString()} IQD
                               </p>
                             </>
                           ) : (
                             <p className="text-green4 font-bold text-base sm:text-lg md:text-xl">
-                              {product.attributes.state.toLocaleString()} IQD
+                              {product.state.toLocaleString()} IQD
                             </p>
                           )}
                         </div>

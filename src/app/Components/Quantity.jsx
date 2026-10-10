@@ -1,31 +1,15 @@
 import React from "react";
-import useCartActions from "../context/cartActions";
 import { useCart } from "../context/CartContext";
 import { motion } from "framer-motion";
 import { FaPlus, FaMinus } from "react-icons/fa";
 import { calculateSalePrice, isSaleActive } from "@/utils/saleUtils";
+import { useSale } from "@/app/context/SaleContext";
 
-export default function Quantity({ item, removeOnZero = false }) {
-  const { cart } = useCart();
-  const { removeFromCart, decreaseQuantity, increaseQuantity, clearCart } =
-    useCartActions();
-    
-  const getItemQuantityById = (cart, id) => {
-    const item = cart.find((item) => item.id === id);
-    return item ? item.quantity : 0;
-  };
-
-  const quantity = getItemQuantityById(cart, item.id);
-  const isOutOfStock = item.attributes.out_of_stock;
-  
-  // Modified decrease function to handle removal at quantity 1
-  const handleDecrease = () => {
-    if (quantity === 1 && removeOnZero) {
-      removeFromCart(item.id);
-    } else {
-      decreaseQuantity(item.id);
-    }
-  };
+export default function Quantity({ item }) {
+  const sale = useSale();
+  const { quantityOf, addItem, decreaseItem } = useCart();
+  const quantity = quantityOf(item);
+  const isOutOfStock = item.out_of_stock;
   
   return (
     <div className="flex items-center justify-between w-full sm:w-auto">
@@ -33,7 +17,7 @@ export default function Quantity({ item, removeOnZero = false }) {
         <motion.button
           disabled={isOutOfStock || quantity <= 0}
           type="button"
-          onClick={handleDecrease}
+          onClick={() => decreaseItem(item)}
           className={`flex h-7 sm:h-8 w-7 sm:w-8 shrink-0 items-center justify-center rounded-full shadow-sm focus:outline-none transition-colors duration-200 ${
             isOutOfStock || quantity <= 0
               ? "bg-gray-300 text-gray-500 cursor-not-allowed"
@@ -61,7 +45,7 @@ export default function Quantity({ item, removeOnZero = false }) {
         <motion.button
           disabled={isOutOfStock}
           type="button"
-          onClick={() => increaseQuantity(item)}
+          onClick={() => addItem(item)}
           className={`flex h-7 sm:h-8 w-7 sm:w-8 shrink-0 items-center justify-center rounded-full shadow-sm focus:outline-none transition-colors duration-200 ${
             isOutOfStock
               ? "bg-gray-300 text-gray-500 cursor-not-allowed"
@@ -75,15 +59,15 @@ export default function Quantity({ item, removeOnZero = false }) {
       
       {quantity > 0 && (
         <div className="ml-3 sm:ml-4 text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-300">
-          {item.attributes.state && (
+          {item.state && (
             <>
-              {isSaleActive() ? (
+              {isSaleActive(sale) ? (
                 <span>
-                  {(calculateSalePrice(item.attributes.state) * quantity).toLocaleString()} IQD
+                  {(calculateSalePrice(item.state, sale) * quantity).toLocaleString()} IQD
                 </span>
               ) : (
                 <span>
-                  {(item.attributes.state * quantity).toLocaleString()} IQD
+                  {(item.state * quantity).toLocaleString()} IQD
                 </span>
               )}
             </>

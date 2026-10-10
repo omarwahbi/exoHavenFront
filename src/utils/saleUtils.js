@@ -1,22 +1,15 @@
-// Utility functions for the 10% off sale (active until end of 2026)
+// The site-wide sale, set in the admin (Strapi single type "Sale", /api/sale):
+// { active, percent, ends_at }. Read it with useSale() in client components and
+// getSale() (src/services/sale.js) on the server.
 
-/**
- * Checks if the sale is currently active
- * @returns {boolean} True if the sale is active, false otherwise
- */
-export const isSaleActive = () => {
-  const now = new Date();
-  // Sale is active until end of 2026
-  const saleEndDate = new Date(2026, 11, 31, 23, 59, 59); // December 31, 2026
-  return now < saleEndDate;
+export const NO_SALE = { active: false, percent: 0, ends_at: null };
+
+export const isSaleActive = (sale, now = new Date()) =>
+  Boolean(sale?.active && sale.percent > 0 && (!sale.ends_at || now < new Date(sale.ends_at)));
+
+// The price after the sale's discount, rounded to whole dinars; unchanged when no
+// sale is running.
+export const calculateSalePrice = (price, sale) => {
+  if (!price || !isSaleActive(sale)) return price;
+  return Math.round((price * (100 - sale.percent)) / 100);
 };
-
-/**
- * Calculates the sale price (10% off) if the sale is active
- * @param {number} originalPrice - The original price of the product
- * @returns {number} The sale price if sale is active, otherwise the original price
- */
-export const calculateSalePrice = (originalPrice) => {
-  if (!isSaleActive() || !originalPrice) return originalPrice;
-  return Math.round(originalPrice * 0.9); // 10% off
-}; 

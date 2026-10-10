@@ -109,7 +109,7 @@ const Categories = () => {
             variants={itemVariants}
             className="w-[calc(50%-8px)] sm:w-[calc(50%-10px)] md:w-[calc(25%-18px)] lg:w-[calc(20%-19.2px)]"
           >
-            <Link href={`/subCategory/${entryKey(category)}`} className="block h-full">
+            <Link href={`/categories/${entryKey(category)}`} className="block h-full">
               <motion.div
                 className="flex flex-col items-center p-5 sm:p-6 bg-white rounded-2xl shadow-card hover:shadow-card-hover transition-all duration-400 relative overflow-hidden group h-full border border-gray-100"
                 whileHover={{ y: -8 }}
@@ -124,8 +124,8 @@ const Categories = () => {
                 <div className="relative mb-4 sm:mb-5 overflow-hidden rounded-full border-4 border-green1 p-1 sm:p-1.5 group-hover:border-green3 transition-all duration-400 shadow-sm group-hover:shadow-green z-10 bg-white">
                   <div className="relative rounded-full overflow-hidden">
                     <Image
-                      src={imageUrl(category.attributes.category_thumbnail)}
-                      alt={category.attributes.name}
+                      src={imageUrl(category.category_thumbnail)}
+                      alt={category.name}
                       width={120}
                       height={120}
                       className="rounded-full h-20 w-20 sm:h-28 sm:w-28 md:h-32 md:w-32 object-cover transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3"
@@ -137,7 +137,7 @@ const Categories = () => {
                 </div>
 
                 <h2 className="text-sm sm:text-base md:text-lg font-bold text-gray-800 group-hover:text-green4 text-center transition-colors duration-400 line-clamp-2 z-10 relative">
-                  {category.attributes.name}
+                  {category.name}
                 </h2>
 
                 <span className="mt-2 sm:mt-3 inline-flex items-center gap-1.5 text-[10px] sm:text-xs text-gray-500 group-hover:text-green4 transition-colors duration-400 font-medium z-10 relative">

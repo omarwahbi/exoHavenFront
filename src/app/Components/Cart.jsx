@@ -1,7 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useCart } from "../context/CartContext";
-import useCartActions from "../context/cartActions";
 import ContinueOnWhatsApp from "./ContinueOnWhatsapp";
 import Link from "next/link";
 import Image from "next/image";
@@ -13,14 +12,15 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchSuggestedItems } from "@/services/api";
 import { QueryKeys } from "@/utils/queryKeys";
 import { calculateSalePrice, isSaleActive } from "@/utils/saleUtils";
+import { useSale } from "@/app/context/SaleContext";
+import { DELIVERY_FEES, FREE_DELIVERY_THRESHOLD, cartSubtotal, deliveryFee, unitPrice } from "@/utils/pricing";
 import { itemImageUrl } from "@/utils/media";
 import { entryKey } from "@/utils/ids";
 
 const Cart = () => {
-  const { cart } = useCart();
-  const { removeFromCart, decreaseQuantity, increaseQuantity, clearCart } = useCartActions();
+  const sale = useSale();
+  const { cart, addItem, decreaseItem, removeItem, clearCart } = useCart();
 
-  const [totalState, setTotalState] = useState(0);
   const [isClient, setIsClient] = useState(false);
   const [loading, setLoading] = useState(true);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
@@ -30,11 +30,6 @@ const Cart = () => {
   const [addressError, setAddressError] = useState(false); // Track if address is required but empty
   const [orderNote, setOrderNote] = useState(''); // Optional note from user
   
-  // Constants
-  const BAGHDAD_DELIVERY_FEE = 5000;
-  const OTHER_GOVERNORATES_DELIVERY_FEE = 6000;
-  const FREE_DELIVERY_THRESHOLD = 50000;
-
   // Fetch suggested items using React Query
   const { 
     data: suggestedItems = []
@@ -44,30 +39,20 @@ const Cart = () => {
     enabled: cart.length === 0 // Only fetch suggested items when cart is empty
   });
 
-  // Function to handle decreasing quantity (removes item at quantity 1)
-  const handleDecrease = (itemId) => {
-    const itemInCart = cart.find(item => item.id === itemId);
-    if (itemInCart && itemInCart.quantity === 1) {
-      removeFromCart(itemId);
-    } else {
-      decreaseQuantity(itemId);
-    }
-  };
-
-  const confirmDelete = (itemId) => {
-    setDeleteConfirm(itemId);
+  const confirmDelete = (key) => {
+    setDeleteConfirm(key);
     // Auto-hide after 2 seconds
     setTimeout(() => {
       setDeleteConfirm(null);
     }, 2000);
   };
 
-  const handleDelete = (itemId) => {
-    if (deleteConfirm === itemId) {
-      removeFromCart(itemId);
+  const handleDelete = (item) => {
+    if (deleteConfirm === entryKey(item)) {
+      removeItem(item);
       setDeleteConfirm(null);
     } else {
-      confirmDelete(itemId);
+      confirmDelete(entryKey(item));
     }
   };
 
@@ -104,44 +89,23 @@ const Cart = () => {
     return true;
   };
 
-  const getDeliveryFee = () => {
-    if (totalState >= FREE_DELIVERY_THRESHOLD) {
-      return 0; // Free delivery for orders above the threshold regardless of location
-    }
-    return deliveryLocation === 'baghdad' ? BAGHDAD_DELIVERY_FEE : OTHER_GOVERNORATES_DELIVERY_FEE;
-  };
+  const subtotal = cartSubtotal(cart, sale);
+  const fee = deliveryFee(subtotal, deliveryLocation);
+  const grandTotal = subtotal + fee;
 
-  const getItemNamesWithQuantities = (cart) => {
-    // Calculate total with sale prices if applicable
-    const subtotal = cart.reduce((sum, item) => {
-      const price = isSaleActive() ? calculateSalePrice(item.attributes.state) : item.attributes.state;
-      return sum + price * item.quantity;
-    }, 0);
-
-    // Determine if delivery is free
-    const isDeliveryFree = subtotal >= FREE_DELIVERY_THRESHOLD;
-    const deliveryFee = isDeliveryFree ? 0 : (deliveryLocation === 'baghdad' ? BAGHDAD_DELIVERY_FEE : OTHER_GOVERNORATES_DELIVERY_FEE);
-    const grandTotal = subtotal + deliveryFee;
-
-    // Format each item detail with sale price if applicable
+  // The order text sent over WhatsApp.
+  const buildOrderMessage = () => {
     const itemDetails = cart
       .map(
-        (item) => {
-          const price = isSaleActive() ? calculateSalePrice(item.attributes.state) : item.attributes.state;
-          return `${item.attributes.name}\nالعدد: ${item.quantity}\nالسعر: ${(
-            price * item.quantity
-          ).toLocaleString()} IQD\n`;
-        }
+        (item) =>
+          `${item.name}\nالعدد: ${item.quantity}\nالسعر: ${(unitPrice(item, sale) * item.quantity).toLocaleString()} IQD\n`
       )
       .join("\n- ");
 
-    // Append total price and delivery fee to the end
-    let deliveryText = '';
-    if (isDeliveryFree) {
-      deliveryText = 'مجاني';
-    } else {
-      deliveryText = `${deliveryFee.toLocaleString()} IQD ${deliveryLocation === 'baghdad' ? '(داخل بغداد)' : '(المحافظات الأخرى)'}`;
-    }
+    const deliveryText =
+      fee === 0
+        ? 'مجاني'
+        : `${fee.toLocaleString()} IQD ${deliveryLocation === 'baghdad' ? '(داخل بغداد)' : '(المحافظات الأخرى)'}`;
 
     // Include address in the message
     const addressLine = userAddress ? `\nعنوان التوصيل: ${userAddress}` : '';
@@ -152,49 +116,10 @@ const Cart = () => {
     return `${itemDetails}\n\nإجمالي السلة: ${subtotal.toLocaleString()} IQD\nرسوم التوصيل: ${deliveryText}\nالمجموع الكلي: ${grandTotal.toLocaleString()} IQD${addressLine}${noteLine}`;
   };
 
-  const itemsToMessage = getItemNamesWithQuantities(cart);
-
-  const calculateTotalCost = (cart) => {
-    return cart.reduce((total, item) => {
-      let cost = parseInt(item.attributes.state, 10); // Convert state to an integer
-      
-      // Apply sale discount if active
-      if (isSaleActive()) {
-        cost = calculateSalePrice(cost);
-      }
-      
-      if (!isNaN(cost)) {
-        return total + cost * item.quantity; // Multiply by the quantity and add to total
-      }
-      return total;
-    }, 0);
-  };
-
-  const calculateDeliveryFee = (subtotal) => {
-    // Delivery is free if subtotal is >= FREE_DELIVERY_THRESHOLD
-    if (subtotal >= FREE_DELIVERY_THRESHOLD) {
-      return 0;
-    }
-    // Otherwise, return the fee based on location
-    return deliveryLocation === 'baghdad' ? BAGHDAD_DELIVERY_FEE : OTHER_GOVERNORATES_DELIVERY_FEE;
-  };
-
-  const calculateGrandTotal = (subtotal) => {
-    const deliveryFee = calculateDeliveryFee(subtotal);
-    return subtotal + deliveryFee;
-  };
-
   useEffect(() => {
     setIsClient(true); // Mark the component as client-side
     setLoading(false); // No longer need extra loading state since we use React Query
   }, []);
-
-  useEffect(() => {
-    // Update the total state whenever the cart changes
-    const total = calculateTotalCost(cart);
-    setTotalState(total);
-  }, [cart]);
-
 
   if (!isClient) {
     // Render nothing on server-side to avoid mismatch
@@ -232,59 +157,59 @@ const Cart = () => {
 
   // Product card component for consistent design
   const ProductCard = ({ product, index }) => (
-    <Link href={`/item/${entryKey(product)}`} className="group">
+    <Link href={`/products/${entryKey(product)}`} className="group">
       <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 h-full flex flex-col">
         <div className="relative pt-[100%]">
           <Image
-            src={itemImageUrl(product.attributes)}
-            alt={product.attributes.name}
+            src={itemImageUrl(product)}
+            alt={product.name}
             fill
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 20vw"
             className="object-cover group-hover:scale-105 transition-transform duration-500"
             priority={index < 2}
             loading={index < 2 ? "eager" : "lazy"}
           />
-          {product.attributes.out_of_stock && (
+          {product.out_of_stock && (
             <div className="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
               نفذت الكمية
             </div>
           )}
-          {product.attributes.new_arrival && (
+          {product.new_arrival && (
             <div className="absolute top-2 left-2 bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded">
               جديد
             </div>
           )}
           {/* Sale tag */}
-          {isSaleActive() && !product.attributes.out_of_stock && (
+          {isSaleActive(sale) && !product.out_of_stock && (
             <div className="absolute top-2 left-2 bg-green4/20 border border-green4/40 text-green4 text-xs font-semibold px-2.5 py-1 rounded-full">
-              -10%
+              -{sale.percent}%
             </div>
           )}
         </div>
         <div className="p-3 flex-grow flex flex-col">
           <h4 className="font-medium text-gray-800 mb-1 line-clamp-1 group-hover:text-green4 transition-colors text-right">
-            {product.attributes.name}
+            {product.name}
           </h4>
-          {product.attributes.description && (
+          {product.description && (
             <p className="text-gray-500 text-xs line-clamp-2 mb-2 text-right">
-              {product.attributes.description}
+              {product.description}
             </p>
           )}
           <div className="mt-auto text-right">
-            {product.attributes.out_of_stock ? (
+            {product.out_of_stock ? (
               <span className="font-bold text-gray-400">غير متوفر</span>
-            ) : isSaleActive() ? (
+            ) : isSaleActive(sale) ? (
               <div>
                 <span className="text-gray-500 line-through text-xs block">
-                  {Number(product.attributes.state).toLocaleString()} IQD
+                  {Number(product.state).toLocaleString()} IQD
                 </span>
                 <span className="font-bold text-red-600">
-                  {calculateSalePrice(product.attributes.state).toLocaleString()} IQD
+                  {calculateSalePrice(product.state, sale).toLocaleString()} IQD
                 </span>
               </div>
             ) : (
               <span className="font-bold text-green4">
-                {Number(product.attributes.state).toLocaleString()} IQD
+                {Number(product.state).toLocaleString()} IQD
               </span>
             )}
           </div>
@@ -303,7 +228,7 @@ const Cart = () => {
               عربة التسوق
             </h1>
           </div>
-          <Link href="/category" className="inline-flex items-center text-green4 hover:text-green3 transition-colors">
+          <Link href="/products" className="inline-flex items-center text-green4 hover:text-green3 transition-colors">
             <MdKeyboardBackspace className="shrink-0 ml-1" size={20} />
             <span>العودة إلى المنتجات</span>
           </Link>
@@ -320,7 +245,7 @@ const Cart = () => {
               <MdShoppingBag className="shrink-0 mb-6 text-gray-300" size="5rem" />
               <h2 className="text-xl md:text-2xl font-medium text-gray-600 mb-4">عربة التسوق فارغة!</h2>
               <p className="text-gray-500 mb-8 text-center">قم بإضافة بعض المنتجات لتظهر هنا</p>
-              <Link href="/category">
+              <Link href="/products">
                 <motion.button 
                   className="px-6 py-3 bg-green4 text-white rounded-lg font-medium hover:bg-green3 transition-colors duration-300 flex items-center"
                   whileHover={{ scale: 1.03 }}
@@ -358,13 +283,13 @@ const Cart = () => {
                     <div className="flex items-center" dir="rtl">
                       <MdLocalShipping size={24} className="shrink-0 text-green4 ml-2" />
                       <p className="text-sm text-gray-800">
-                        {totalState >= FREE_DELIVERY_THRESHOLD ? (
+                        {subtotal >= FREE_DELIVERY_THRESHOLD ? (
                           <span className="font-medium">تهانينا! لقد حصلت على توصيل مجاني في جميع أنحاء العراق!</span>
                         ) : (
                           <>
                             <span className="font-medium">توصيل مجاني</span> للطلبات التي تزيد عن {FREE_DELIVERY_THRESHOLD.toLocaleString()} IQD في جميع أنحاء العراق. 
                             <span className="text-green4 font-medium mr-1">
-                              أضف {(FREE_DELIVERY_THRESHOLD - totalState).toLocaleString()} IQD أخرى للحصول على توصيل مجاني!
+                              أضف {(FREE_DELIVERY_THRESHOLD - subtotal).toLocaleString()} IQD أخرى للحصول على توصيل مجاني!
                             </span>
                           </>
                         )}
@@ -375,22 +300,22 @@ const Cart = () => {
                   <div className="space-y-4">
                     {cart.map((item) => (
                       <motion.div
-                        key={item.id}
+                        key={entryKey(item)}
                         variants={itemVariants}
                         className="rounded-xl border border-gray-100 bg-white p-4 shadow-sm md:p-6 hover:shadow-md transition-shadow duration-300"
                       >
                         <div className="space-y-4 md:flex md:items-center md:gap-6 md:space-y-0">
                           <Link
-                            href={`/item/${entryKey(item)}`}
+                            href={`/products/${entryKey(item)}`}
                             className="shrink-0 md:order-1"
                           >
                             <div className="overflow-hidden rounded-lg">
                               <Image
                                 className="h-20 w-20 object-cover transition-transform duration-300 hover:scale-110"
                                 src={
-                                  itemImageUrl(item.attributes)
+                                  itemImageUrl(item)
                                 }
-                                alt={item.attributes.name}
+                                alt={item.name}
                                 width={80}
                                 height={80}
                                 priority
@@ -401,16 +326,16 @@ const Cart = () => {
                           <div className="w-full min-w-0 flex-1 md:order-2 md:max-w-md">
                             <div className="flex justify-between">
                               <Link
-                                href={`/item/${entryKey(item)}`}
+                                href={`/products/${entryKey(item)}`}
                                 className="text-lg font-bold text-gray-900 hover:text-green4"
                               >
-                                {item.attributes.name}
+                                {item.name}
                               </Link>
                             </div>
                   
-                            {item.attributes.description && (
+                            {item.description && (
                               <p className="mt-1 text-sm text-gray-500 line-clamp-1">
-                                {item.attributes.description}
+                                {item.description}
                               </p>
                             )}
                           </div>
@@ -420,7 +345,7 @@ const Cart = () => {
                               <div className="flex items-center bg-gray-100 rounded-full px-2 py-1">
                                 <motion.button
                                   type="button"
-                                  onClick={() => handleDecrease(item.id)}
+                                  onClick={() => decreaseItem(item)}
                                   className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white text-gray-500 shadow-sm hover:bg-gray-200 focus:outline-none"
                                   whileTap={{ scale: 0.9 }}
                                   aria-label="تقليل الكمية"
@@ -432,7 +357,7 @@ const Cart = () => {
                                 </span>
                                 <motion.button
                                   type="button"
-                                  onClick={() => increaseQuantity(item)}
+                                  onClick={() => addItem(item)}
                                   className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-green4 text-white shadow-sm hover:bg-green3 focus:outline-none"
                                   whileTap={{ scale: 0.9 }}
                                   aria-label="زيادة الكمية"
@@ -442,19 +367,19 @@ const Cart = () => {
                               </div>
                               <div className="text-end whitespace-nowrap">
                                 <p className="text-base font-bold text-gray-900">
-                                  {isSaleActive() ? (
+                                  {isSaleActive(sale) ? (
                                     <>
                                       <span className="text-sm font-normal line-through text-gray-500 block">
-                                        {(item.attributes.state * item.quantity).toLocaleString()} IQD
+                                        {(item.state * item.quantity).toLocaleString()} IQD
                                       </span>
                                       <span className="text-red-600">
-                                        {(calculateSalePrice(item.attributes.state) * item.quantity).toLocaleString()}{" "}
+                                        {(calculateSalePrice(item.state, sale) * item.quantity).toLocaleString()}{" "}
                                         <span className="text-sm font-normal">IQD</span>
                                       </span>
                                     </>
                                   ) : (
                                     <>
-                                      {(item.attributes.state * item.quantity).toLocaleString()}{" "}
+                                      {(item.state * item.quantity).toLocaleString()}{" "}
                                       <span className="text-sm font-normal">IQD</span>
                                     </>
                                   )}
@@ -464,13 +389,13 @@ const Cart = () => {
                             
                             <motion.button
                               type="button"
-                              onClick={() => handleDelete(item.id)}
-                              className={`inline-flex items-center text-sm font-medium px-2 py-1 rounded-full self-end ${deleteConfirm === item.id ? 'bg-red-100 text-red-600' : 'text-gray-500 hover:text-red-600'}`}
+                              onClick={() => handleDelete(item)}
+                              className={`inline-flex items-center text-sm font-medium px-2 py-1 rounded-full self-end ${deleteConfirm === entryKey(item) ? 'bg-red-100 text-red-600' : 'text-gray-500 hover:text-red-600'}`}
                               whileHover={{ scale: 1.05 }}
                               whileTap={{ scale: 0.95 }}
                               aria-label="إزالة من السلة"
                             >
-                              {deleteConfirm === item.id ? (
+                              {deleteConfirm === entryKey(item) ? (
                                 <>
                                   <span className="mr-1 text-xs">تأكيد</span>
                                   <MdDeleteOutline size={20} className="shrink-0" />
@@ -531,7 +456,7 @@ const Cart = () => {
                       <div className="flex justify-between">
                         <p className="text-gray-600">إجمالي السلة</p>
                         <p className="font-medium text-gray-900">
-                          {totalState.toLocaleString()} <span className="text-sm font-normal">د.ع</span>
+                          {subtotal.toLocaleString()} <span className="text-sm font-normal">د.ع</span>
                         </p>
                       </div>
                       
@@ -619,16 +544,16 @@ const Cart = () => {
                         <div className="flex items-center">
                           <MdLocalShipping className="shrink-0 ml-2" size={20} />
                           <p className="text-sm">
-                            {totalState >= FREE_DELIVERY_THRESHOLD 
+                            {subtotal >= FREE_DELIVERY_THRESHOLD 
                               ? 'رسوم التوصيل' 
                               : `رسوم التوصيل ${deliveryLocation === 'baghdad' ? '(داخل بغداد)' : '(المحافظات الأخرى)'}`}
                           </p>
                         </div>
-                        {totalState >= FREE_DELIVERY_THRESHOLD ? (
+                        {subtotal >= FREE_DELIVERY_THRESHOLD ? (
                           <p className="text-sm font-medium bg-green-100 text-green5 px-2 py-0.5 rounded-full">مجاني</p>
                         ) : (
                           <p className="text-sm font-medium">
-                            {(deliveryLocation === 'baghdad' ? BAGHDAD_DELIVERY_FEE : OTHER_GOVERNORATES_DELIVERY_FEE).toLocaleString()} د.ع
+                            {DELIVERY_FEES[deliveryLocation].toLocaleString()} د.ع
                           </p>
                         )}
                       </div>
@@ -637,14 +562,14 @@ const Cart = () => {
                         <div className="flex justify-between items-center">
                           <p className="text-lg font-bold text-gray-900">المجموع الكلي</p>
                           <p className="text-xl font-bold text-green5">
-                            {calculateGrandTotal(totalState).toLocaleString()} <span className="text-sm font-normal">د.ع</span>
+                            {grandTotal.toLocaleString()} <span className="text-sm font-normal">د.ع</span>
                           </p>
                         </div>
                       </div>
                       
                       <ContinueOnWhatsApp
-                        messageText={itemsToMessage}
-                        totalPrice={calculateGrandTotal(totalState)}
+                        messageText={buildOrderMessage()}
+                        totalPrice={grandTotal}
                         onValidate={validateAddress}
                       />
                       

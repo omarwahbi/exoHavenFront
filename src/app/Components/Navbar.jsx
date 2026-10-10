@@ -11,10 +11,7 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
-  const { cart } = useCart();
-
-  // Calculate total items in cart
-  const cartItemCount = cart.reduce((total, item) => total + item.quantity, 0);
+  const { itemCount: cartItemCount } = useCart();
   
   useEffect(() => {
     const handleScroll = () => {
@@ -96,7 +93,7 @@ const Navbar = () => {
                   <Image
                     height={30}
                     width={90}
-                    src="/favicon.png"
+                    src="/logo.png"
                     alt="logo"
                     priority
                   />
@@ -106,7 +103,7 @@ const Navbar = () => {
             <div className="hidden md:block">
               <div className="ml-10 flex items-baseline space-x-4">
                 <NavLink href="/">الرئيسية</NavLink>
-                <NavLink href="/category">كل المواد</NavLink>
+                <NavLink href="/products">كل المواد</NavLink>
                 <NavLink href="/aboutUs">من نحن؟</NavLink>
                 <NavLink href="/contact">اتصل بنا</NavLink>
               </div>
@@ -269,10 +266,10 @@ const Navbar = () => {
                   </motion.div>
                 </Link>
                 
-                <Link href="/category" onClick={handleLinkClick}>
+                <Link href="/products" onClick={handleLinkClick}>
                   <motion.div
                     className={`flex items-center p-4 rounded-xl transition-all duration-300
-                                ${pathname.startsWith('/category')
+                                ${pathname.startsWith('/products')
                                   ? 'bg-gradient-to-r from-green1 to-green2/50 text-green5 shadow-sm'
                                   : 'text-gray-700 hover:bg-green1/40 hover:text-green5'}`}
                     whileHover={{ x: 5 }}

@@ -6,13 +6,13 @@ import { useState } from "react";
 import { FaShoppingCart, FaCheckCircle } from "react-icons/fa";
 
 const AddToCartButton = ({ item }) => {
-  const { dispatch } = useCart();
+  const { addItem } = useCart();
   const [added, setAdded] = useState(false);
   const [ripples, setRipples] = useState([]);
   const [particles, setParticles] = useState([]);
 
   const addToCart = (e) => {
-    if (item.attributes.out_of_stock || added) return;
+    if (item.out_of_stock || added) return;
 
     // Create ripple effect
     const rect = e.currentTarget.getBoundingClientRect();
@@ -32,7 +32,7 @@ const AddToCartButton = ({ item }) => {
     }));
     setParticles(particleArray);
 
-    dispatch({ type: "ADD_ITEM", payload: item });
+    addItem(item);
     setAdded(true);
 
     // Reset the animation after a delay
@@ -42,7 +42,7 @@ const AddToCartButton = ({ item }) => {
     }, 2000);
   };
 
-  const isOutOfStock = item.attributes.out_of_stock;
+  const isOutOfStock = item.out_of_stock;
   // Button is disabled when out of stock OR when showing the success animation
   const isDisabled = isOutOfStock || added;
 

@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { FaWhatsapp, FaEnvelope, FaPhone, FaArrowLeft } from "react-icons/fa";
-import Image from "next/image";
 
 const CtaBanner = () => {
   const [hovered, setHovered] = useState(null);

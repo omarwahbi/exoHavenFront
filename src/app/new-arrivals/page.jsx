@@ -1,6 +1,5 @@
 "use client";
-import React, { useState, useEffect, useMemo } from "react";
-import { useSearchParams } from "next/navigation";
+import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import Link from "next/link";
@@ -10,26 +9,19 @@ import Spinner from "../Components/Spinner";
 import { fetchNewArrivals } from "@/services/api";
 import { QueryKeys } from "@/utils/queryKeys";
 import { isSaleActive, calculateSalePrice } from "@/utils/saleUtils";
+import { useSale } from "@/app/context/SaleContext";
 import { itemImageUrl } from "@/utils/media";
 import { entryKey } from "@/utils/ids";
 
-export default function ItemsPage() {
-  const searchParams = useSearchParams();
-  const filter = searchParams.get('filter');
-  
+export default function NewArrivalsPage() {
+  const sale = useSale();
   const { 
     data: items = [],
     isLoading,
     error 
   } = useQuery({
-    queryKey: [QueryKeys.items, filter],
-    queryFn: () => {
-      if (filter === 'new_arrival') {
-        return fetchNewArrivals(20); // Fetch more items for dedicated page
-      } else {
-        return fetchNewArrivals(20); // Default to new arrivals for now
-      }
-    }
+    queryKey: [QueryKeys.items, 'new_arrival'],
+    queryFn: () => fetchNewArrivals(20),
   });
   
   const containerVariants = {
@@ -51,20 +43,12 @@ export default function ItemsPage() {
     }
   };
 
-  // Get page title based on filter
-  const getPageTitle = () => {
-    if (filter === 'new_arrival') {
-      return 'وصل حديثاً';
-    }
-    return 'جميع المنتجات';
-  };
-
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Category Header Banner */}
       <div className="bg-gradient-to-r from-green3 to-green4 text-white py-12 px-4 mb-6">
         <div className="max-w-7xl mx-auto">
-          <h1 className="text-3xl md:text-4xl font-bold text-center mb-4">{getPageTitle()}</h1>
+          <h1 className="text-3xl md:text-4xl font-bold text-center mb-4">وصل حديثاً</h1>
           <p className="text-lg text-center text-white/80 max-w-2xl mx-auto">
             اكتشف أحدث المنتجات التي وصلت لدينا
           </p>
@@ -76,7 +60,7 @@ export default function ItemsPage() {
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center">
             <div className="h-8 w-1.5 bg-green4 rounded-full mr-2 hidden md:block"></div>
-            <h2 className="text-xl font-bold text-green4">{getPageTitle()}</h2>
+            <h2 className="text-xl font-bold text-green4">وصل حديثاً</h2>
           </div>
           <Link href="/" className="text-green3 hover:text-green4 transition-all duration-300 flex items-center group">
             <span className="mr-1">العودة للرئيسية</span>
@@ -112,10 +96,10 @@ export default function ItemsPage() {
               <motion.div key={item.id} variants={itemVariants}>
                 <div className="h-full">
                   <div className="group bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 h-full flex flex-col">
-                    <Link href={`/item/${entryKey(item)}`} className="block relative pt-[100%]">
+                    <Link href={`/products/${entryKey(item)}`} className="block relative pt-[100%]">
                       <Image
-                        src={itemImageUrl(item.attributes)}
-                        alt={item.attributes.name}
+                        src={itemImageUrl(item)}
+                        alt={item.name}
                         fill
                         sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                         className="object-cover group-hover:scale-105 transition-transform duration-500"
@@ -130,41 +114,41 @@ export default function ItemsPage() {
                       </div>
                       
                       {/* New arrival badge */}
-                      {item.attributes.new_arrival && (
+                      {item.new_arrival && (
                         <div className="absolute top-0 right-0 bg-green4 text-white text-xs font-bold px-3 py-1 m-2 rounded">
                           جديد
                         </div>
                       )}
                       
                       {/* Sale badge */}
-                      {isSaleActive() && !item.attributes.out_of_stock && (
+                      {isSaleActive(sale) && !item.out_of_stock && (
                         <div className="absolute top-2 left-2 bg-green4/20 border border-green4/40 text-green4 text-xs font-semibold px-2.5 py-1 m-0 rounded-full flex items-center gap-1">
                           <FaTag className="text-[10px]" />
-                          <span>-10%</span>
+                          <span>-{sale.percent}%</span>
                         </div>
                       )}
                     </Link>
                     
                     <div className="p-3 flex-grow flex flex-col">
-                      <Link href={`/item/${entryKey(item)}`}>
+                      <Link href={`/products/${entryKey(item)}`}>
                         <h3 className="font-medium text-gray-800 mb-1 line-clamp-1 hover:text-green4 transition-colors">
-                          {item.attributes.name}
+                          {item.name}
                         </h3>
                       </Link>
                       
                       <div className="mt-auto pt-2 flex justify-between items-center">
-                        {isSaleActive() && !item.attributes.out_of_stock ? (
+                        {isSaleActive(sale) && !item.out_of_stock ? (
                           <div>
                             <span className="text-gray-500 line-through text-xs block">
-                              {Number(item.attributes.state).toLocaleString()} IQD
+                              {Number(item.state).toLocaleString()} IQD
                             </span>
                             <span className="font-bold text-red-600">
-                              {calculateSalePrice(item.attributes.state).toLocaleString()} IQD
+                              {calculateSalePrice(item.state, sale).toLocaleString()} IQD
                             </span>
                           </div>
                         ) : (
                           <span className="font-bold text-green4">
-                            {Number(item.attributes.state).toLocaleString()} IQD
+                            {Number(item.state).toLocaleString()} IQD
                           </span>
                         )}
                       </div>

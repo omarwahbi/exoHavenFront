@@ -5,13 +5,13 @@ import React, { useState, useEffect, useMemo } from "react";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import Spinner from "../Components/Spinner";
 import { motion } from "framer-motion";
-import { FaSearch, FaFilter, FaShoppingCart, FaEye, FaPlus, FaMinus, FaCheck, FaTag } from "react-icons/fa";
+import { FaSearch, FaFilter, FaShoppingCart, FaEye, FaPlus, FaMinus, FaTag } from "react-icons/fa";
 import { useCart } from "../context/CartContext";
 import { fetchCategories } from "@/services/api";
 import api from "@/services/api";
 import { QueryKeys } from "@/utils/queryKeys";
 import { isSaleActive, calculateSalePrice } from "@/utils/saleUtils";
-import SaleBanner from "../Components/SaleBanner";
+import { useSale } from "@/app/context/SaleContext";
 import { itemImageUrl } from "@/utils/media";
 import { entryKey } from "@/utils/ids";
 
@@ -72,6 +72,7 @@ const fetchCategoryItems = async ({ pageParam = 1, categoryId, searchQuery, sign
 };
 
 const Category = () => {
+  const sale = useSale();
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   const [searchInputValue, setSearchInputValue] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -80,9 +81,9 @@ const Category = () => {
   const [scrolled, setScrolled] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const [hideOutOfStock, setHideOutOfStock] = useState(false);
-  const { cart, dispatch } = useCart();
+  const { quantityOf, addItem, decreaseItem } = useCart();
 
-  const { data: categories = [], isLoading: isCategoriesLoading } = useQuery({
+  const { data: categories = [] } = useQuery({
     queryKey: [QueryKeys.categoriesList],
     queryFn: fetchCategories
   });
@@ -100,7 +101,6 @@ const Category = () => {
     isFetchingNextPage, 
     isLoading,
     isFetching,
-    refetch
   } = useInfiniteQuery({
     queryKey: queryKey,
     queryFn: ({ pageParam = 1, signal }) =>
@@ -149,7 +149,7 @@ const Category = () => {
     
     // Apply out of stock filter if enabled
     if (hideOutOfStock) {
-      items = items.filter(item => !item.attributes.out_of_stock);
+      items = items.filter(item => !item.out_of_stock);
     }
     
     return items;
@@ -159,8 +159,6 @@ const Category = () => {
     return filteredItems.length;
   }, [filteredItems]);
 
-  const allItems = data ? data.pages.flatMap((page) => page.items) : [];
-  const totalItems = data?.pages[0]?.total || 0;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -234,33 +232,6 @@ const Category = () => {
     if (hideOutOfStock) count++;
     return count;
   }, [selectedCategoryId, searchQuery, hideOutOfStock]);
-
-  // Helper function to get quantity of an item in cart
-  const getItemQuantityInCart = (itemId) => {
-    const cartItem = cart.find(item => item.id === itemId);
-    return cartItem ? cartItem.quantity : 0;
-  };
-  
-  // Cart action functions
-  const addToCart = (item) => {
-    if (item.attributes.out_of_stock) return;
-    dispatch({ type: "ADD_ITEM", payload: item });
-  };
-  
-  const removeFromCart = (itemId) => {
-    dispatch({ type: "REMOVE_ITEM", payload: { id: itemId } });
-  };
-  
-  const decreaseQuantity = (itemId) => {
-    const itemInCart = cart.find(item => item.id === itemId);
-    if (itemInCart && itemInCart.quantity === 1) {
-      // If quantity is 1, remove the item completely
-      dispatch({ type: "REMOVE_ITEM", payload: { id: itemId } });
-    } else {
-      // Otherwise just decrease the quantity
-      dispatch({ type: "DECREASE_QUANTITY", payload: { id: itemId } });
-    }
-  };
 
   if (isLoading) {
     return (
@@ -419,7 +390,7 @@ const Category = () => {
                           {categories &&
                             categories.map((cat) => (
                               <option key={cat.id} value={entryKey(cat)}>
-                                {cat.attributes.name}
+                                {cat.name}
                               </option>
                             ))}
                         </select>
@@ -501,7 +472,7 @@ const Category = () => {
                 )}
                 {selectedCategoryId && categories.length > 0 && (
                   <span className="inline-flex items-center px-3 py-1 rounded-full bg-green1 text-green4 text-xs">
-                    فئة: {categories.find(c => entryKey(c) === selectedCategoryId)?.attributes.name || selectedCategoryId}
+                    فئة: {categories.find(c => entryKey(c) === selectedCategoryId)?.name || selectedCategoryId}
                     <button 
                       onClick={() => setSelectedCategoryId(null)} 
                       className="mr-1 hover:text-red-500"
@@ -585,17 +556,17 @@ const Category = () => {
             className={viewStyle === "grid" ? "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6" : "flex flex-col space-y-4"}
           >
             {filteredItems.map((item, index) => {
-              const quantityInCart = getItemQuantityInCart(item.id);
+              const quantityInCart = quantityOf(item);
               
               return (
                 <motion.div key={item.id} variants={itemVariants}>
                   {viewStyle === "grid" ? (
                     <div className="h-full">
                       <div className="group bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 h-full flex flex-col">
-                        <Link href={`/item/${entryKey(item)}`} className="block relative pt-[100%]">
+                        <Link href={`/products/${entryKey(item)}`} className="block relative pt-[100%]">
                           <Image
-                            src={itemImageUrl(item.attributes)}
-                            alt={item.attributes.name}
+                            src={itemImageUrl(item)}
+                            alt={item.name}
                             fill
                             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                             className="object-cover group-hover:scale-105 transition-transform duration-500"
@@ -610,62 +581,62 @@ const Category = () => {
                           </div>
                           
                           {/* Out of stock badge */}
-                          {item.attributes.out_of_stock && (
+                          {item.out_of_stock && (
                             <div className="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold px-3 py-1 m-2 rounded">
                               نفذت الكمية
                             </div>
                           )}
                           
                           {/* New arrival badge */}
-                          {item.attributes.new_arrival && !item.attributes.out_of_stock && (
+                          {item.new_arrival && !item.out_of_stock && (
                             <div className="absolute top-0 right-0 bg-blue-500 text-white text-xs font-bold px-2 py-1 m-2 rounded">
                               جديد
                             </div>
                           )}
                           
                           {/* Sale badge */}
-                          {isSaleActive() && !item.attributes.out_of_stock && (
+                          {isSaleActive(sale) && !item.out_of_stock && (
                             <div className="absolute top-0 left-0 bg-red-600 text-white text-xs font-bold px-2 py-1 m-2 rounded-full animate-pulse">
                               <FaTag className="inline-block ml-1" size={10} />
-                              خصم 10%
+                              خصم {sale.percent}%
                             </div>
                           )}
                         </Link>
                         
                         <div className="p-3 flex-grow flex flex-col">
-                          <Link href={`/item/${entryKey(item)}`}>
+                          <Link href={`/products/${entryKey(item)}`}>
                             <h3 className="font-medium text-gray-800 mb-1 line-clamp-1 hover:text-green4 transition-colors">
-                              {item.attributes.name}
+                              {item.name}
                             </h3>
                           </Link>
                           
                           <div className="mt-auto pt-2 flex justify-between items-center">
-                            <span className={`font-bold ${item.attributes.out_of_stock ? 'text-gray-400' : ''}`}>
-                              {item.attributes.out_of_stock ? (
+                            <span className={`font-bold ${item.out_of_stock ? 'text-gray-400' : ''}`}>
+                              {item.out_of_stock ? (
                                 "غير متوفر"
-                              ) : isSaleActive() ? (
+                              ) : isSaleActive(sale) ? (
                                 <div>
                                   <span className="text-gray-500 line-through text-xs block">
-                                    {Number(item.attributes.state).toLocaleString()} IQD
+                                    {Number(item.state).toLocaleString()} IQD
                                   </span>
                                   <span className="text-red-600">
-                                    {calculateSalePrice(item.attributes.state).toLocaleString()} IQD
+                                    {calculateSalePrice(item.state, sale).toLocaleString()} IQD
                                   </span>
                                 </div>
                               ) : (
-                                `${Number(item.attributes.state).toLocaleString()} IQD`
+                                `${Number(item.state).toLocaleString()} IQD`
                               )}
                             </span>
                             
                             {/* Cart interaction button */}
-                            {item.attributes.out_of_stock ? (
+                            {item.out_of_stock ? (
                               <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-400 cursor-not-allowed">
                                 <FaShoppingCart size={14} />
                               </div>
                             ) : quantityInCart > 0 ? (
                               <div className="flex items-center">
                                 <motion.button 
-                                  onClick={() => decreaseQuantity(item.id)}
+                                  onClick={() => decreaseItem(item)}
                                   className="w-7 h-7 rounded-full bg-green1 flex items-center justify-center text-green4 hover:bg-green2 transition-colors"
                                   whileTap={{ scale: 0.9 }}
                                 >
@@ -675,7 +646,7 @@ const Category = () => {
                                 <span className="mx-2 font-medium text-green4">{quantityInCart}</span>
                                 
                                 <motion.button 
-                                  onClick={() => addToCart(item)}
+                                  onClick={() => addItem(item)}
                                   className="w-7 h-7 rounded-full bg-green4 flex items-center justify-center text-white hover:bg-green3 transition-colors"
                                   whileTap={{ scale: 0.9 }}
                                 >
@@ -684,7 +655,7 @@ const Category = () => {
                               </div>
                             ) : (
                               <motion.button 
-                                onClick={() => addToCart(item)}
+                                onClick={() => addItem(item)}
                                 className="w-8 h-8 rounded-full bg-green1 flex items-center justify-center text-green4 hover:bg-green4 hover:text-white transition-colors"
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
@@ -700,68 +671,68 @@ const Category = () => {
                     // List view
                     <div className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
                       <div className="flex flex-row h-full">
-                        <Link href={`/item/${entryKey(item)}`} className="relative w-1/3 sm:w-1/4">
+                        <Link href={`/products/${entryKey(item)}`} className="relative w-1/3 sm:w-1/4">
                           <Image
-                            src={itemImageUrl(item.attributes)}
-                            alt={item.attributes.name}
+                            src={itemImageUrl(item)}
+                            alt={item.name}
                             width={200}
                             height={200}
                             className="object-cover w-full h-full aspect-square"
                             priority
                           />
-                          {item.attributes.out_of_stock && (
+                          {item.out_of_stock && (
                             <div className="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold px-2 py-1 m-1 rounded">
                               نفذت الكمية
                             </div>
                           )}
                           
                           {/* New arrival badge */}
-                          {item.attributes.new_arrival && !item.attributes.out_of_stock && (
+                          {item.new_arrival && !item.out_of_stock && (
                             <div className="absolute top-0 right-0 bg-blue-500 text-white text-xs font-bold px-2 py-1 m-1 rounded">
                               جديد
                             </div>
                           )}
                           
                           {/* Sale badge */}
-                          {isSaleActive() && !item.attributes.out_of_stock && (
+                          {isSaleActive(sale) && !item.out_of_stock && (
                             <div className="absolute top-0 left-0 bg-red-600 text-white text-xs font-bold px-2 py-1 m-1 rounded animate-pulse">
                               <FaTag className="inline-block ml-1" size={10} />
-                              خصم 10%
+                              خصم {sale.percent}%
                             </div>
                           )}
                         </Link>
                         
                         <div className="flex-grow p-4 flex flex-col">
-                          <Link href={`/item/${entryKey(item)}`}>
+                          <Link href={`/products/${entryKey(item)}`}>
                             <h3 className="font-medium text-gray-800 mb-1 hover:text-green4 transition-colors">
-                              {item.attributes.name}
+                              {item.name}
                             </h3>
                           </Link>
                           
                           <p className="text-gray-500 text-sm line-clamp-2 mb-2">
-                            {item.attributes.description || "وصف المنتج غير متوفر"}
+                            {item.description || "وصف المنتج غير متوفر"}
                           </p>
                           
                           <div className="mt-auto flex justify-between items-center">
-                            <span className={`font-bold ${item.attributes.out_of_stock ? 'text-gray-400' : ''}`}>
-                              {item.attributes.out_of_stock ? (
+                            <span className={`font-bold ${item.out_of_stock ? 'text-gray-400' : ''}`}>
+                              {item.out_of_stock ? (
                                 "غير متوفر"
-                              ) : isSaleActive() ? (
+                              ) : isSaleActive(sale) ? (
                                 <div>
                                   <span className="text-gray-500 line-through text-xs block">
-                                    {Number(item.attributes.state).toLocaleString()} IQD
+                                    {Number(item.state).toLocaleString()} IQD
                                   </span>
                                   <span className="text-red-600">
-                                    {calculateSalePrice(item.attributes.state).toLocaleString()} IQD
+                                    {calculateSalePrice(item.state, sale).toLocaleString()} IQD
                                   </span>
                                 </div>
                               ) : (
-                                `${Number(item.attributes.state).toLocaleString()} IQD`
+                                `${Number(item.state).toLocaleString()} IQD`
                               )}
                             </span>
                             
                             {/* Cart interaction for list view */}
-                            {item.attributes.out_of_stock ? (
+                            {item.out_of_stock ? (
                               <button 
                                 disabled
                                 className="px-3 py-1.5 bg-gray-200 text-gray-400 rounded-lg text-sm cursor-not-allowed"
@@ -772,7 +743,7 @@ const Category = () => {
                               <div className="flex items-center gap-2">
                                 <div className="flex items-center border border-green2 rounded-full">
                                   <motion.button 
-                                    onClick={() => decreaseQuantity(item.id)}
+                                    onClick={() => decreaseItem(item)}
                                     className="w-7 h-7 rounded-full bg-white flex items-center justify-center text-green4 hover:bg-green1 transition-colors"
                                     whileTap={{ scale: 0.9 }}
                                   >
@@ -782,7 +753,7 @@ const Category = () => {
                                   <span className="mx-2 font-medium text-green4">{quantityInCart}</span>
                                   
                                   <motion.button 
-                                    onClick={() => addToCart(item)}
+                                    onClick={() => addItem(item)}
                                     className="w-7 h-7 rounded-full bg-green4 flex items-center justify-center text-white hover:bg-green3 transition-colors"
                                     whileTap={{ scale: 0.9 }}
                                   >
@@ -794,7 +765,7 @@ const Category = () => {
                               </div>
                             ) : (
                               <motion.button 
-                                onClick={() => addToCart(item)}
+                                onClick={() => addItem(item)}
                                 className="px-3 py-1.5 bg-green1 text-green4 rounded-lg text-sm hover:bg-green4 hover:text-white transition-colors flex items-center gap-1"
                                 whileHover={{ scale: 1.03 }}
                                 whileTap={{ scale: 0.97 }}
