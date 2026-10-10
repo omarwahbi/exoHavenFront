@@ -9,6 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchNewArrivals } from "@/services/api";
 import { QueryKeys } from "@/utils/queryKeys";
 import { isSaleActive, calculateSalePrice } from "@/utils/saleUtils";
+import { useSale } from "@/app/context/SaleContext";
 // Import Swiper React components
 import { Swiper, SwiperSlide } from 'swiper/react';
 // Import Swiper styles
@@ -30,6 +31,7 @@ const MIN_LOOP_SLIDES = 8;
 const PRIORITY_SLIDES = 3;
 
 export default function NewArrivalsCarousel() {
+  const sale = useSale();
   // Fetch new arrivals using React Query
   const { 
     data: images = [],
@@ -181,10 +183,10 @@ export default function NewArrivalsCarousel() {
                         </div>
                         
                         {/* Sale badge - Only shown if sale is active */}
-                        {isSaleActive() && !img.out_of_stock && (
+                        {isSaleActive(sale) && !img.out_of_stock && (
                           <div className="absolute top-1 right-1 bg-amber-500 text-white text-[10px] font-medium px-1.5 py-0.5 rounded-full z-10 flex items-center gap-0.5">
                             <FaTag className="text-[8px]" />
-                            <span>-10%</span>
+                            <span>-{sale.percent}%</span>
                           </div>
                         )}
                         
@@ -201,13 +203,13 @@ export default function NewArrivalsCarousel() {
                         </h3>
                         {img.state && (
                           <div className="flex items-center justify-between mt-0.5">
-                            {isSaleActive() && !img.out_of_stock ? (
+                            {isSaleActive(sale) && !img.out_of_stock ? (
                               <div>
                                 <span className="text-gray-500 line-through text-[10px] block">
                                   {img.state.toLocaleString()} IQD
                                 </span>
                                 <span className="font-bold text-amber-600 text-xs">
-                                  {calculateSalePrice(img.state).toLocaleString()} IQD
+                                  {calculateSalePrice(img.state, sale).toLocaleString()} IQD
                                 </span>
                               </div>
                             ) : (

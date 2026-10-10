@@ -11,6 +11,7 @@ import { fetchCategories } from "@/services/api";
 import api from "@/services/api";
 import { QueryKeys } from "@/utils/queryKeys";
 import { isSaleActive, calculateSalePrice } from "@/utils/saleUtils";
+import { useSale } from "@/app/context/SaleContext";
 import { itemImageUrl } from "@/utils/media";
 import { entryKey } from "@/utils/ids";
 
@@ -71,6 +72,7 @@ const fetchCategoryItems = async ({ pageParam = 1, categoryId, searchQuery, sign
 };
 
 const Category = () => {
+  const sale = useSale();
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   const [searchInputValue, setSearchInputValue] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -593,10 +595,10 @@ const Category = () => {
                           )}
                           
                           {/* Sale badge */}
-                          {isSaleActive() && !item.out_of_stock && (
+                          {isSaleActive(sale) && !item.out_of_stock && (
                             <div className="absolute top-0 left-0 bg-red-600 text-white text-xs font-bold px-2 py-1 m-2 rounded-full animate-pulse">
                               <FaTag className="inline-block ml-1" size={10} />
-                              خصم 10%
+                              خصم {sale.percent}%
                             </div>
                           )}
                         </Link>
@@ -612,13 +614,13 @@ const Category = () => {
                             <span className={`font-bold ${item.out_of_stock ? 'text-gray-400' : ''}`}>
                               {item.out_of_stock ? (
                                 "غير متوفر"
-                              ) : isSaleActive() ? (
+                              ) : isSaleActive(sale) ? (
                                 <div>
                                   <span className="text-gray-500 line-through text-xs block">
                                     {Number(item.state).toLocaleString()} IQD
                                   </span>
                                   <span className="text-red-600">
-                                    {calculateSalePrice(item.state).toLocaleString()} IQD
+                                    {calculateSalePrice(item.state, sale).toLocaleString()} IQD
                                   </span>
                                 </div>
                               ) : (
@@ -692,10 +694,10 @@ const Category = () => {
                           )}
                           
                           {/* Sale badge */}
-                          {isSaleActive() && !item.out_of_stock && (
+                          {isSaleActive(sale) && !item.out_of_stock && (
                             <div className="absolute top-0 left-0 bg-red-600 text-white text-xs font-bold px-2 py-1 m-1 rounded animate-pulse">
                               <FaTag className="inline-block ml-1" size={10} />
-                              خصم 10%
+                              خصم {sale.percent}%
                             </div>
                           )}
                         </Link>
@@ -715,13 +717,13 @@ const Category = () => {
                             <span className={`font-bold ${item.out_of_stock ? 'text-gray-400' : ''}`}>
                               {item.out_of_stock ? (
                                 "غير متوفر"
-                              ) : isSaleActive() ? (
+                              ) : isSaleActive(sale) ? (
                                 <div>
                                   <span className="text-gray-500 line-through text-xs block">
                                     {Number(item.state).toLocaleString()} IQD
                                   </span>
                                   <span className="text-red-600">
-                                    {calculateSalePrice(item.state).toLocaleString()} IQD
+                                    {calculateSalePrice(item.state, sale).toLocaleString()} IQD
                                   </span>
                                 </div>
                               ) : (

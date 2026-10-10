@@ -9,10 +9,12 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchFeaturedProducts } from "@/services/api";
 import { QueryKeys } from "@/utils/queryKeys";
 import { calculateSalePrice, isSaleActive } from "@/utils/saleUtils";
+import { useSale } from "@/app/context/SaleContext";
 import { itemImageUrl } from "@/utils/media";
 import { entryKey } from "@/utils/ids";
 
 const FeaturedProducts = () => {
+  const sale = useSale();
   // Fetch featured products using React Query
   const {
     data: products = [],
@@ -110,10 +112,10 @@ const FeaturedProducts = () => {
                     </div>
 
                     {/* Sale tag - Display only if sale is active */}
-                    {isSaleActive() && (
+                    {isSaleActive(sale) && (
                       <div className="absolute top-3 left-3 bg-amber-500 text-[10px] sm:text-xs font-semibold text-white px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-lg shadow-sm flex items-center gap-1">
                         <FaTag className="text-[9px] sm:text-xs" />
-                        <span>-10%</span>
+                        <span>-{sale.percent}%</span>
                       </div>
                     )}
 
@@ -143,13 +145,13 @@ const FeaturedProducts = () => {
                     <div className="mt-auto space-y-3">
                       {product.state && (
                         <div>
-                          {isSaleActive() ? (
+                          {isSaleActive(sale) ? (
                             <>
                               <p className="text-gray-400 line-through text-xs sm:text-sm font-medium">
                                 {product.state.toLocaleString()} IQD
                               </p>
                               <p className="text-amber-600 font-bold text-base sm:text-lg md:text-xl">
-                                {calculateSalePrice(product.state).toLocaleString()} IQD
+                                {calculateSalePrice(product.state, sale).toLocaleString()} IQD
                               </p>
                             </>
                           ) : (

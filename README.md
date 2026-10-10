@@ -66,8 +66,12 @@ ids get a 308 redirect from `src/middleware.js`.
   host.
 - **Prices.** An item's price is in its `state` field, stored as a string. Use
   `src/utils/pricing.js` for unit prices (sale included), cart subtotals and
-  delivery fees, so the cart, the metadata and the JSON-LD agree. The 10% sale
-  and its end date are in `src/utils/saleUtils.js`.
+  delivery fees, so the cart, the metadata and the JSON-LD agree.
+- **Sale.** The site-wide discount is set in the admin (the "Sale" single type:
+  on/off, percent, end date). The root layout fetches it with `getSale()`
+  (`src/services/sale.js`, cached for 5 minutes). Client components read it with
+  `useSale()` and pass it to `isSaleActive` / `calculateSalePrice` /
+  `unitPrice`. Never hard-code a discount.
 - **Cart.** Use `useCart()` from `src/app/context/CartContext.jsx`. It provides
   `quantityOf`, `addItem`, `decreaseItem`, `removeItem`, `clearCart` and
   `itemCount`. The cart is saved in localStorage.

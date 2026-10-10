@@ -11,10 +11,12 @@ import { useCart } from "@/app/context/CartContext";
 import { fetchSubCategoryById, fetchSubCategoryItems } from "@/services/api";
 import { QueryKeys } from "@/utils/queryKeys";
 import { isSaleActive, calculateSalePrice } from "@/utils/saleUtils";
+import { useSale } from "@/app/context/SaleContext";
 import { itemImageUrl } from "@/utils/media";
 import { entryKey } from "@/utils/ids";
 
 const Items = () => {
+  const sale = useSale();
   const { id } = useParams();
   const observerRef = useRef(null);
   const [sortBy, setSortBy] = useState("newest");
@@ -230,10 +232,10 @@ const Items = () => {
                           )}
                           
                           {/* Sale badge */}
-                          {isSaleActive() && !item.out_of_stock && (
+                          {isSaleActive(sale) && !item.out_of_stock && (
                             <div className="absolute top-0 left-0 bg-amber-500 text-white text-xs font-semibold px-2 py-1 m-2 rounded-lg flex items-center gap-1">
                               <FaTag className="text-[10px]" />
-                              <span>-10%</span>
+                              <span>-{sale.percent}%</span>
                             </div>
                           )}
                         </Link>
@@ -249,13 +251,13 @@ const Items = () => {
                             <span className={`font-bold ${item.out_of_stock ? 'text-gray-400' : ''}`}>
                               {item.out_of_stock ? (
                                 "غير متوفر"
-                              ) : isSaleActive() ? (
+                              ) : isSaleActive(sale) ? (
                                 <div>
                                   <span className="text-gray-500 line-through text-xs block">
                                     {Number(item.state).toLocaleString()} د.ع
                                   </span>
                                   <span className="text-amber-600">
-                                    {calculateSalePrice(item.state).toLocaleString()} د.ع
+                                    {calculateSalePrice(item.state, sale).toLocaleString()} د.ع
                                   </span>
                                 </div>
                               ) : (

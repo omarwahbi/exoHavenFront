@@ -12,11 +12,13 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchSuggestedItems } from "@/services/api";
 import { QueryKeys } from "@/utils/queryKeys";
 import { calculateSalePrice, isSaleActive } from "@/utils/saleUtils";
+import { useSale } from "@/app/context/SaleContext";
 import { DELIVERY_FEES, FREE_DELIVERY_THRESHOLD, cartSubtotal, deliveryFee, unitPrice } from "@/utils/pricing";
 import { itemImageUrl } from "@/utils/media";
 import { entryKey } from "@/utils/ids";
 
 const Cart = () => {
+  const sale = useSale();
   const { cart, addItem, decreaseItem, removeItem, clearCart } = useCart();
 
   const [isClient, setIsClient] = useState(false);
@@ -87,7 +89,7 @@ const Cart = () => {
     return true;
   };
 
-  const subtotal = cartSubtotal(cart);
+  const subtotal = cartSubtotal(cart, sale);
   const fee = deliveryFee(subtotal, deliveryLocation);
   const grandTotal = subtotal + fee;
 
@@ -96,7 +98,7 @@ const Cart = () => {
     const itemDetails = cart
       .map(
         (item) =>
-          `${item.name}\nالعدد: ${item.quantity}\nالسعر: ${(unitPrice(item) * item.quantity).toLocaleString()} IQD\n`
+          `${item.name}\nالعدد: ${item.quantity}\nالسعر: ${(unitPrice(item, sale) * item.quantity).toLocaleString()} IQD\n`
       )
       .join("\n- ");
 
@@ -178,9 +180,9 @@ const Cart = () => {
             </div>
           )}
           {/* Sale tag */}
-          {isSaleActive() && !product.out_of_stock && (
+          {isSaleActive(sale) && !product.out_of_stock && (
             <div className="absolute top-2 left-2 bg-green4/20 border border-green4/40 text-green4 text-xs font-semibold px-2.5 py-1 rounded-full">
-              -10%
+              -{sale.percent}%
             </div>
           )}
         </div>
@@ -196,13 +198,13 @@ const Cart = () => {
           <div className="mt-auto text-right">
             {product.out_of_stock ? (
               <span className="font-bold text-gray-400">غير متوفر</span>
-            ) : isSaleActive() ? (
+            ) : isSaleActive(sale) ? (
               <div>
                 <span className="text-gray-500 line-through text-xs block">
                   {Number(product.state).toLocaleString()} IQD
                 </span>
                 <span className="font-bold text-red-600">
-                  {calculateSalePrice(product.state).toLocaleString()} IQD
+                  {calculateSalePrice(product.state, sale).toLocaleString()} IQD
                 </span>
               </div>
             ) : (
@@ -365,13 +367,13 @@ const Cart = () => {
                               </div>
                               <div className="text-end whitespace-nowrap">
                                 <p className="text-base font-bold text-gray-900">
-                                  {isSaleActive() ? (
+                                  {isSaleActive(sale) ? (
                                     <>
                                       <span className="text-sm font-normal line-through text-gray-500 block">
                                         {(item.state * item.quantity).toLocaleString()} IQD
                                       </span>
                                       <span className="text-red-600">
-                                        {(calculateSalePrice(item.state) * item.quantity).toLocaleString()}{" "}
+                                        {(calculateSalePrice(item.state, sale) * item.quantity).toLocaleString()}{" "}
                                         <span className="text-sm font-normal">IQD</span>
                                       </span>
                                     </>

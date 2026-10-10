@@ -3,11 +3,13 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { FaTimes } from "react-icons/fa";
 import { isSaleActive } from "@/utils/saleUtils";
+import { useSale } from "@/app/context/SaleContext";
 
 const SaleBanner = () => {
+  const sale = useSale();
   const [isVisible, setIsVisible] = useState(true);
 
-  if (!isSaleActive() || !isVisible) return null;
+  if (!isSaleActive(sale) || !isVisible) return null;
 
   return (
     <motion.div
@@ -25,7 +27,7 @@ const SaleBanner = () => {
           <svg className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clipRule="evenodd" />
           </svg>
-          <span className="text-sm sm:text-base font-semibold text-gray-800">خصم 10%</span>
+          <span className="text-sm sm:text-base font-semibold text-gray-800">خصم {sale.percent}%</span>
         </div>
 
         {/* Main message with icon */}

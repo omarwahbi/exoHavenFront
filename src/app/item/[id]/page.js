@@ -5,6 +5,8 @@ import { API_URL as apiUrl } from '@/services/api';
 import { mediaUrl } from '@/utils/media';
 import { entryKey } from '@/utils/ids';
 import { unitPrice } from '@/utils/pricing';
+import { getSale } from '@/services/sale';
+import { isSaleActive } from '@/utils/saleUtils';
 import { flattenResponse } from '@/utils/strapi';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://exohaven-iq.com';
@@ -27,7 +29,7 @@ async function getItem(id) {
 // Generate dynamic metadata for each product page
 export async function generateMetadata(props) {
   const params = await props.params;
-  const item = await getItem(params.id);
+  const [item, sale] = await Promise.all([getItem(params.id), getSale()]);
 
   if (!item) {
     return {
@@ -47,12 +49,13 @@ export async function generateMetadata(props) {
       : `https://ik.imagekit.io/5a72nvbtu${thumbnailUrl}`;
   }
 
-  const salePrice = unitPrice(item);
+  const salePrice = unitPrice(item, sale);
+  const discount = isSaleActive(sale) ? ` خصم ${sale.percent}% على الطلبات عبر الموقع.` : '';
 
   const productTitle = `${name} | ExoHaven Iraq - مستلزمات الحيوانات الأليفة`;
   const productDescription = description
-    ? `${description.substring(0, 150)}... اشتري الآن من ExoHaven مع توصيل مجاني فوق 50,000 دينار. خصم 10% على الطلبات عبر الموقع.`
-    : `${name} - متوفر الآن في ExoHaven Iraq. توصيل مجاني للطلبات فوق 50,000 دينار، خصم 10% على الموقع، الدفع عند الاستلام.`;
+    ? `${description.substring(0, 150)}... اشتري الآن من ExoHaven مع توصيل مجاني فوق 50,000 دينار.${discount}`
+    : `${name} - متوفر الآن في ExoHaven Iraq. توصيل مجاني للطلبات فوق 50,000 دينار، الدفع عند الاستلام.${discount}`;
 
   return {
     title: productTitle,

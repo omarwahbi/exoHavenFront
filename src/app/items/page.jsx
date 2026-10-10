@@ -10,10 +10,12 @@ import Spinner from "../Components/Spinner";
 import { fetchNewArrivals } from "@/services/api";
 import { QueryKeys } from "@/utils/queryKeys";
 import { isSaleActive, calculateSalePrice } from "@/utils/saleUtils";
+import { useSale } from "@/app/context/SaleContext";
 import { itemImageUrl } from "@/utils/media";
 import { entryKey } from "@/utils/ids";
 
 export default function ItemsPage() {
+  const sale = useSale();
   const searchParams = useSearchParams();
   const filter = searchParams.get('filter');
   
@@ -137,10 +139,10 @@ export default function ItemsPage() {
                       )}
                       
                       {/* Sale badge */}
-                      {isSaleActive() && !item.out_of_stock && (
+                      {isSaleActive(sale) && !item.out_of_stock && (
                         <div className="absolute top-2 left-2 bg-green4/20 border border-green4/40 text-green4 text-xs font-semibold px-2.5 py-1 m-0 rounded-full flex items-center gap-1">
                           <FaTag className="text-[10px]" />
-                          <span>-10%</span>
+                          <span>-{sale.percent}%</span>
                         </div>
                       )}
                     </Link>
@@ -153,13 +155,13 @@ export default function ItemsPage() {
                       </Link>
                       
                       <div className="mt-auto pt-2 flex justify-between items-center">
-                        {isSaleActive() && !item.out_of_stock ? (
+                        {isSaleActive(sale) && !item.out_of_stock ? (
                           <div>
                             <span className="text-gray-500 line-through text-xs block">
                               {Number(item.state).toLocaleString()} IQD
                             </span>
                             <span className="font-bold text-red-600">
-                              {calculateSalePrice(item.state).toLocaleString()} IQD
+                              {calculateSalePrice(item.state, sale).toLocaleString()} IQD
                             </span>
                           </div>
                         ) : (

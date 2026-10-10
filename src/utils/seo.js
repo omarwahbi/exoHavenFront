@@ -3,6 +3,7 @@
 import { mediaUrl } from './media';
 import { entryKey } from './ids';
 import { deliveryFee, unitPrice } from './pricing';
+import { isSaleActive } from './saleUtils';
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://exohaven-iq.com';
 const imageKitUrl = 'https://ik.imagekit.io/5a72nvbtu';
@@ -111,7 +112,7 @@ export function generateWebSiteSchema() {
  * Generate Product structured data (JSON-LD)
  * @param {Object} item - Product item from API
  */
-export function generateProductSchema(item) {
+export function generateProductSchema(item, sale) {
   if (!item) return null;
 
   const {
@@ -122,7 +123,7 @@ export function generateProductSchema(item) {
   } = item;
 
   // Prices are stored as strings; skip items without a usable one.
-  const salePrice = unitPrice(item);
+  const salePrice = unitPrice(item, sale);
   if (!salePrice) return null;
 
   // Get image URL
@@ -217,7 +218,7 @@ export function generateBreadcrumbSchema(breadcrumbs) {
  * Generate FAQ structured data (JSON-LD)
  * For FAQ or About pages
  */
-export function generateFAQSchema() {
+export function generateFAQSchema(sale) {
   return {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
@@ -238,14 +239,19 @@ export function generateFAQSchema() {
           text: 'نعم، نوفر خدمة الدفع عند الاستلام لجميع الطلبات.',
         },
       },
-      {
-        '@type': 'Question',
-        name: 'ما هو خصم الطلب عبر الموقع؟',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'نقدم خصم 10% على جميع الطلبات التي يتم إجراؤها عبر الموقع الإلكتروني.',
-        },
-      },
+      // Only while a sale runs (set in the admin).
+      ...(isSaleActive(sale)
+        ? [
+            {
+              '@type': 'Question',
+              name: 'ما هو خصم الطلب عبر الموقع؟',
+              acceptedAnswer: {
+                '@type': 'Answer',
+                text: `نقدم خصم ${sale.percent}% على جميع الطلبات التي يتم إجراؤها عبر الموقع الإلكتروني.`,
+              },
+            },
+          ]
+        : []),
       {
         '@type': 'Question',
         name: 'ما هي المناطق التي تغطيها خدمة التوصيل؟',
