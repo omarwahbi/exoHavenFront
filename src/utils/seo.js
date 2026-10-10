@@ -19,7 +19,7 @@ export function generateOrganizationSchema() {
     name: 'ExoHaven Iraq | إكزو هيفن',
     alternateName: 'إكزو هيفن',
     url: baseUrl,
-    logo: `${baseUrl}/icons/icon-512x512.png`,
+    logo: `${baseUrl}/logo.png`,
     image: `${baseUrl}/og-image.png`,
     description:
       'متجر متخصص في بيع جميع مستلزمات الحيوانات الأليفة الغريبة والزواحف في العراق. توصيل مجاني للطلبات فوق 50,000 دينار عراقي.',

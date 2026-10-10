@@ -28,7 +28,7 @@ const Footer = () => {
             >
               <div className="bg-white rounded-2xl p-3 inline-block shadow-lg">
                 <Image
-                  src="/favicon.png"
+                  src="/logo.png"
                   alt="ExoHaven Logo"
                   width={90}
                   height={30}

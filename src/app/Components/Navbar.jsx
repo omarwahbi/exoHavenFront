@@ -93,7 +93,7 @@ const Navbar = () => {
                   <Image
                     height={30}
                     width={90}
-                    src="/favicon.png"
+                    src="/logo.png"
                     alt="logo"
                     priority
                   />
