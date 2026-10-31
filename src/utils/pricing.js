@@ -1,14 +1,13 @@
 import { calculateSalePrice } from "./saleUtils";
-import { basePrice } from "./product";
 
 // Delivery fees in IQD. Delivery is free from FREE_DELIVERY_THRESHOLD up.
 export const DELIVERY_FEES = { baghdad: 5000, other: 6000 };
 export const FREE_DELIVERY_THRESHOLD = 50000;
 
-// The price after the running sale (see saleUtils) of an item, or of a cart line
-// (an item with the chosen `variant`). See product.js for variants.
+// An item's price after the running sale (see saleUtils). Prices live in the
+// item's `state` field.
 export const unitPrice = (item, sale) => {
-  const price = basePrice(item, item?.variant);
+  const price = Number(item?.state);
   if (!Number.isFinite(price)) return 0;
   return calculateSalePrice(price, sale);
 };

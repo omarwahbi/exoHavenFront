@@ -1,12 +1,12 @@
 // SEO Utility Functions - JSON-LD Structured Data Generators
 
-import { absoluteMediaUrl } from './metadata';
+import { mediaUrl } from './media';
 import { entryKey } from './ids';
 import { deliveryFee, unitPrice } from './pricing';
 import { isSaleActive } from './saleUtils';
-import { availableVariants, hasPriceRange, isOutOfStock } from './product';
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://exohaven-iq.com';
+const imageKitUrl = 'https://ik.imagekit.io/5a72nvbtu';
 
 /**
  * Generate Organization structured data (JSON-LD)
@@ -101,7 +101,7 @@ export function generateWebSiteSchema() {
       '@type': 'SearchAction',
       target: {
         '@type': 'EntryPoint',
-        urlTemplate: `${baseUrl}/products?q={search_term_string}`,
+        urlTemplate: `${baseUrl}/search?q={search_term_string}`,
       },
       'query-input': 'required name=search_term_string',
     },
@@ -115,14 +115,25 @@ export function generateWebSiteSchema() {
 export function generateProductSchema(item, sale) {
   if (!item) return null;
 
-  const { name, description, category } = item;
+  const {
+    name,
+    description,
+    out_of_stock,
+    category,
+  } = item;
 
   // Prices are stored as strings; skip items without a usable one.
   const salePrice = unitPrice(item, sale);
   if (!salePrice) return null;
 
-  const imageUrl =
-    absoluteMediaUrl(item.item_thumbnail) || absoluteMediaUrl(item.item_images) || `${baseUrl}/icons/icon-512x512.png`;
+  // Get image URL
+  let imageUrl = `${baseUrl}/icons/icon-512x512.png`; // Default image
+  const thumbnailUrl = mediaUrl(item.item_thumbnail) || mediaUrl(item.item_images);
+  if (thumbnailUrl) {
+    imageUrl = thumbnailUrl.startsWith('http')
+      ? thumbnailUrl
+      : `${imageKitUrl}${thumbnailUrl}`;
+  }
 
   return {
     '@context': 'https://schema.org',
@@ -138,22 +149,15 @@ export function generateProductSchema(item, sale) {
     },
     category: category?.name || 'Pet Accessories',
     offers: {
-      // With variants: the price range ("from ... to ...") across those in stock.
-      ...(hasPriceRange(item)
-        ? {
-            '@type': 'AggregateOffer',
-            lowPrice: salePrice,
-            highPrice: Math.max(...availableVariants(item).map((v) => unitPrice({ ...item, variant: v }, sale))),
-            offerCount: availableVariants(item).length,
-          }
-        : { '@type': 'Offer', price: salePrice }),
+      '@type': 'Offer',
       url: `${baseUrl}/products/${entryKey(item)}`,
       priceCurrency: 'IQD',
-      // A date, not a timestamp: this is rendered on the server and again in the
-      // browser, and the two must match.
-      priceValidUntil: `${new Date().getFullYear() + 1}-12-31`,
+      price: salePrice,
+      priceValidUntil: new Date(
+        new Date().setFullYear(new Date().getFullYear() + 1)
+      ).toISOString(),
       itemCondition: 'https://schema.org/NewCondition',
-      availability: isOutOfStock(item)
+      availability: out_of_stock
         ? 'https://schema.org/OutOfStock'
         : 'https://schema.org/InStock',
       seller: {

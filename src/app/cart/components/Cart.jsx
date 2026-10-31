@@ -12,11 +12,10 @@ import { fetchSuggestedItems } from "@/services/api";
 import { QueryKeys } from "@/utils/queryKeys";
 import { FREE_DELIVERY_THRESHOLD, cartSubtotal, deliveryFee } from "@/utils/pricing";
 import { buildOrderMessage } from "@/utils/orderMessage";
+import { entryKey } from "@/utils/ids";
 import CartLine from "./CartLine";
 import OrderSummary from "./OrderSummary";
-import ProductCard from "@/app/Components/ProductCard";
-import Breadcrumbs from "@/app/Components/Breadcrumbs";
-import { isOutOfStock, lineKey } from "@/utils/product";
+import SuggestedProductCard from "./SuggestedProductCard";
 
 const Cart = () => {
   const sale = useSale();
@@ -34,8 +33,7 @@ const Cart = () => {
     data: suggestedItems = []
   } = useQuery({
     queryKey: [QueryKeys.suggestedItems],
-    // Products whose every variant is out of stock aren't suggested either.
-    queryFn: () => fetchSuggestedItems(8).then((items) => items.filter((item) => !isOutOfStock(item))),
+    queryFn: () => fetchSuggestedItems(4),
     enabled: cart.length === 0 // Only fetch suggested items when cart is empty
   });
 
@@ -48,11 +46,11 @@ const Cart = () => {
   };
 
   const handleDelete = (item) => {
-    if (deleteConfirm === lineKey(item)) {
+    if (deleteConfirm === entryKey(item)) {
       removeItem(item);
       setDeleteConfirm(null);
     } else {
-      confirmDelete(lineKey(item));
+      confirmDelete(entryKey(item));
     }
   };
 
@@ -137,7 +135,6 @@ const Cart = () => {
   return (
     <section className="py-4 antialiased md:py-8">
       <div className="mx-auto max-w-screen-xl px-4 md:px-6 lg:px-8">
-        <Breadcrumbs className="mb-4" items={[{ label: "عربة التسوق" }]} />
         <div dir="rtl" className="flex flex-wrap items-center justify-between mb-8 gap-4">
           <div className="flex items-center">
             <MdShoppingCart className="shrink-0 me-4 text-green4" size={24} />
@@ -179,7 +176,7 @@ const Cart = () => {
                   <h3 className="text-lg font-medium text-gray-700 mb-6 text-center">منتجات قد تعجبك</h3>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {suggestedItems.slice(0, 4).map((product, index) => (
-                      <ProductCard key={product.id} item={product} />
+                      <SuggestedProductCard key={product.id} product={product} index={index} />
                     ))}
                   </div>
                 </div>
@@ -204,9 +201,9 @@ const Cart = () => {
                           <span className="font-medium">تهانينا! لقد حصلت على توصيل مجاني في جميع أنحاء العراق!</span>
                         ) : (
                           <>
-                            <span className="font-medium">توصيل مجاني</span> للطلبات التي تزيد عن {FREE_DELIVERY_THRESHOLD.toLocaleString("en-US")} د.ع في جميع أنحاء العراق. 
+                            <span className="font-medium">توصيل مجاني</span> للطلبات التي تزيد عن {FREE_DELIVERY_THRESHOLD.toLocaleString()} IQD في جميع أنحاء العراق. 
                             <span className="text-green4 font-medium mr-1">
-                              أضف {(FREE_DELIVERY_THRESHOLD - subtotal).toLocaleString("en-US")} د.ع أخرى للحصول على توصيل مجاني!
+                              أضف {(FREE_DELIVERY_THRESHOLD - subtotal).toLocaleString()} IQD أخرى للحصول على توصيل مجاني!
                             </span>
                           </>
                         )}
@@ -217,10 +214,10 @@ const Cart = () => {
                   <div className="space-y-4">
                     {cart.map((item) => (
                       <CartLine
-                        key={lineKey(item)}
+                        key={entryKey(item)}
                         item={item}
                         variants={itemVariants}
-                        confirmingDelete={deleteConfirm === lineKey(item)}
+                        confirmingDelete={deleteConfirm === entryKey(item)}
                         onDelete={handleDelete}
                       />
                     ))}
@@ -279,7 +276,7 @@ const Cart = () => {
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {suggestedItems.slice(0, 4).map((product, index) => (
-                      <ProductCard key={product.id} item={product} />
+                      <SuggestedProductCard key={product.id} product={product} index={index} />
                     ))}
                   </div>
                 </motion.div>
