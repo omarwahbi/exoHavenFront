@@ -16,6 +16,7 @@ import { itemImageUrl } from "@/utils/media";
 import { entryKey } from "@/utils/ids";
 import { basePrice, hasPriceRange, hasVariants, isOutOfStock } from "@/utils/product";
 import StockBadge from "@/app/Components/StockBadge";
+import Breadcrumbs from "@/app/Components/Breadcrumbs";
 
 const Items = () => {
   const sale = useSale();
@@ -154,21 +155,12 @@ const Items = () => {
     <div className="w-11/12 md:w-4/5 m-auto mt-8 mb-14">
       {/* Breadcrumbs */}
       {!isSubcategoryLoading && (
-        <nav className="flex mb-6 text-sm md:text-base">
-          <Link href="/" className="text-gray-500 hover:text-green4">
-            الرئيسية
-          </Link>
-          <span className="mx-2 text-gray-400">/</span>
-          {categoryName && (
-            <>
-              <Link href={categoryId ? `/categories/${categoryId}` : "/products"} className="text-gray-500 hover:text-green4">
-                {categoryName}
-              </Link>
-              <span className="mx-2 text-gray-400">/</span>
-            </>
-          )}
-          <span className="font-medium text-green5">{subcategoryName}</span>
-        </nav>
+        <Breadcrumbs
+          items={[
+            { label: categoryName, href: categoryId ? `/categories/${categoryId}` : "/products" },
+            { label: subcategoryName },
+          ]}
+        />
       )}
 
       {items.length === 0 && !isPageLoading ? (

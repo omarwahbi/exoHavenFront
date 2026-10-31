@@ -131,7 +131,6 @@ export function generateProductSchema(item, sale) {
     name: name || 'Product',
     description: description || 'Exotic pet accessory available at ExoHaven Iraq',
     image: imageUrl,
-    sku: item.Item_ID || entryKey(item),
     brand: {
       '@type': 'Brand',
       name: 'ExoHaven',

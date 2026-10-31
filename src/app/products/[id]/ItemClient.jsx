@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useMemo } from "react";
+import React, { Fragment, useState, useEffect, useMemo } from "react";
 import { MdCheckCircle, MdSupportAgent, MdLocalShipping, MdShield, MdShoppingCart } from "react-icons/md";
 import AddToCartButton from "@/app/Components/AddToCartBtn";
 import Quantity from "@/app/Components/Quantity";
@@ -64,10 +64,22 @@ export default function ItemClient({ params }) {
 
   // Generate structured data for SEO
   const productSchema = item ? generateProductSchema(item, sale) : null;
+  // Where the product sits: its category and sub-category (or "all products" for
+  // one without them), then the product itself.
+  const trail = item
+    ? [
+        ...(item.category || item.sub_category
+          ? [
+              item.category && { label: item.category.name, href: `/categories/${entryKey(item.category)}` },
+              item.sub_category && { label: item.sub_category.name, href: `/sub-categories/${entryKey(item.sub_category)}` },
+            ].filter(Boolean)
+          : [{ label: 'المنتجات', href: '/products' }]),
+        { label: item.name, href: `/products/${entryKey(item)}` },
+      ]
+    : [];
   const breadcrumbSchema = item ? generateBreadcrumbSchema([
     { name: 'الرئيسية', url: 'https://exohaven-iq.com/' },
-    { name: 'المنتجات', url: 'https://exohaven-iq.com/products' },
-    { name: item.name, url: `https://exohaven-iq.com/products/${entryKey(item)}` }
+    ...trail.map((crumb) => ({ name: crumb.label, url: `https://exohaven-iq.com${crumb.href}` })),
   ]) : null;
 
   // Handle image selection and rotation
@@ -130,18 +142,22 @@ export default function ItemClient({ params }) {
       <div className="max-w-7xl mx-auto mt-8 mb-14 px-4 md:px-6 lg:px-8">
         {/* Breadcrumb */}
         <nav className="mb-6 text-sm font-medium" dir="rtl">
-          <ol className="flex items-center space-x-1 space-x-reverse">
+          <ol className="flex flex-wrap items-center space-x-1 space-x-reverse">
             <li>
               <Link href="/" className="text-gray-600 hover:text-green4">
                 الرئيسية
               </Link>
             </li>
-            <li className="mx-2">/</li>
-            <li>
-              <Link href="/products" className="text-gray-600 hover:text-green4">
-                المنتجات
-              </Link>
-            </li>
+            {trail.slice(0, -1).map((crumb) => (
+              <Fragment key={crumb.href}>
+                <li className="mx-2">/</li>
+                <li>
+                  <Link href={crumb.href} className="text-gray-600 hover:text-green4">
+                    {crumb.label}
+                  </Link>
+                </li>
+              </Fragment>
+            ))}
             <li className="mx-2">/</li>
             <li className="text-green5 font-bold">{item.name}</li>
           </ol>

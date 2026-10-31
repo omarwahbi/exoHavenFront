@@ -5,12 +5,20 @@ import React from "react";
 import Image from "next/image";
 import Spinner from "@/app/Components/Spinner";
 import { useQuery } from "@tanstack/react-query";
-import { fetchSubCategories, fetchCategoryItems } from "@/services/api";
+import { fetchCategoryById, fetchSubCategories, fetchCategoryItems } from "@/services/api";
+import Breadcrumbs from "@/app/Components/Breadcrumbs";
 import { imageUrl, itemImageUrl } from "@/utils/media";
 import { entryKey } from "@/utils/ids";
 
 const SubCategories = () => {
   const { id } = useParams();
+
+  // The category's name, for the breadcrumbs.
+  const { data: category } = useQuery({
+    queryKey: ['category', id],
+    queryFn: () => fetchCategoryById(id),
+    enabled: !!id
+  });
 
   // Query for subcategories
   const { 
@@ -63,7 +71,10 @@ const SubCategories = () => {
   }
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 mb-14 w-10/12 mx-auto mt-14">
+    <div className="w-10/12 mx-auto mt-8">
+      {/* Same place and style as on the sub-category page. */}
+      <Breadcrumbs items={[{ label: category?.name }]} />
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 mb-14">
       {subCategories.length > 0
         ? subCategories.map((subCategory) => (
             <Link href={`/sub-categories/${entryKey(subCategory)}`} key={subCategory.id} className="h-full">
@@ -109,6 +120,7 @@ const SubCategories = () => {
               </div>
             </Link>
           ))}
+    </div>
     </div>
   );
 };
