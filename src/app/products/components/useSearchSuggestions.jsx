@@ -91,9 +91,15 @@ export default function useSearchSuggestions({ value, onSearchAll }) {
         if (next < -1) return options.length - 1;
         return next >= options.length ? -1 : next;
       });
-    } else if (event.key === "Enter" && current && options[active]) {
-      event.preventDefault();
-      choose(options[active]);
+    } else if (event.key === "Enter") {
+      // With a suggestion highlighted, open it; otherwise the form submits as
+      // before, and the list makes way for the results.
+      if (current && options[active]) {
+        event.preventDefault();
+        choose(options[active]);
+      } else {
+        close();
+      }
     } else if (event.key === "Escape" && showList) {
       event.preventDefault();
       close();

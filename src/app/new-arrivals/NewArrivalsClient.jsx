@@ -141,7 +141,7 @@ export default function NewArrivalsPage() {
                         {isSaleActive(sale) && !isOutOfStock(item) ? (
                           <div>
                             <span className="text-gray-500 line-through text-xs block">
-                              {hasPriceRange(item) && "من "}{basePrice(item).toLocaleString()} IQD
+                              {basePrice(item).toLocaleString()} IQD
                             </span>
                             <span className="font-bold text-red-600">
                               {hasPriceRange(item) && "من "}{calculateSalePrice(basePrice(item), sale).toLocaleString()} IQD

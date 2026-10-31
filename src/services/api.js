@@ -301,5 +301,25 @@ export const searchProducts = async ({
   };
 };
 
+// Search results carry what a product card shows, but not the description the
+// /products list view prints: fetch those for one page of results.
+export const withDescriptions = async (page) => {
+  const ids = page.items.map((item) => item.documentId).filter(Boolean);
+  if (!ids.length || page.items.every((item) => 'description' in item)) return page;
+  try {
+    const { data } = await api.get('/api/items', {
+      params: {
+        filters: { documentId: { $in: ids } },
+        fields: ['description'],
+        pagination: { pageSize: ids.length },
+      },
+    });
+    const byId = new Map((data.data || []).map((item) => [item.documentId, item.description]));
+    return { ...page, items: page.items.map((item) => ({ ...item, description: byId.get(item.documentId) ?? null })) };
+  } catch {
+    return page;
+  }
+};
+
 export default api;
  

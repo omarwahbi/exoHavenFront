@@ -63,7 +63,8 @@ export default function Quantity({ item, variant }) {
       
       {quantity > 0 && (
         <div className="ml-3 sm:ml-4 text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-300">
-          {(unitPrice(line, sale) * quantity).toLocaleString()} IQD
+          {/* Hidden, as before, for an item saved without a price. */}
+          {unitPrice(line, sale) > 0 && `${(unitPrice(line, sale) * quantity).toLocaleString()} IQD`}
         </div>
       )}
     </div>

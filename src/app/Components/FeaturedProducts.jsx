@@ -12,7 +12,7 @@ import { calculateSalePrice, isSaleActive } from "@/utils/saleUtils";
 import { useSale } from "@/app/context/SaleContext";
 import { itemImageUrl } from "@/utils/media";
 import { entryKey } from "@/utils/ids";
-import { basePrice, hasPriceRange, shownPrice } from "@/utils/product";
+import { basePrice, hasPriceRange, hasVariants, shownPrice } from "@/utils/product";
 
 const FeaturedProducts = () => {
   const sale = useSale();
@@ -144,7 +144,7 @@ const FeaturedProducts = () => {
                     </div>
 
                     <div className="mt-auto space-y-3">
-                      {basePrice(product) > 0 && (
+                      {(hasVariants(product) ? basePrice(product) > 0 : product.state) && (
                         <div>
                           {isSaleActive(sale) ? (
                             <>

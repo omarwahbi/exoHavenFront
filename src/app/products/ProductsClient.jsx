@@ -3,7 +3,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import Spinner from "../Components/Spinner";
-import { fetchCategories, fetchProductsPage, searchProducts } from "@/services/api";
+import { fetchCategories, fetchProductsPage, searchProducts, withDescriptions } from "@/services/api";
 import { QueryKeys } from "@/utils/queryKeys";
 import ProductFilters from "./components/ProductFilters";
 import ProductGridCard from "@/app/Components/ProductGridCard";
@@ -13,8 +13,12 @@ import { entryKey } from "@/utils/ids";
 
 const Category = () => {
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
-  const [searchInputValue, setSearchInputValue] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
+  // /products?q=… (links from Google's search box) opens with that search.
+  // (The layout renders pages only in the browser; the check is a safety net.)
+  const [searchQuery, setSearchQuery] = useState(() =>
+    typeof window === "undefined" ? "" : new URLSearchParams(window.location.search).get("q")?.trim() || ""
+  );
+  const [searchInputValue, setSearchInputValue] = useState(searchQuery);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [viewStyle, setViewStyle] = useState("grid"); // grid or list
   const [scrolled, setScrolled] = useState(false);
@@ -45,7 +49,7 @@ const Category = () => {
     // the plain listing keeps its usual order.
     queryFn: ({ pageParam = 1, signal }) =>
       searchQuery
-        ? searchProducts({ q: searchQuery, category: selectedCategoryId, page: pageParam, signal })
+        ? searchProducts({ q: searchQuery, category: selectedCategoryId, page: pageParam, signal }).then(withDescriptions)
         : fetchProductsPage({
             pageParam,
             signal,
@@ -141,12 +145,6 @@ const Category = () => {
     setSearchInputValue(query);
     setSearchQuery(query);
   };
-
-  // /products?q=… (links from Google's search box) opens with that search.
-  useEffect(() => {
-    const q = new URLSearchParams(window.location.search).get("q")?.trim();
-    if (q) handleSearchAll(q);
-  }, []);
 
   const handleClearSearch = () => {
     setSearchInputValue("");

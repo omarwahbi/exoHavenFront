@@ -19,7 +19,7 @@ import 'swiper/css/effect-coverflow';
 import { Autoplay, EffectCoverflow } from 'swiper/modules';
 import { itemImageUrl } from "@/utils/media";
 import { entryKey } from "@/utils/ids";
-import { basePrice, isOutOfStock, hasPriceRange, shownPrice } from "@/utils/product";
+import { basePrice, isOutOfStock, hasPriceRange, hasVariants, shownPrice } from "@/utils/product";
 
 const NEW_ARRIVALS_LIMIT = 12;
 
@@ -202,7 +202,7 @@ export default function NewArrivalsCarousel() {
                         <h3 className="font-bold text-gray-800 text-xs line-clamp-1 group-hover:text-green4 transition-colors">
                           {img.name}
                         </h3>
-                        {basePrice(img) > 0 && (
+                        {(hasVariants(img) ? basePrice(img) > 0 : img.state) && (
                           <div className="flex items-center justify-between mt-0.5">
                             {isSaleActive(sale) && !isOutOfStock(img) ? (
                               <div>
