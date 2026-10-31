@@ -3,12 +3,13 @@ import React, { useState, useEffect, useMemo } from "react";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import Spinner from "../Components/Spinner";
-import { fetchCategories, fetchProductsPage } from "@/services/api";
+import { fetchCategories, fetchProductsPage, searchProducts } from "@/services/api";
 import { QueryKeys } from "@/utils/queryKeys";
 import ProductFilters from "./components/ProductFilters";
 import ProductGridCard from "@/app/Components/ProductGridCard";
 import ProductListCard from "./components/ProductListCard";
 import { isOutOfStock } from "@/utils/product";
+import { entryKey } from "@/utils/ids";
 
 const Category = () => {
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
@@ -40,13 +41,17 @@ const Category = () => {
     isFetching,
   } = useInfiniteQuery({
     queryKey: queryKey,
+    // A search goes through the smart search (typos, Arabic spellings, synonyms);
+    // the plain listing keeps its usual order.
     queryFn: ({ pageParam = 1, signal }) =>
-      fetchProductsPage({ 
-        pageParam, 
-        signal,
-        categoryId: selectedCategoryId,
-        searchQuery
-      }),
+      searchQuery
+        ? searchProducts({ q: searchQuery, category: selectedCategoryId, page: pageParam, signal })
+        : fetchProductsPage({
+            pageParam,
+            signal,
+            categoryId: selectedCategoryId,
+            searchQuery
+          }),
     getNextPageParam: (lastPage) =>
       lastPage.hasMore ? lastPage.nextPage : undefined,
   });
@@ -131,6 +136,18 @@ const Category = () => {
     setSearchQuery(searchInputValue);
   };
 
+  // "See all results" in the search suggestions.
+  const handleSearchAll = (query) => {
+    setSearchInputValue(query);
+    setSearchQuery(query);
+  };
+
+  // /products?q=… (links from Google's search box) opens with that search.
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search).get("q")?.trim();
+    if (q) handleSearchAll(q);
+  }, []);
+
   const handleClearSearch = () => {
     setSearchInputValue("");
     setSearchQuery("");
@@ -214,6 +231,7 @@ const Category = () => {
           setIsSearching={setIsSearching}
           activeFiltersCount={activeFiltersCount}
           onSearchSubmit={handleSearchSubmit}
+          onSearchAll={handleSearchAll}
           onClearSearch={handleClearSearch}
           onResetFilters={resetFilters}
         />
@@ -257,7 +275,7 @@ const Category = () => {
             className={viewStyle === "grid" ? "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6" : "flex flex-col space-y-4"}
           >
             {filteredItems.map((item, index) => (
-              <motion.div key={item.id} variants={itemVariants}>
+              <motion.div key={entryKey(item)} variants={itemVariants}>
                 {viewStyle === "grid" ? (
                   <ProductGridCard item={item} index={index} />
                 ) : (

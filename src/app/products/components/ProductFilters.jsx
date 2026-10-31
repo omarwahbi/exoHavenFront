@@ -2,6 +2,7 @@
 import { motion } from "framer-motion";
 import { FaSearch, FaFilter } from "react-icons/fa";
 import { entryKey } from "@/utils/ids";
+import useSearchSuggestions from "./useSearchSuggestions";
 
 // The sticky search / filter / view bar of /products and the active-filters row
 // under it. All state lives in the page; this only renders it.
@@ -23,9 +24,12 @@ export default function ProductFilters({
   setIsSearching,
   activeFiltersCount,
   onSearchSubmit,
+  onSearchAll,
   onClearSearch,
   onResetFilters,
 }) {
+  const { inputProps, list: suggestions } = useSearchSuggestions({ value: searchInputValue, onSearchAll });
+
   return (
     <>
       {/* Enhanced Sticky Filters Bar */}
@@ -118,6 +122,7 @@ export default function ProductFilters({
                 placeholder="ابحث عن منتج..."
                 value={searchInputValue}
                 onChange={(e) => setSearchInputValue(e.target.value)}
+                {...inputProps}
                 className="w-full py-3 px-4 text-right outline-none border-0 focus:ring-0 bg-white text-gray-800 placeholder-gray-400"
               />
               {searchInputValue && (
@@ -157,6 +162,7 @@ export default function ProductFilters({
                 )}
               </button>
             </form>
+            {suggestions}
           </div>
         </div>
 

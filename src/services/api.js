@@ -218,4 +218,88 @@ export const fetchProductsPage = async ({ pageParam = 1, categoryId, searchQuery
   }
 };
 
-export default api; 
+// Product search and listings (the backend's /api/search: Meilisearch, or its
+// database when that's down). Options: q, category, subCategory (documentIds),
+// inStock, sort (relevance | featured | newest | price_asc | price_desc | name),
+// page, pageSize, suggest (also return categories whose name matches).
+//
+// A backend from before /api/search answers 404; then the same filters go to
+// /api/items, without the smarter matching and with sorting by the price text.
+let searchEndpointMissing = false;
+
+const LEGACY_SORT = {
+  relevance: ['new_arrival:desc', 'out_of_stock:asc', 'createdAt:desc'],
+  featured: ['new_arrival:desc', 'out_of_stock:asc', 'createdAt:desc'],
+  newest: ['out_of_stock:asc', 'createdAt:desc'],
+  price_asc: ['out_of_stock:asc', 'state:asc'],
+  price_desc: ['out_of_stock:asc', 'state:desc'],
+  name: ['out_of_stock:asc', 'name:asc'],
+};
+
+const legacySearch = async ({ q, category, subCategory, inStock, sort, page, pageSize, signal }) => {
+  const filters = {};
+  if (q) filters.name = { $containsi: q };
+  if (category) filters.category = { documentId: { $eq: category } };
+  if (subCategory) filters.sub_category = { documentId: { $eq: subCategory } };
+  if (inStock) filters.out_of_stock = { $eq: false };
+  const { data } = await api.get('/api/items', {
+    params: {
+      filters,
+      sort: LEGACY_SORT[sort] ?? LEGACY_SORT.featured,
+      populate: { item_thumbnail: true, item_images: true, variants: true, category: true, sub_category: true },
+      pagination: { page, pageSize },
+    },
+    signal,
+  });
+  return { items: data.data || [], pagination: data.meta.pagination, categories: [] };
+};
+
+export const searchProducts = async ({
+  q = '',
+  category = null,
+  subCategory = null,
+  inStock = false,
+  sort,
+  page = 1,
+  pageSize = 12,
+  suggest = false,
+  signal,
+} = {}) => {
+  const options = { q, category, subCategory, inStock, sort: sort || (q ? 'relevance' : 'featured'), page, pageSize, signal };
+  let result;
+  if (!searchEndpointMissing) {
+    try {
+      const { data } = await api.get('/api/search', {
+        params: {
+          q: q || undefined,
+          category: category || undefined,
+          sub_category: subCategory || undefined,
+          instock: inStock ? 1 : undefined,
+          sort: options.sort,
+          page,
+          pageSize,
+          suggest: suggest ? 1 : undefined,
+        },
+        signal,
+      });
+      result = { items: data.data || [], pagination: data.meta.pagination, categories: data.meta.categories || [] };
+    } catch (error) {
+      if (error?.response?.status !== 404) throw error;
+      searchEndpointMissing = true;
+    }
+  }
+  if (!result) result = await legacySearch(options);
+  const { page: current, pageCount, total } = result.pagination;
+  return {
+    items: result.items,
+    categories: result.categories,
+    total,
+    page: current,
+    pageCount,
+    hasMore: current < pageCount,
+    nextPage: current + 1,
+  };
+};
+
+export default api;
+ 

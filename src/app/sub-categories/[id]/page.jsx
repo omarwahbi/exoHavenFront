@@ -8,7 +8,7 @@ import React, { useRef, useCallback, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { FaEye, FaShoppingCart, FaPlus, FaMinus, FaTag } from "react-icons/fa";
 import { useCart } from "@/app/context/CartContext";
-import { fetchSubCategoryById, fetchSubCategoryItems } from "@/services/api";
+import { fetchSubCategoryById, fetchSubCategoryItems, searchProducts } from "@/services/api";
 import { QueryKeys } from "@/utils/queryKeys";
 import { isSaleActive, calculateSalePrice } from "@/utils/saleUtils";
 import { useSale } from "@/app/context/SaleContext";
@@ -62,7 +62,20 @@ const Items = () => {
 
   const categoryId = entryKey(subcategoryData?.data?.category);
 
-  const fetchItems = async ({ pageParam = 1 }) => {
+  const fetchItems = async ({ pageParam = 1, signal }) => {
+    // Price sorts go through the search API, which sorts by the real price
+    // (variants included); the database would sort the price text ("9000" after
+    // "10000"). The result is put in the shape the rest of this page reads.
+    if (sortBy === "priceAsc" || sortBy === "priceDesc") {
+      const result = await searchProducts({
+        subCategory: id,
+        sort: sortBy === "priceAsc" ? "price_asc" : "price_desc",
+        page: pageParam,
+        signal,
+      });
+      return { data: result.items, meta: { pagination: { page: result.page, pageCount: result.pageCount } } };
+    }
+
     let sortQuery = "";
     
     switch (sortBy) {
@@ -200,7 +213,7 @@ const Items = () => {
                 
                 return (
                   <motion.div 
-                    key={item.id} 
+                    key={entryKey(item)} 
                     variants={itemVariants}
                     ref={index === items.length - 1 ? lastItemRef : null}
                   >
