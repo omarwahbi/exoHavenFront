@@ -12,7 +12,7 @@ import { fetchSuggestedItems } from "@/services/api";
 import { QueryKeys } from "@/utils/queryKeys";
 import { FREE_DELIVERY_THRESHOLD, cartSubtotal, deliveryFee } from "@/utils/pricing";
 import { buildOrderMessage } from "@/utils/orderMessage";
-import { entryKey } from "@/utils/ids";
+import { isOutOfStock, lineKey } from "@/utils/product";
 import CartLine from "./CartLine";
 import OrderSummary from "./OrderSummary";
 import SuggestedProductCard from "./SuggestedProductCard";
@@ -33,7 +33,8 @@ const Cart = () => {
     data: suggestedItems = []
   } = useQuery({
     queryKey: [QueryKeys.suggestedItems],
-    queryFn: () => fetchSuggestedItems(4),
+    // Products whose every variant is out of stock aren't suggested either.
+    queryFn: () => fetchSuggestedItems(8).then((items) => items.filter((item) => !isOutOfStock(item)).slice(0, 4)),
     enabled: cart.length === 0 // Only fetch suggested items when cart is empty
   });
 
@@ -46,11 +47,11 @@ const Cart = () => {
   };
 
   const handleDelete = (item) => {
-    if (deleteConfirm === entryKey(item)) {
+    if (deleteConfirm === lineKey(item)) {
       removeItem(item);
       setDeleteConfirm(null);
     } else {
-      confirmDelete(entryKey(item));
+      confirmDelete(lineKey(item));
     }
   };
 
@@ -214,10 +215,10 @@ const Cart = () => {
                   <div className="space-y-4">
                     {cart.map((item) => (
                       <CartLine
-                        key={entryKey(item)}
+                        key={lineKey(item)}
                         item={item}
                         variants={itemVariants}
-                        confirmingDelete={deleteConfirm === entryKey(item)}
+                        confirmingDelete={deleteConfirm === lineKey(item)}
                         onDelete={handleDelete}
                       />
                     ))}

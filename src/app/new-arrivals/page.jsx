@@ -12,7 +12,7 @@ import { isSaleActive, calculateSalePrice } from "@/utils/saleUtils";
 import { useSale } from "@/app/context/SaleContext";
 import { itemImageUrl } from "@/utils/media";
 import { entryKey } from "@/utils/ids";
-import { basePrice, isOutOfStock } from "@/utils/product";
+import { basePrice, isOutOfStock, hasPriceRange } from "@/utils/product";
 
 export default function NewArrivalsPage() {
   const sale = useSale();
@@ -141,15 +141,15 @@ export default function NewArrivalsPage() {
                         {isSaleActive(sale) && !isOutOfStock(item) ? (
                           <div>
                             <span className="text-gray-500 line-through text-xs block">
-                              {basePrice(item).toLocaleString()} IQD
+                              {hasPriceRange(item) && "من "}{basePrice(item).toLocaleString()} IQD
                             </span>
                             <span className="font-bold text-red-600">
-                              {calculateSalePrice(basePrice(item), sale).toLocaleString()} IQD
+                              {hasPriceRange(item) && "من "}{calculateSalePrice(basePrice(item), sale).toLocaleString()} IQD
                             </span>
                           </div>
                         ) : (
                           <span className="font-bold text-green4">
-                            {basePrice(item).toLocaleString()} IQD
+                            {hasPriceRange(item) && "من "}{basePrice(item).toLocaleString()} IQD
                           </span>
                         )}
                       </div>

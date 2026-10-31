@@ -8,6 +8,7 @@ import { QueryKeys } from "@/utils/queryKeys";
 import ProductFilters from "./components/ProductFilters";
 import ProductGridCard from "@/app/Components/ProductGridCard";
 import ProductListCard from "./components/ProductListCard";
+import { isOutOfStock } from "@/utils/product";
 
 const Category = () => {
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
@@ -85,7 +86,7 @@ const Category = () => {
     
     // Apply out of stock filter if enabled
     if (hideOutOfStock) {
-      items = items.filter(item => !item.out_of_stock);
+      items = items.filter((item) => !isOutOfStock(item));
     }
     
     return items;
