@@ -19,7 +19,7 @@ import 'swiper/css/effect-coverflow';
 import { Autoplay, EffectCoverflow } from 'swiper/modules';
 import { itemImageUrl } from "@/utils/media";
 import { entryKey } from "@/utils/ids";
-import { basePrice, isOutOfStock, hasPriceRange } from "@/utils/product";
+import { basePrice, isOutOfStock, hasPriceRange, shownPrice } from "@/utils/product";
 
 const NEW_ARRIVALS_LIMIT = 12;
 
@@ -207,7 +207,7 @@ export default function NewArrivalsCarousel() {
                             {isSaleActive(sale) && !isOutOfStock(img) ? (
                               <div>
                                 <span className="text-gray-500 line-through text-[10px] block">
-                                  {basePrice(img).toLocaleString()} IQD
+                                  {shownPrice(img)} IQD
                                 </span>
                                 <span className="font-bold text-amber-600 text-xs">
                                   {hasPriceRange(img) && "من "}{calculateSalePrice(basePrice(img), sale).toLocaleString()} IQD
@@ -215,7 +215,7 @@ export default function NewArrivalsCarousel() {
                               </div>
                             ) : (
                               <span className="font-bold text-green4 text-xs">
-                                {hasPriceRange(img) && "من "}{basePrice(img).toLocaleString()} IQD
+                                {hasPriceRange(img) && "من "}{shownPrice(img)} IQD
                               </span>
                             )}
                           </div>

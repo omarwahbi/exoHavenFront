@@ -39,6 +39,11 @@ export const basePrice = (item, variant) => {
   return Number(item?.state);
 };
 
+// The price before any sale as the home page cards show it: an item's own price
+// exactly as typed in the admin (as these cards always have), a variant item's
+// lowest price formatted.
+export const shownPrice = (item) => (hasVariants(item) ? basePrice(item).toLocaleString() : String(item?.state ?? ""));
+
 // True when the available variants don't all cost the same, so cards say "from".
 export const hasPriceRange = (item) => new Set(availableVariants(item).map((v) => Number(v.price))).size > 1;
 
