@@ -1,7 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
 import { FaSearch, FaFilter } from "react-icons/fa";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { entryKey } from "@/utils/ids";
 import { PRICE_PRESETS, sortOptions } from "@/utils/productFilters";
 import useSearchSuggestions from "@/app/Components/useSearchSuggestions";
@@ -312,7 +312,7 @@ function Chip({ children, onRemove }) {
   return (
     <span className="inline-flex items-center px-3 py-1 rounded-full bg-green1 text-green4 text-xs">
       {children}
-      <button onClick={onRemove} className="mr-1 hover:text-red-500" aria-label="إزالة">
+      <button onClick={onRemove} className="mr-1 hover:text-red-500" aria-label="إزالة هذا الفلتر">
         <CloseIcon className="h-3 w-3" />
       </button>
     </span>
@@ -379,25 +379,33 @@ function PriceFilter({ min, max, onChange }) {
     const n = Number(String(value).replace(/[,٬\s]/g, ""));
     return String(value).trim() === "" || !Number.isFinite(n) || n < 0 ? null : Math.floor(n);
   };
+  // apply() always reads the latest boxes and filters (it also runs from a timer),
+  // and cancels a pending timer so the same value isn't applied twice.
+  const timer = useRef(null);
+  const latest = useRef(null);
+  latest.current = { from, to, min, max, onChange };
   const apply = () => {
-    let lo = toNumber(from);
-    let hi = toNumber(to);
+    clearTimeout(timer.current);
+    const now = latest.current;
+    let lo = toNumber(now.from);
+    let hi = toNumber(now.to);
     if (lo !== null && hi !== null && lo > hi) [lo, hi] = [hi, lo];
-    if (lo !== min || hi !== max) onChange(lo, hi);
+    if (lo !== now.min || hi !== now.max) now.onChange(lo, hi);
   };
   // Applied a moment after typing stops.
   useEffect(() => {
-    const timer = setTimeout(apply, 800);
-    return () => clearTimeout(timer);
+    timer.current = setTimeout(apply, 800);
+    return () => clearTimeout(timer.current);
   }, [from, to]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const box = (value, setValue, placeholder) => (
+  const box = (value, setValue, placeholder, label) => (
     <div className={`border ${value !== "" ? "border-green3" : "border-gray-300"} rounded-lg overflow-hidden shadow-sm flex-1`}>
       <input
         type="text"
         inputMode="numeric"
         dir="ltr"
         placeholder={placeholder}
+        aria-label={label}
         value={value}
         onChange={(e) => setValue(e.target.value)}
         onBlur={apply}
@@ -411,9 +419,9 @@ function PriceFilter({ min, max, onChange }) {
     <div className="flex flex-col items-start gap-2 w-full">
       <span className="text-sm text-green4 font-medium">السعر (IQD):</span>
       <div className="flex items-center gap-2 w-full">
-        {box(from, setFrom, "من")}
+        {box(from, setFrom, "من", "أقل سعر")}
         <span className="text-gray-400">-</span>
-        {box(to, setTo, "إلى")}
+        {box(to, setTo, "إلى", "أعلى سعر")}
       </div>
       <div className="flex flex-wrap gap-2">
         {PRICE_PRESETS.map((preset) => {
@@ -422,6 +430,7 @@ function PriceFilter({ min, max, onChange }) {
             <button
               key={preset.label}
               type="button"
+              aria-pressed={selected}
               onClick={() => (selected ? onChange(null, null) : onChange(preset.min, preset.max))}
               className={`px-3 py-1 rounded-full text-xs transition-colors ${
                 selected ? "bg-green4 text-white" : "bg-green1 text-green4 hover:bg-green2"

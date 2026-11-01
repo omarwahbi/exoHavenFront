@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { MdShoppingCart, MdSearch, MdClose } from "react-icons/md";
@@ -11,6 +11,7 @@ import NavSearch from "./NavSearch";
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const searchButton = useRef(null);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
   const { itemCount: cartItemCount } = useCart();
@@ -121,6 +122,7 @@ const Navbar = () => {
           <div className="flex items-center gap-3">
             {/* Search - opens the search bar under the top bar, on every page */}
             <motion.button
+              ref={searchButton}
               type="button"
               onClick={() => setSearchOpen((open) => !open)}
               aria-label={searchOpen ? "إغلاق البحث" : "بحث"}
@@ -225,7 +227,12 @@ const Navbar = () => {
             transition={{ duration: 0.25 }}
           >
             <div className="w-11/12 max-w-screen-xl mx-auto py-3">
-              <NavSearch onDone={() => setSearchOpen(false)} />
+              <NavSearch
+                onDone={(byEscape) => {
+                  setSearchOpen(false);
+                  if (byEscape) searchButton.current?.focus();
+                }}
+              />
             </div>
           </motion.div>
         )}

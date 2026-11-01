@@ -50,10 +50,12 @@ export const readFilters = (params) => {
     return value && ID.test(value) ? value : null;
   };
   const sort = params.get("sort");
+  const category = id("category");
   return {
     q,
-    category: id("category"),
-    sub: id("sub"),
+    category,
+    // A sub-category is chosen within a category.
+    sub: category ? id("sub") : null,
     min: toPrice(params.get("min")),
     max: toPrice(params.get("max")),
     sort: sortOptions(Boolean(q)).some((option) => option.value === sort) ? sort : defaultSort(Boolean(q)),
@@ -94,10 +96,12 @@ export const activeFilterCount = (filters) =>
 
 // The shopper types prices as cards show them, after the sale; the API filters on
 // prices before it. A bound of 9,000 with 10% off means 10,000 before the sale.
+// Cards round the sale price (calculateSalePrice), so the bounds are the widest
+// pre-sale prices that still show inside the range: shown = round(price × factor).
 export const priceBoundsBeforeSale = (min, max, sale) => {
   const factor = isSaleActive(sale) ? (100 - sale.percent) / 100 : 1;
   return {
-    minPrice: min === null ? null : Math.ceil(min / factor - 0.5),
-    maxPrice: max === null ? null : Math.floor(max / factor + 0.5),
+    minPrice: min === null ? null : Math.ceil((min - 0.5) / factor),
+    maxPrice: max === null ? null : Math.ceil((max + 0.5) / factor) - 1,
   };
 };

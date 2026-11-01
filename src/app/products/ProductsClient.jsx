@@ -30,12 +30,15 @@ const Category = () => {
   // search, shared links and back/forward all land here with them.
   const filters = useMemo(() => readFilters(searchParams), [searchParams]);
   const setFilters = (changes) => {
-    const next = { ...filters, ...changes };
+    // Start from the address as it is now, not as of this render: two quick changes
+    // (or a price applied a moment after typing) must not undo each other.
+    const current = readFilters(new URLSearchParams(window.location.search));
+    const next = { ...current, ...changes };
     // Another category: its sub-categories are different.
-    if ("category" in changes && changes.category !== filters.category && !("sub" in changes)) next.sub = null;
+    if ("category" in changes && changes.category !== current.category && !("sub" in changes)) next.sub = null;
     // A new search (or none) goes back to that case's default order, unless the
     // shopper had picked one.
-    if ("q" in changes && filters.sort === defaultSort(Boolean(filters.q))) next.sort = defaultSort(Boolean(next.q));
+    if ("q" in changes && current.sort === defaultSort(Boolean(current.q))) next.sort = defaultSort(Boolean(next.q));
     const query = filtersToQuery(next);
     // A history step per change, so the back button undoes the last filter.
     router.push(query ? `${pathname}?${query}` : pathname, { scroll: false });

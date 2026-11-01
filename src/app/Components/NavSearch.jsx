@@ -6,7 +6,8 @@ import useSearchSuggestions from "./useSearchSuggestions";
 
 // The search bar that opens under the top bar (the magnifier next to the cart):
 // the same box and suggestions as the products page. Searching opens
-// /products?q=…; picking a suggestion opens that product or category.
+// /products?q=…; picking a suggestion opens that product or category. onDone(true)
+// means the shopper closed it with Escape (focus goes back to the button).
 export default function NavSearch({ onDone }) {
   const router = useRouter();
   const [value, setValue] = useState("");
@@ -41,7 +42,7 @@ export default function NavSearch({ onDone }) {
           {...inputProps}
           onKeyDown={(event) => {
             // Escape on an empty box (or with no suggestions open) closes the bar.
-            if (event.key === "Escape" && !inputProps["aria-expanded"]) onDone();
+            if (event.key === "Escape" && !inputProps["aria-expanded"]) onDone(true);
             inputProps.onKeyDown(event);
           }}
           className="w-full py-3 px-4 text-right outline-none border-0 focus:ring-0 bg-white text-gray-800 placeholder-gray-400 [&::-webkit-search-cancel-button]:hidden"

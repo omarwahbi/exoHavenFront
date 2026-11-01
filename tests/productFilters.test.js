@@ -65,3 +65,30 @@ describe('priceBoundsBeforeSale', () => {
     expect(priceBoundsBeforeSale(5000, null, { active: false })).toEqual({ minPrice: 5000, maxPrice: null });
   });
 });
+
+describe('priceBoundsBeforeSale matches the rounded card price', () => {
+  // Cards show Math.round(price * (100 - percent) / 100).
+  const shown = (price, percent) => Math.round((price * (100 - percent)) / 100);
+
+  it('never drops or adds an item at the edges', () => {
+    for (const percent of [5, 10, 15, 33, 50, 75]) {
+      const sale = { active: true, percent, ends_at: null };
+      for (const [min, max] of [[1000, 1000], [50000, null], [null, 10000], [12345, 23456]]) {
+        const { minPrice, maxPrice } = priceBoundsBeforeSale(min, max, sale);
+        for (let price = 500; price <= 70000; price += 7) {
+          const inRange = (min === null || shown(price, percent) >= min) && (max === null || shown(price, percent) <= max);
+          const passes = (minPrice === null || price >= minPrice) && (maxPrice === null || price <= maxPrice);
+          if (inRange !== passes) throw new Error(`${percent}% ${min}-${max}: price ${price} shows ${shown(price, percent)}`);
+        }
+      }
+    }
+  });
+
+  it('the review example: 55,555 shows 50,000 with 10% off, and counts as "over 50,000"', () => {
+    expect(priceBoundsBeforeSale(50000, null, { active: true, percent: 10 }).minPrice).toBeLessThanOrEqual(55555);
+  });
+});
+
+it('a sub-category without its category is ignored', () => {
+  expect(readFilters(new URLSearchParams('sub=abc')).sub).toBeNull();
+});
