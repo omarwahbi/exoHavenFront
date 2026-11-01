@@ -103,6 +103,7 @@ const Navbar = () => {
             <div className="hidden md:block">
               <div className="ml-10 flex items-baseline space-x-4">
                 <NavLink href="/">الرئيسية</NavLink>
+                <NavLink href="/categories">الأقسام</NavLink>
                 <NavLink href="/products">كل المواد</NavLink>
                 <NavLink href="/aboutUs">من نحن؟</NavLink>
                 <NavLink href="/contact">اتصل بنا</NavLink>
@@ -263,6 +264,33 @@ const Navbar = () => {
                       />
                     </svg>
                     <span className="font-medium">الرئيسية</span>
+                  </motion.div>
+                </Link>
+                
+                <Link href="/categories" onClick={handleLinkClick}>
+                  <motion.div
+                    className={`flex items-center p-4 rounded-xl transition-all duration-300
+                                ${pathname.startsWith('/categories')
+                                  ? 'bg-gradient-to-r from-green1 to-green2/50 text-green5 shadow-sm'
+                                  : 'text-gray-700 hover:bg-green1/40 hover:text-green5'}`}
+                    whileHover={{ x: 5 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <svg 
+                      className="w-5 h-5 ml-3" 
+                      fill="none" 
+                      stroke="currentColor" 
+                      viewBox="0 0 24 24" 
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round" 
+                        strokeWidth={2} 
+                        d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" 
+                      />
+                    </svg>
+                    <span className="font-medium">الأقسام</span>
                   </motion.div>
                 </Link>
                 

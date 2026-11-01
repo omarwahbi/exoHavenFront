@@ -10,7 +10,9 @@ import { QueryKeys } from "@/utils/queryKeys";
 import { imageUrl } from "@/utils/media";
 import { entryKey } from "@/utils/ids";
 
-const Categories = () => {
+// The home page's category section. `showHeading={false}` leaves out its title,
+// for /categories, whose banner already says it.
+const Categories = ({ showHeading = true }) => {
   // Fetch categories using React Query
   const {
     data: categories = [],
@@ -78,6 +80,7 @@ const Categories = () => {
 
   return (
     <div className="py-12 sm:py-16 px-4 bg-gradient-to-br from-green1/40 via-green1/20 to-transparent rounded-3xl sm:rounded-4xl my-8 sm:my-12 max-w-screen-xl mx-auto border border-green2/30">
+      {showHeading && (
       <motion.div
         className="flex flex-col md:flex-row items-center justify-between mb-8 sm:mb-12"
         initial={{ opacity: 0, y: -30 }}
@@ -96,6 +99,7 @@ const Categories = () => {
           </p>
         </div>
       </motion.div>
+      )}
 
       <motion.div
         className="flex flex-wrap justify-center gap-4 sm:gap-5 md:gap-6 max-w-screen-xl mx-auto"
