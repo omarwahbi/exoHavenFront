@@ -1,13 +1,14 @@
-import { notFound } from "next/navigation";
-import { entryKey } from "@/utils/ids";
 import { getCategory } from "@/services/catalog";
+import { entryKey } from "@/utils/ids";
 import { absoluteMediaUrl, pageMetadata, snippet } from "@/utils/metadata";
 import CategoryClient from "./CategoryClient";
 
+// Server part of the category page: its title, description, canonical URL and
+// share image. The page itself is CategoryClient, unchanged.
 export async function generateMetadata({ params }) {
   const { id } = await params;
-  const { entry: category } = await getCategory(id);
-  if (!category) return { title: "القسم" };
+  const { entry: category, missing } = await getCategory(id);
+  if (!category) return missing ? { title: "القسم", robots: { index: false } } : { title: "القسم" };
   return pageMetadata({
     title: category.name,
     description:
@@ -18,9 +19,6 @@ export async function generateMetadata({ params }) {
   });
 }
 
-export default async function CategoryPage({ params }) {
-  const { id } = await params;
-  const { entry, missing } = await getCategory(id);
-  if (missing) notFound();
-  return <CategoryClient initialCategory={entry} />;
+export default function CategoryPage() {
+  return <CategoryClient />;
 }

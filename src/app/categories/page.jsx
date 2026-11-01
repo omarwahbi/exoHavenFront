@@ -1,6 +1,5 @@
+import Categories from "@/app/Components/Categories";
 import { pageMetadata } from "@/utils/metadata";
-import Breadcrumbs from "@/app/Components/Breadcrumbs";
-import { CategoryGrid } from "@/app/Components/Categories";
 
 export const metadata = pageMetadata({
   title: "الأقسام",
@@ -8,12 +7,22 @@ export const metadata = pageMetadata({
   path: "/categories",
 });
 
+// Every category, with the same banner as the products page and the home page's
+// category tiles.
 export default function CategoriesPage() {
   return (
-    <div className="container-page py-6 sm:py-8" dir="rtl">
-      <Breadcrumbs className="mb-4" items={[{ label: "الأقسام" }]} />
-      <h1 className="mb-6 text-2xl font-bold text-gray-900 sm:text-3xl">الأقسام</h1>
-      <CategoryGrid />
+    <div className="min-h-screen bg-gray-50 pb-6">
+      <div className="bg-gradient-to-r from-green3 to-green4 text-white py-12 px-4 mb-6">
+        <div className="max-w-7xl mx-auto">
+          <h1 className="text-3xl md:text-4xl font-bold text-center mb-4">أقسام المتجر</h1>
+          <p className="text-lg text-center text-white/80 max-w-2xl mx-auto">
+            اختر القسم الذي تبحث عنه وتصفح منتجاته
+          </p>
+        </div>
+      </div>
+      <div className="px-4">
+        <Categories showHeading={false} />
+      </div>
     </div>
   );
 }

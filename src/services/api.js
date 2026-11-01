@@ -40,7 +40,7 @@ export const fetchCategories = async () => {
 
 export const fetchCategoryById = async (id) => {
   const { data } = await api.get(`/api/categories/${id}`, {
-    params: { 'fields[0]': 'name', 'fields[1]': 'desc' }
+    params: { 'fields[0]': 'name' }
   });
   return data.data;
 };
@@ -79,6 +79,21 @@ export const fetchCategoryItems = async (categoryId, page = 1, pageSize = 12) =>
     }
   });
   return data.data || [];
+};
+
+export const fetchSubCategoryItems = async (subCategoryId, page = 1, pageSize = 12, sortBy = null) => {
+  const { data } = await api.get('/api/items', {
+    params: {
+      'filters[sub_category][documentId][$eq]': subCategoryId,
+      'populate': '*',
+      'pagination[page]': page,
+      'pagination[pageSize]': pageSize,
+      'sort[0]': 'new_arrival:desc',
+      'sort[1]': 'out_of_stock:asc',
+      'sort[2]': sortBy || 'createdAt:desc'
+    }
+  });
+  return data;
 };
 
 export const fetchNewArrivals = async (limit = 6) => {
@@ -152,6 +167,64 @@ export const fetchSuggestedItems = async (limit = 4) => {
   return data.data;
 };
 
+// One page of /products: optionally one category and a name search.
+export const fetchProductsPage = async ({ pageParam = 1, categoryId, searchQuery, signal }) => {
+  const params = {
+    pagination: {
+      page: pageParam,
+      pageSize: 12
+    },
+    // Only select specific fields we need, excluding buffer data
+    fields: ['name', 'description', 'state', 'new_arrival', 'out_of_stock', 'low_stock', 'Item_ID'],
+    // Use specific fields to populate instead of '*' to reduce response size
+    populate: {
+      item_thumbnail: {
+        fields: ['name', 'url', 'width', 'height', 'formats']
+      },
+      // Fallback image for items saved without a thumbnail
+      item_images: {
+        fields: ['url']
+      },
+      variants: true,
+      category: {
+        fields: ['name']
+      },
+      sub_category: {
+        fields: ['name']
+      }
+    },
+    // Sort: new items first, out of stock at bottom, then by creation date
+    sort: ['new_arrival:desc', 'out_of_stock:asc', 'createdAt:desc']
+  };
+
+  if (categoryId) {
+    params.filters = {
+      ...params.filters,
+      category: { documentId: { $eq: categoryId } }
+    };
+  }
+  
+  if (searchQuery) {
+    params.filters = {
+      ...params.filters,
+      name: { $containsi: searchQuery }
+    };
+  }
+
+  try {
+    const data = await api.get('/api/items', { params, signal });
+    return {
+      items: data.data.data,
+      nextPage: pageParam + 1,
+      hasMore: pageParam < data.data.meta.pagination.pageCount,
+      total: data.data.meta.pagination.total,
+    };
+  } catch (error) {
+    console.error("Error fetching items:", error);
+    throw error;
+  }
+};
+
 // Product search and listings (the backend's /api/search: Meilisearch, or its
 // database when that's down). Options: q, category, subCategory (documentIds),
 // inStock, sort (relevance | featured | newest | price_asc | price_desc | name),
@@ -164,18 +237,20 @@ let searchEndpointMissing = false;
 const LEGACY_SORT = {
   relevance: ['new_arrival:desc', 'out_of_stock:asc', 'createdAt:desc'],
   featured: ['new_arrival:desc', 'out_of_stock:asc', 'createdAt:desc'],
+  listing: ['new_arrival:desc', 'out_of_stock:asc', 'createdAt:desc'],
   newest: ['out_of_stock:asc', 'createdAt:desc'],
   price_asc: ['out_of_stock:asc', 'state:asc'],
   price_desc: ['out_of_stock:asc', 'state:desc'],
   name: ['out_of_stock:asc', 'name:asc'],
 };
 
-const legacySearch = async ({ q, category, subCategory, inStock, sort, page, pageSize, signal }) => {
+const legacySearch = async ({ q, category, subCategory, inStock, newOnly, sort, page, pageSize, signal }) => {
   const filters = {};
   if (q) filters.name = { $containsi: q };
   if (category) filters.category = { documentId: { $eq: category } };
   if (subCategory) filters.sub_category = { documentId: { $eq: subCategory } };
   if (inStock) filters.out_of_stock = { $eq: false };
+  if (newOnly) filters.new_arrival = { $eq: true };
   const { data } = await api.get('/api/items', {
     params: {
       filters,
@@ -193,13 +268,16 @@ export const searchProducts = async ({
   category = null,
   subCategory = null,
   inStock = false,
+  newOnly = false,
+  minPrice = null,
+  maxPrice = null,
   sort,
   page = 1,
   pageSize = 12,
   suggest = false,
   signal,
 } = {}) => {
-  const options = { q, category, subCategory, inStock, sort: sort || (q ? 'relevance' : 'featured'), page, pageSize, signal };
+  const options = { q, category, subCategory, inStock, newOnly, sort: sort || (q ? 'relevance' : 'featured'), page, pageSize, signal };
   let result;
   if (!searchEndpointMissing) {
     try {
@@ -209,6 +287,9 @@ export const searchProducts = async ({
           category: category || undefined,
           sub_category: subCategory || undefined,
           instock: inStock ? 1 : undefined,
+          new: newOnly ? 1 : undefined,
+          min_price: minPrice ?? undefined,
+          max_price: maxPrice ?? undefined,
           sort: options.sort,
           page,
           pageSize,
@@ -235,4 +316,25 @@ export const searchProducts = async ({
   };
 };
 
+// Search results carry what a product card shows, but not the description the
+// /products list view prints: fetch those for one page of results.
+export const withDescriptions = async (page) => {
+  const ids = page.items.map((item) => item.documentId).filter(Boolean);
+  if (!ids.length || page.items.every((item) => 'description' in item)) return page;
+  try {
+    const { data } = await api.get('/api/items', {
+      params: {
+        filters: { documentId: { $in: ids } },
+        fields: ['description'],
+        pagination: { pageSize: ids.length },
+      },
+    });
+    const byId = new Map((data.data || []).map((item) => [item.documentId, item.description]));
+    return { ...page, items: page.items.map((item) => ({ ...item, description: byId.get(item.documentId) ?? null })) };
+  } catch {
+    return page;
+  }
+};
+
 export default api;
+ 
