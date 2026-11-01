@@ -2,13 +2,15 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { MdShoppingCart } from "react-icons/md";
+import { MdShoppingCart, MdSearch, MdClose } from "react-icons/md";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { useCart } from "../context/CartContext";
+import NavSearch from "./NavSearch";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
   const { itemCount: cartItemCount } = useCart();
@@ -41,6 +43,11 @@ const Navbar = () => {
       document.body.style.overflow = 'unset';
     };
   }, [isOpen]);
+
+  // The search bar closes when the page changes (a result was opened).
+  useEffect(() => {
+    setSearchOpen(false);
+  }, [pathname]);
 
   const toggleNavbar = () => {
     setIsOpen(!isOpen);
@@ -112,6 +119,20 @@ const Navbar = () => {
           </div>
 
           <div className="flex items-center gap-3">
+            {/* Search - opens the search bar under the top bar, on every page */}
+            <motion.button
+              type="button"
+              onClick={() => setSearchOpen((open) => !open)}
+              aria-label={searchOpen ? "إغلاق البحث" : "بحث"}
+              aria-expanded={searchOpen}
+              className={`text-white p-2.5 md:p-3 rounded-xl transition-all duration-400 flex items-center shadow-sm
+                        ${searchOpen ? 'bg-green5 shadow-green' : 'bg-green4 hover:bg-green5 hover:shadow-green-lg'}`}
+              whileHover={{ scale: 1.08, y: -2 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              {searchOpen ? <MdClose className="shrink-0" size={20} /> : <MdSearch className="shrink-0" size={20} />}
+            </motion.button>
+
             {/* Cart Icon - Visible on both mobile and desktop */}
             <div className="relative">
               <Link href="/cart">
@@ -191,6 +212,24 @@ const Navbar = () => {
           </div>
         </div>
       </div>
+
+      {/* Search bar under the top bar */}
+      <AnimatePresence>
+        {searchOpen && (
+          <motion.div
+            className="border-t border-gray-100 bg-white"
+            // Fades and slides in (a height animation would clip the suggestions).
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.25 }}
+          >
+            <div className="w-11/12 max-w-screen-xl mx-auto py-3">
+              <NavSearch onDone={() => setSearchOpen(false)} />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       
       {/* Mobile menu with improved animation */}
       <AnimatePresence>

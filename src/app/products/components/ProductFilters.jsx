@@ -2,7 +2,7 @@
 import { motion } from "framer-motion";
 import { FaSearch, FaFilter } from "react-icons/fa";
 import { entryKey } from "@/utils/ids";
-import useSearchSuggestions from "./useSearchSuggestions";
+import useSearchSuggestions from "@/app/Components/useSearchSuggestions";
 
 // The sticky search / filter / view bar of /products and the active-filters row
 // under it. All state lives in the page; this only renders it.

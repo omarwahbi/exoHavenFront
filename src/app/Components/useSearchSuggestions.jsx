@@ -27,7 +27,8 @@ const useDebounced = (value, delay) => {
 // categories and products (from the backend's smart search), and a row that runs
 // the full search. Returns props for the search <input> and the list to render
 // under it. Enter without a highlighted suggestion submits the form as before.
-export default function useSearchSuggestions({ value, onSearchAll }) {
+// onChoose (optional) runs when a product or category suggestion is picked.
+export default function useSearchSuggestions({ value, onSearchAll, onChoose }) {
   const router = useRouter();
   const sale = useSale();
   const id = useId();
@@ -75,7 +76,10 @@ export default function useSearchSuggestions({ value, onSearchAll }) {
   const choose = (option) => {
     close();
     if (option.kind === "all") onSearchAll(debounced);
-    else router.push(option.href);
+    else {
+      onChoose?.();
+      router.push(option.href);
+    }
   };
 
   const onKeyDown = (event) => {

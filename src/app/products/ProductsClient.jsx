@@ -1,5 +1,6 @@
 "use client";
-import React, { useState, useEffect, useMemo } from "react";
+import React, { Suspense, useState, useEffect, useMemo } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import Spinner from "../Components/Spinner";
@@ -13,12 +14,23 @@ import { entryKey } from "@/utils/ids";
 
 const Category = () => {
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
-  // /products?q=… (links from Google's search box) opens with that search.
-  // (The layout renders pages only in the browser; the check is a safety net.)
-  const [searchQuery, setSearchQuery] = useState(() =>
-    typeof window === "undefined" ? "" : new URLSearchParams(window.location.search).get("q")?.trim() || ""
-  );
-  const [searchInputValue, setSearchInputValue] = useState(searchQuery);
+  // The search lives in the address (/products?q=…): the top bar's search, links
+  // from Google's search box and back/forward all land here with it.
+  const router = useRouter();
+  const pathname = usePathname();
+  const urlQuery = useSearchParams().get("q")?.trim() || "";
+  const [searchQuery, setSearchQueryState] = useState(urlQuery);
+  const [searchInputValue, setSearchInputValue] = useState(urlQuery);
+  useEffect(() => {
+    setSearchQueryState(urlQuery);
+    setSearchInputValue(urlQuery);
+  }, [urlQuery]);
+  // Searching from this page's own box updates the address too.
+  const setSearchQuery = (query) => {
+    const q = query.trim();
+    setSearchQueryState(q);
+    router.replace(q ? `${pathname}?q=${encodeURIComponent(q)}` : pathname, { scroll: false });
+  };
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [viewStyle, setViewStyle] = useState("grid"); // grid or list
   const [scrolled, setScrolled] = useState(false);
@@ -303,5 +315,9 @@ const Category = () => {
 };
 
 export default function CategoryPage() {
-  return <Category />;
+  return (
+    <Suspense fallback={null}>
+      <Category />
+    </Suspense>
+  );
 }
