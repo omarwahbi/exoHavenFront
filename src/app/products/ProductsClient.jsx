@@ -1,75 +1,103 @@
 "use client";
 import React, { Suspense, useState, useEffect, useMemo } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import Spinner from "../Components/Spinner";
-import { fetchCategories, fetchProductsPage, searchProducts, withDescriptions } from "@/services/api";
+import { fetchCategories, fetchProductsPage, fetchSubCategories, searchProducts, withDescriptions } from "@/services/api";
 import { QueryKeys } from "@/utils/queryKeys";
 import ProductFilters from "./components/ProductFilters";
 import ProductGridCard from "@/app/Components/ProductGridCard";
 import ProductListCard from "./components/ProductListCard";
-import { isOutOfStock } from "@/utils/product";
+import { useSale } from "@/app/context/SaleContext";
+import {
+  activeFilterCount,
+  defaultSort,
+  filtersToQuery,
+  isPlainListing,
+  priceBoundsBeforeSale,
+  readFilters,
+} from "@/utils/productFilters";
 import { entryKey } from "@/utils/ids";
 
 const Category = () => {
-  const [selectedCategoryId, setSelectedCategoryId] = useState(null);
-  // The search lives in the address (/products?q=…): the top bar's search, links
-  // from Google's search box and back/forward all land here with it.
   const router = useRouter();
   const pathname = usePathname();
-  const urlQuery = useSearchParams().get("q")?.trim() || "";
-  const [searchQuery, setSearchQueryState] = useState(urlQuery);
-  const [searchInputValue, setSearchInputValue] = useState(urlQuery);
-  useEffect(() => {
-    setSearchQueryState(urlQuery);
-    setSearchInputValue(urlQuery);
-  }, [urlQuery]);
-  // Searching from this page's own box updates the address too.
-  const setSearchQuery = (query) => {
-    const q = query.trim();
-    setSearchQueryState(q);
-    router.replace(q ? `${pathname}?q=${encodeURIComponent(q)}` : pathname, { scroll: false });
+  const searchParams = useSearchParams();
+  const sale = useSale();
+
+  // Every filter lives in the address (see utils/productFilters.js): the top bar's
+  // search, shared links and back/forward all land here with them.
+  const filters = useMemo(() => readFilters(searchParams), [searchParams]);
+  const setFilters = (changes) => {
+    const next = { ...filters, ...changes };
+    // Another category: its sub-categories are different.
+    if ("category" in changes && changes.category !== filters.category && !("sub" in changes)) next.sub = null;
+    // A new search (or none) goes back to that case's default order, unless the
+    // shopper had picked one.
+    if ("q" in changes && filters.sort === defaultSort(Boolean(filters.q))) next.sort = defaultSort(Boolean(next.q));
+    const query = filtersToQuery(next);
+    // A history step per change, so the back button undoes the last filter.
+    router.push(query ? `${pathname}?${query}` : pathname, { scroll: false });
   };
+
+  // The search box's text, until it is submitted.
+  const [searchInputValue, setSearchInputValue] = useState(filters.q);
+  useEffect(() => {
+    setSearchInputValue(filters.q);
+  }, [filters.q]);
+
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [viewStyle, setViewStyle] = useState("grid"); // grid or list
   const [scrolled, setScrolled] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
-  const [hideOutOfStock, setHideOutOfStock] = useState(false);
 
   const { data: categories = [] } = useQuery({
     queryKey: [QueryKeys.categoriesList],
     queryFn: fetchCategories
   });
 
-  // Memoize the query key to prevent unnecessary refetches
-  const queryKey = useMemo(() => 
-    QueryKeys.categoryItems(selectedCategoryId, searchQuery),
-    [selectedCategoryId, searchQuery]
-  );
+  const { data: subCategories = [] } = useQuery({
+    queryKey: ["subcategories", filters.category],
+    queryFn: () => fetchSubCategories(filters.category),
+    enabled: !!filters.category
+  });
 
-  const { 
-    data, 
-    fetchNextPage, 
-    hasNextPage, 
-    isFetchingNextPage, 
+  // The plain listing loads exactly as it always has; any other filter goes
+  // through the search API, which filters and sorts on the server.
+  const plain = isPlainListing(filters);
+  const { minPrice, maxPrice } = priceBoundsBeforeSale(filters.min, filters.max, sale);
+
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
     isLoading,
     isFetching,
   } = useInfiniteQuery({
-    queryKey: queryKey,
-    // A search goes through the smart search (typos, Arabic spellings, synonyms);
-    // the plain listing keeps its usual order.
+    queryKey: ["products-page", filters, minPrice, maxPrice],
     queryFn: ({ pageParam = 1, signal }) =>
-      searchQuery
-        ? searchProducts({ q: searchQuery, category: selectedCategoryId, page: pageParam, signal }).then(withDescriptions)
-        : fetchProductsPage({
-            pageParam,
+      plain
+        ? fetchProductsPage({ pageParam, signal, categoryId: filters.category })
+        : searchProducts({
+            q: filters.q,
+            category: filters.category,
+            subCategory: filters.sub,
+            inStock: filters.inStock,
+            newOnly: filters.newOnly,
+            minPrice,
+            maxPrice,
+            sort: filters.sort,
+            page: pageParam,
             signal,
-            categoryId: selectedCategoryId,
-            searchQuery
-          }),
+          }).then(withDescriptions),
+    initialPageParam: 1,
     getNextPageParam: (lastPage) =>
       lastPage.hasMore ? lastPage.nextPage : undefined,
+    // Changing a filter keeps the current products on screen until the new ones
+    // arrive, instead of replacing the page with a spinner.
+    placeholderData: keepPreviousData,
   });
 
   // Update isSearching state based on isFetching state, with better cleanup
@@ -99,23 +127,9 @@ const Category = () => {
     };
   }, [isFetching, isFetchingNextPage]);
 
-  // Apply local filters to the fetched data
-  const filteredItems = useMemo(() => {
-    if (!data) return [];
-    
-    let items = data.pages.flatMap((page) => page.items);
-    
-    // Apply out of stock filter if enabled
-    if (hideOutOfStock) {
-      items = items.filter((item) => !isOutOfStock(item));
-    }
-    
-    return items;
-  }, [data, hideOutOfStock]);
-
-  const totalFilteredItems = useMemo(() => {
-    return filteredItems.length;
-  }, [filteredItems]);
+  const filteredItems = useMemo(() => (data ? data.pages.flatMap((page) => page.items) : []), [data]);
+  // How many products match (all pages, not just those loaded so far).
+  const totalFilteredItems = data?.pages[0]?.total ?? filteredItems.length;
 
 
   useEffect(() => {
@@ -149,25 +163,23 @@ const Category = () => {
     e.preventDefault();
     // Reset search loading state before starting a new search
     setIsSearching(false);
-    setSearchQuery(searchInputValue);
+    setFilters({ q: searchInputValue.trim() });
   };
 
   // "See all results" in the search suggestions.
   const handleSearchAll = (query) => {
     setSearchInputValue(query);
-    setSearchQuery(query);
+    setFilters({ q: query.trim() });
   };
 
   const handleClearSearch = () => {
     setSearchInputValue("");
-    setSearchQuery("");
+    setFilters({ q: "" });
   };
 
   const resetFilters = () => {
-    setSelectedCategoryId(null);
     setSearchInputValue("");
-    setSearchQuery("");
-    setHideOutOfStock(false);
+    router.push(pathname, { scroll: false });
   };
 
   // Animation variants
@@ -190,14 +202,7 @@ const Category = () => {
     }
   };
 
-  // Update the active filters count
-  const activeFiltersCount = useMemo(() => {
-    let count = 0;
-    if (selectedCategoryId) count++;
-    if (searchQuery) count++;
-    if (hideOutOfStock) count++;
-    return count;
-  }, [selectedCategoryId, searchQuery, hideOutOfStock]);
+  const activeFiltersCount = activeFilterCount(filters);
 
   if (isLoading) {
     return (
@@ -225,13 +230,11 @@ const Category = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <ProductFilters
           categories={categories}
-          selectedCategoryId={selectedCategoryId}
-          setSelectedCategoryId={setSelectedCategoryId}
+          subCategories={subCategories}
+          filters={filters}
+          setFilters={setFilters}
           searchInputValue={searchInputValue}
           setSearchInputValue={setSearchInputValue}
-          searchQuery={searchQuery}
-          hideOutOfStock={hideOutOfStock}
-          setHideOutOfStock={setHideOutOfStock}
           isFilterOpen={isFilterOpen}
           setIsFilterOpen={setIsFilterOpen}
           viewStyle={viewStyle}

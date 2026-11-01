@@ -237,18 +237,20 @@ let searchEndpointMissing = false;
 const LEGACY_SORT = {
   relevance: ['new_arrival:desc', 'out_of_stock:asc', 'createdAt:desc'],
   featured: ['new_arrival:desc', 'out_of_stock:asc', 'createdAt:desc'],
+  listing: ['new_arrival:desc', 'out_of_stock:asc', 'createdAt:desc'],
   newest: ['out_of_stock:asc', 'createdAt:desc'],
   price_asc: ['out_of_stock:asc', 'state:asc'],
   price_desc: ['out_of_stock:asc', 'state:desc'],
   name: ['out_of_stock:asc', 'name:asc'],
 };
 
-const legacySearch = async ({ q, category, subCategory, inStock, sort, page, pageSize, signal }) => {
+const legacySearch = async ({ q, category, subCategory, inStock, newOnly, sort, page, pageSize, signal }) => {
   const filters = {};
   if (q) filters.name = { $containsi: q };
   if (category) filters.category = { documentId: { $eq: category } };
   if (subCategory) filters.sub_category = { documentId: { $eq: subCategory } };
   if (inStock) filters.out_of_stock = { $eq: false };
+  if (newOnly) filters.new_arrival = { $eq: true };
   const { data } = await api.get('/api/items', {
     params: {
       filters,
@@ -266,13 +268,16 @@ export const searchProducts = async ({
   category = null,
   subCategory = null,
   inStock = false,
+  newOnly = false,
+  minPrice = null,
+  maxPrice = null,
   sort,
   page = 1,
   pageSize = 12,
   suggest = false,
   signal,
 } = {}) => {
-  const options = { q, category, subCategory, inStock, sort: sort || (q ? 'relevance' : 'featured'), page, pageSize, signal };
+  const options = { q, category, subCategory, inStock, newOnly, sort: sort || (q ? 'relevance' : 'featured'), page, pageSize, signal };
   let result;
   if (!searchEndpointMissing) {
     try {
@@ -282,6 +287,9 @@ export const searchProducts = async ({
           category: category || undefined,
           sub_category: subCategory || undefined,
           instock: inStock ? 1 : undefined,
+          new: newOnly ? 1 : undefined,
+          min_price: minPrice ?? undefined,
+          max_price: maxPrice ?? undefined,
           sort: options.sort,
           page,
           pageSize,
