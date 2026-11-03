@@ -1,23 +1,31 @@
 "use client";
 import Spinner from "@/app/Components/Spinner";
+import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import React, { useRef, useCallback, useState } from "react";
+import React, { useRef, useCallback, useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { fetchSubCategoryById, searchProducts } from "@/services/api";
-import SortSelect from "@/app/Components/SortSelect";
+import { FaEye, FaShoppingCart, FaPlus, FaMinus, FaTag } from "react-icons/fa";
+import { useCart } from "@/app/context/CartContext";
+import { fetchSubCategoryById, fetchSubCategoryItems, searchProducts } from "@/services/api";
 import { QueryKeys } from "@/utils/queryKeys";
+import { isSaleActive, calculateSalePrice } from "@/utils/saleUtils";
+import { useSale } from "@/app/context/SaleContext";
+import { itemImageUrl } from "@/utils/media";
 import { entryKey } from "@/utils/ids";
-import ProductCard from "@/app/Components/ProductCard";
+import { basePrice, hasPriceRange, hasVariants, isOutOfStock } from "@/utils/product";
+import StockBadge from "@/app/Components/StockBadge";
 import Breadcrumbs from "@/app/Components/Breadcrumbs";
 
-// initialSubCategory: the sub-category as the server read it (with its category),
-// so its name and breadcrumbs are in the first HTML.
-const Items = ({ initialSubCategory }) => {
+const Items = () => {
+  const sale = useSale();
   const { id } = useParams();
   const observerRef = useRef(null);
-  const [sortBy, setSortBy] = useState("featured");
+  const [sortBy, setSortBy] = useState("newest");
+  const [categoryName, setCategoryName] = useState("");
+  const [subcategoryName, setSubcategoryName] = useState("");
+  const { quantityOf, addItem, decreaseItem } = useCart();
 
   // Animation variants
   const containerVariants = {
@@ -43,23 +51,71 @@ const Items = ({ initialSubCategory }) => {
   const { data: subcategoryData, isLoading: isSubcategoryLoading } = useQuery({
     queryKey: QueryKeys.subcategory(id),
     queryFn: () => fetchSubCategoryById(id),
-    enabled: !!id,
-    initialData: initialSubCategory ? { data: initialSubCategory } : undefined,
+    enabled: !!id
   });
 
-  const subcategoryName = subcategoryData?.data?.name || "";
-  const categoryName = subcategoryData?.data?.category?.name || "";
+  useEffect(() => {
+    if (subcategoryData?.data) {
+      setSubcategoryName(subcategoryData.data.name || "");
+      setCategoryName(subcategoryData.data.category?.name || "");
+    }
+  }, [subcategoryData]);
 
   const categoryId = entryKey(subcategoryData?.data?.category);
 
-  // Sorting goes through the search API, which sorts by the real price (variants
-  // included) and keeps items in stock first.
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
-    queryKey: QueryKeys.subcategoryItems(id, sortBy),
-    queryFn: ({ pageParam, signal }) => searchProducts({ subCategory: id, sort: sortBy, page: pageParam, signal }),
-    initialPageParam: 1,
-    getNextPageParam: (lastPage) => (lastPage.hasMore ? lastPage.nextPage : undefined),
-  });
+  const fetchItems = async ({ pageParam = 1, signal }) => {
+    // Price sorts go through the search API, which sorts by the real price
+    // (variants included); the database would sort the price text ("9000" after
+    // "10000"). The result is put in the shape the rest of this page reads.
+    if (sortBy === "priceAsc" || sortBy === "priceDesc") {
+      const result = await searchProducts({
+        subCategory: id,
+        sort: sortBy === "priceAsc" ? "price_asc" : "price_desc",
+        page: pageParam,
+        signal,
+      });
+      return { data: result.items, meta: { pagination: { page: result.page, pageCount: result.pageCount } } };
+    }
+
+    let sortQuery = "";
+    
+    switch (sortBy) {
+      case "priceAsc":
+        sortQuery = "state:asc";
+        break;
+      case "priceDesc":
+        sortQuery = "state:desc";
+        break;
+      case "newest":
+        sortQuery = "createdAt:desc";
+        break;
+      case "nameAsc":
+        sortQuery = "name:asc";
+        break;
+      default:
+        sortQuery = "createdAt:desc";
+    }
+    
+    return fetchSubCategoryItems(id, pageParam, 12, sortQuery);
+  };
+
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage, refetch } =
+    useInfiniteQuery({
+      queryKey: QueryKeys.subcategoryItems(id, sortBy),
+      queryFn: fetchItems,
+      getNextPageParam: (lastPage) => {
+        const nextPage = lastPage?.meta?.pagination?.page + 1;
+        return nextPage <= lastPage?.meta?.pagination?.pageCount
+          ? nextPage
+          : undefined;
+      },
+    });
+
+  useEffect(() => {
+    if (sortBy) {
+      refetch();
+    }
+  }, [sortBy, refetch]);
 
   const lastItemRef = useCallback(
     (node) => {
@@ -75,7 +131,7 @@ const Items = ({ initialSubCategory }) => {
     [isFetchingNextPage, hasNextPage, fetchNextPage]
   );
 
-  const items = data?.pages?.flatMap((page) => page.items) || [];
+  const items = data?.pages?.flatMap((page) => page.data) || [];
   const isPageLoading = isLoading || isSubcategoryLoading;
 
   // Skeleton loading component
@@ -96,57 +152,185 @@ const Items = ({ initialSubCategory }) => {
   };
 
   return (
-    <div className="container-page py-6 sm:py-8" dir="rtl">
-      <Breadcrumbs
-        className="mb-6"
-        items={[
-          { label: categoryName, href: categoryId ? `/categories/${categoryId}` : null },
-          { label: subcategoryName },
-        ]}
-      />
-
-      <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
-        <div>
-          {/* Which category this sub-category belongs to. */}
-          {categoryName && (
-            <Link
-              href={categoryId ? `/categories/${categoryId}` : "/products"}
-              className="mb-1 inline-block text-sm font-semibold text-green5 hover:text-green4"
-            >
-              {categoryName}
-            </Link>
-          )}
-          <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">
-            {subcategoryName || "المنتجات المتاحة"}
-          </h1>
-        </div>
-        
-        <SortSelect value={sortBy} onChange={setSortBy} />
-      </div>
+    <div className="w-11/12 md:w-4/5 m-auto mt-8 mb-14">
+      {/* Breadcrumbs */}
+      {!isSubcategoryLoading && (
+        <Breadcrumbs
+          items={[
+            { label: categoryName, href: categoryId ? `/categories/${categoryId}` : "/products" },
+            { label: subcategoryName },
+          ]}
+        />
+      )}
 
       {items.length === 0 && !isPageLoading ? (
-        <div className="text-center text-gray-500 py-20 text-lg">لا توجد منتجات في هذا القسم حالياً.</div>
+        <div className="text-center text-gray-500 py-20 text-lg">عذراً لا يوجد مواد هنا</div>
       ) : (
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible" 
-          className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4"
-        >
-          {isPageLoading ? (
-            renderSkeletons()
-          ) : (
-            items.map((item, index) => (
-              <motion.div
-                key={entryKey(item)}
-                variants={itemVariants}
-                ref={index === items.length - 1 ? lastItemRef : null}
+        <>
+          <div className="flex flex-col md:flex-row justify-between items-center mb-6">
+            <h1 className="text-2xl md:text-3xl font-bold text-green4 mb-4 md:mb-0">
+              {subcategoryName || "المنتجات المتاحة"}
+            </h1>
+            
+            {/* Sort dropdown */}
+            <div className="relative">
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="bg-white border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded leading-tight focus:outline-none focus:border-green4"
               >
-                <ProductCard item={item} priority={index < 4} />
-              </motion.div>
-            ))
-          )}
-        </motion.div>
+                <option value="newest">الأحدث</option>
+                <option value="priceAsc">السعر: من الأقل للأعلى</option>
+                <option value="priceDesc">السعر: من الأعلى للأقل</option>
+                <option value="nameAsc">أبجدياً: أ-ي</option>
+              </select>
+            </div>
+          </div>
+          
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible" 
+            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6"
+          >
+            {isPageLoading ? (
+              renderSkeletons()
+            ) : (
+              items.map((item, index) => {
+                const quantityInCart = quantityOf(item);
+                const outOfStock = isOutOfStock(item);
+                const price = basePrice(item);
+                // Items with variants cost "from" their cheapest variant.
+                const from = hasPriceRange(item) ? "من " : "";
+                
+                return (
+                  <motion.div 
+                    key={entryKey(item)} 
+                    variants={itemVariants}
+                    ref={index === items.length - 1 ? lastItemRef : null}
+                  >
+                    <div className="h-full">
+                      <div className="group bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 h-full flex flex-col">
+                        <Link href={`/products/${entryKey(item)}`} className="block relative pt-[100%]">
+                          <Image
+                            src={itemImageUrl(item)}
+                            alt={item.name}
+                            fill
+                            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                            className="object-cover group-hover:scale-105 transition-transform duration-500"
+                            priority
+                          />
+                          
+                          {/* Quick action buttons */}
+                          <div className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col gap-2">
+                            <button className="w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center text-green4 hover:bg-green4 hover:text-white transition-colors">
+                              <FaEye size={14} />
+                            </button>
+                          </div>
+                          
+                          {/* Out of stock badge */}
+                          {outOfStock && (
+                            <div className="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold px-3 py-1 m-2 rounded">
+                              نفذت الكمية
+                            </div>
+                          )}
+                          
+                          {/* New arrival badge */}
+                          {item.new_arrival && !outOfStock && (
+                            <div className="absolute top-0 right-0 bg-green4 text-white text-xs font-bold px-3 py-1 m-2 rounded">
+                              جديد
+                            </div>
+                          )}
+                          
+                          {/* Sale badge */}
+                          {isSaleActive(sale) && !outOfStock && (
+                            <div className="absolute top-0 left-0 bg-amber-500 text-white text-xs font-semibold px-2 py-1 m-2 rounded-lg flex items-center gap-1">
+                              <FaTag className="text-[10px]" />
+                              <span>-{sale.percent}%</span>
+                            </div>
+                          )}
+                        </Link>
+                        
+                        <div className="p-3 flex-grow flex flex-col">
+                          <Link href={`/products/${entryKey(item)}`}>
+                            <h3 className="font-medium text-gray-800 mb-2 line-clamp-2 hover:text-green4 transition-colors min-h-[2.5rem]">
+                              {item.name}
+                            </h3>
+                          </Link>
+                          <StockBadge item={item} className="self-start" />
+                          
+                          <div className="mt-auto pt-2 flex justify-between items-center">
+                            <span className={`font-bold ${outOfStock ? 'text-gray-400' : ''}`}>
+                              {outOfStock ? (
+                                "غير متوفر"
+                              ) : isSaleActive(sale) ? (
+                                <div>
+                                  <span className="text-gray-500 line-through text-xs block">
+                                    {price.toLocaleString()} د.ع
+                                  </span>
+                                  <span className="text-amber-600">
+                                    {from}
+                                    {calculateSalePrice(price, sale).toLocaleString()} د.ع
+                                  </span>
+                                </div>
+                              ) : (
+                                `${from}${price.toLocaleString()} د.ع`
+                              )}
+                            </span>
+                            
+                            {/* Cart interaction button */}
+                            {outOfStock ? (
+                              <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-400 cursor-not-allowed">
+                                <FaShoppingCart size={14} />
+                              </div>
+                            ) : hasVariants(item) ? (
+                              // Variants are picked on the product page.
+                              <Link
+                                href={`/products/${entryKey(item)}`}
+                                className="px-3 py-1.5 rounded-full bg-green1 text-green4 text-xs font-medium hover:bg-green4 hover:text-white transition-colors"
+                              >
+                                اختر
+                              </Link>
+                            ) : quantityInCart > 0 ? (
+                              <div className="flex items-center">
+                                <motion.button 
+                                  onClick={() => decreaseItem(item)}
+                                  className="w-7 h-7 rounded-full bg-green1 flex items-center justify-center text-green4 hover:bg-green2 transition-colors"
+                                  whileTap={{ scale: 0.9 }}
+                                >
+                                  <FaMinus size={10} />
+                                </motion.button>
+                                
+                                <span className="mx-2 font-medium text-green4">{quantityInCart}</span>
+                                
+                                <motion.button 
+                                  onClick={() => addItem(item)}
+                                  className="w-7 h-7 rounded-full bg-green4 flex items-center justify-center text-white hover:bg-green3 transition-colors"
+                                  whileTap={{ scale: 0.9 }}
+                                >
+                                  <FaPlus size={10} />
+                                </motion.button>
+                              </div>
+                            ) : (
+                              <motion.button 
+                                onClick={() => addItem(item)}
+                                className="w-8 h-8 rounded-full bg-green1 flex items-center justify-center text-green4 hover:bg-green4 hover:text-white transition-colors"
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                              >
+                                <FaShoppingCart size={14} />
+                              </motion.button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })
+            )}
+          </motion.div>
+        </>
       )}
       
       {isFetchingNextPage && (

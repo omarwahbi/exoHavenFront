@@ -78,16 +78,16 @@ export default function CartLine({ item, variants, confirmingDelete, onDelete })
                 {isSaleActive(sale) ? (
                   <>
                     <span className="text-sm font-normal line-through text-gray-500 block">
-                      {(basePrice(item, item.variant) * item.quantity).toLocaleString("en-US")} د.ع
+                      {(basePrice(item, item.variant) * item.quantity).toLocaleString()} IQD
                     </span>
                     <span className="text-red-600">
-                      {(calculateSalePrice(basePrice(item, item.variant), sale) * item.quantity).toLocaleString("en-US")}{" "}
-                      <span className="text-sm font-normal">د.ع</span>
+                      {(calculateSalePrice(basePrice(item, item.variant), sale) * item.quantity).toLocaleString()}{" "}
+                      <span className="text-sm font-normal">IQD</span>
                     </span>
                   </>
                 ) : (
                   <>
-                    {(basePrice(item, item.variant) * item.quantity).toLocaleString("en-US")} <span className="text-sm font-normal">د.ع</span>
+                    {(basePrice(item, item.variant) * item.quantity).toLocaleString()} <span className="text-sm font-normal">IQD</span>
                   </>
                 )}
               </p>

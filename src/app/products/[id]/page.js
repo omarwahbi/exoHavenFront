@@ -1,16 +1,24 @@
-import { notFound } from 'next/navigation';
-import { entryKey } from '@/utils/ids';
+// Server part of the product page: its title, description, canonical URL, share
+// image and price tags. The page itself is ItemClient, unchanged.
 import ItemClient from './ItemClient';
 import { getItem } from '@/services/catalog';
 import { getSale } from '@/services/sale';
+import { entryKey } from '@/utils/ids';
 import { unitPrice } from '@/utils/pricing';
 import { isOutOfStock } from '@/utils/product';
 import { absoluteMediaUrl, pageMetadata, snippet } from '@/utils/metadata';
 
 export async function generateMetadata({ params }) {
   const { id } = await params;
-  const [{ entry: item }, sale] = await Promise.all([getItem(id), getSale()]);
-  if (!item) return { title: 'المنتج' };
+  const [{ entry: item, missing }, sale] = await Promise.all([getItem(id), getSale()]);
+  if (!item) {
+    return {
+      title: 'منتج غير موجود',
+      description: 'المنتج الذي تبحث عنه غير متوفر',
+      // A removed product shouldn't stay in Google.
+      ...(missing && { robots: { index: false } }),
+    };
+  }
 
   const where = [item.sub_category?.name, item.category?.name].filter(Boolean).join(' - ');
   const metadata = pageMetadata({
@@ -32,11 +40,6 @@ export async function generateMetadata({ params }) {
   };
 }
 
-// The product is read on the server, so its name, price and description (and its
-// structured data) are in the first HTML for search engines and link previews.
 export default async function ItemPage({ params }) {
-  const { id } = await params;
-  const { entry, missing } = await getItem(id);
-  if (missing) notFound();
-  return <ItemClient params={{ id }} initialItem={entry} />;
+  return <ItemClient params={await params} />;
 }

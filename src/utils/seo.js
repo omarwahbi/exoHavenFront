@@ -131,7 +131,6 @@ export function generateProductSchema(item, sale) {
     name: name || 'Product',
     description: description || 'Exotic pet accessory available at ExoHaven Iraq',
     image: imageUrl,
-    sku: item.Item_ID || entryKey(item),
     brand: {
       '@type': 'Brand',
       name: 'ExoHaven',
@@ -149,8 +148,7 @@ export function generateProductSchema(item, sale) {
         : { '@type': 'Offer', price: salePrice }),
       url: `${baseUrl}/products/${entryKey(item)}`,
       priceCurrency: 'IQD',
-      // A date, not a timestamp: this is rendered on the server and again in the
-      // browser, and the two must match.
+      // A date, not a timestamp (it's in the page and must not change between renders).
       priceValidUntil: `${new Date().getFullYear() + 1}-12-31`,
       itemCondition: 'https://schema.org/NewCondition',
       availability: isOutOfStock(item)
