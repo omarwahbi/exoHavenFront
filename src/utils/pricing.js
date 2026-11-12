@@ -1,8 +1,9 @@
 import { calculateSalePrice } from "./saleUtils";
 import { basePrice } from "./product";
 
-// Delivery fees in IQD. Delivery is free from FREE_DELIVERY_THRESHOLD up.
-export const DELIVERY_FEES = { baghdad: 5000, other: 6000 };
+// Delivery in IQD: the same for every province, and free from
+// FREE_DELIVERY_THRESHOLD up.
+export const DELIVERY_FEE = 5000;
 export const FREE_DELIVERY_THRESHOLD = 50000;
 
 // The price after the running sale (see saleUtils) of an item, or of a cart line
@@ -16,5 +17,4 @@ export const unitPrice = (item, sale) => {
 export const cartSubtotal = (cart, sale) =>
   cart.reduce((total, line) => total + unitPrice(line, sale) * line.quantity, 0);
 
-export const deliveryFee = (subtotal, location) =>
-  subtotal >= FREE_DELIVERY_THRESHOLD ? 0 : DELIVERY_FEES[location] ?? DELIVERY_FEES.other;
+export const deliveryFee = (subtotal) => (subtotal >= FREE_DELIVERY_THRESHOLD ? 0 : DELIVERY_FEE);
