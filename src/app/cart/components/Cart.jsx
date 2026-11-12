@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { MdShoppingCart, MdKeyboardBackspace, MdShoppingBag, MdLocalShipping } from "react-icons/md";
 import { motion, AnimatePresence } from "framer-motion";
@@ -11,11 +11,13 @@ import Spinner from "@/app/Components/Spinner";
 import { fetchSuggestedItems } from "@/services/api";
 import { QueryKeys } from "@/utils/queryKeys";
 import { FREE_DELIVERY_THRESHOLD, cartSubtotal, deliveryFee } from "@/utils/pricing";
-import { buildOrderMessage } from "@/utils/orderMessage";
+import { buildOrderMessage, isValidPhone } from "@/utils/orderMessage";
 import { isOutOfStock, lineKey } from "@/utils/product";
 import CartLine from "./CartLine";
 import OrderSummary from "./OrderSummary";
 import SuggestedProductCard from "./SuggestedProductCard";
+
+const CUSTOMER_KEY = "orderCustomer";
 
 const Cart = () => {
   const sale = useSale();
@@ -23,10 +25,24 @@ const Cart = () => {
 
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [clearCartConfirm, setClearCartConfirm] = useState(false);
-  const [deliveryLocation, setDeliveryLocation] = useState('baghdad'); // 'baghdad' or 'other'
+  const [customerName, setCustomerName] = useState('');
+  const [customerPhone, setCustomerPhone] = useState('');
   const [userAddress, setUserAddress] = useState(''); // User's custom address
-  const [addressError, setAddressError] = useState(false); // Track if address is required but empty
+  // Which required field is missing or wrong: null, 'name', 'phone' or 'address'.
+  const [fieldError, setFieldError] = useState(null);
   const [orderNote, setOrderNote] = useState(''); // Optional note from user
+
+  // Name, phone and address are remembered in this browser for the next order.
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(CUSTOMER_KEY) || "{}");
+      if (saved.name) setCustomerName(saved.name);
+      if (saved.phone) setCustomerPhone(saved.phone);
+      if (saved.address) setUserAddress(saved.address);
+    } catch {
+      // Nothing saved, or storage blocked.
+    }
+  }, []);
   
   // Fetch suggested items using React Query
   const { 
@@ -72,31 +88,46 @@ const Cart = () => {
     }
   };
 
-  const validateAddress = () => {
-    const trimmedAddress = userAddress.trim();
-    if (!trimmedAddress) {
-      setAddressError(true);
-      // Scroll to the address field
-      const addressInput = document.querySelector('input[type="text"][required]');
-      if (addressInput) {
-        addressInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        addressInput.focus();
+  // Before WhatsApp opens: name, a valid phone number and an address, in that
+  // order. The first one missing is marked and scrolled to.
+  const validateOrder = () => {
+    const problem = !customerName.trim()
+      ? 'name'
+      : !isValidPhone(customerPhone)
+        ? 'phone'
+        : !userAddress.trim()
+          ? 'address'
+          : null;
+    setFieldError(problem);
+    if (problem) {
+      const input = document.getElementById(`order-${problem}`);
+      if (input) {
+        input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        input.focus();
       }
       return false;
     }
-    setAddressError(false);
+    try {
+      localStorage.setItem(
+        CUSTOMER_KEY,
+        JSON.stringify({ name: customerName.trim(), phone: customerPhone.trim(), address: userAddress.trim() })
+      );
+    } catch {
+      // Storage blocked: just don't remember.
+    }
     return true;
   };
 
   const subtotal = cartSubtotal(cart, sale);
-  const fee = deliveryFee(subtotal, deliveryLocation);
+  const fee = deliveryFee(subtotal);
   const grandTotal = subtotal + fee;
   const orderMessage = buildOrderMessage({
     cart,
     sale,
     subtotal,
     fee,
-    location: deliveryLocation,
+    name: customerName,
+    phone: customerPhone,
     address: userAddress,
     note: orderNote,
   });
@@ -249,16 +280,19 @@ const Cart = () => {
                   cart={cart}
                   subtotal={subtotal}
                   grandTotal={grandTotal}
-                  deliveryLocation={deliveryLocation}
-                  setDeliveryLocation={setDeliveryLocation}
+                  fee={fee}
+                  customerName={customerName}
+                  setCustomerName={setCustomerName}
+                  customerPhone={customerPhone}
+                  setCustomerPhone={setCustomerPhone}
                   userAddress={userAddress}
                   setUserAddress={setUserAddress}
-                  addressError={addressError}
-                  setAddressError={setAddressError}
+                  fieldError={fieldError}
+                  setFieldError={setFieldError}
                   orderNote={orderNote}
                   setOrderNote={setOrderNote}
                   orderMessage={orderMessage}
-                  validateAddress={validateAddress}
+                  validateOrder={validateOrder}
                 />
               </div>
 

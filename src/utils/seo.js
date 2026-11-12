@@ -162,7 +162,7 @@ export function generateProductSchema(item, sale) {
         '@type': 'OfferShippingDetails',
         shippingRate: {
           '@type': 'MonetaryAmount',
-          value: deliveryFee(salePrice, 'baghdad'),
+          value: deliveryFee(salePrice),
           currency: 'IQD',
         },
         shippingDestination: {
